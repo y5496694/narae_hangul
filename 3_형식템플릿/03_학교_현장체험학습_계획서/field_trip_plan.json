@@ -1,0 +1,1134 @@
+{
+  "schema": 1,
+  "action": "create",
+  "format": "hwpx",
+  "output": "C:\\Users\\USER\\Desktop\\2026학년도_만승초_특수학급_에버랜드_현장체험학습_계획서.hwpx",
+  "overwrite_output": true,
+  "page": {
+    "width_mm": 210,
+    "height_mm": 297,
+    "margins_mm": [
+      20,
+      20,
+      15,
+      15
+    ]
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "2026학년도 만승 특수교육 교육과정 운영 계획",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10,
+        "color": "#718096"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "before": 10,
+        "after": 4
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        170
+      ],
+      "row_heights_mm": [
+        2
+      ],
+      "rows": [
+        [
+          {
+            "text": "",
+            "background": "#1B365D"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {
+        "before": 15
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        170
+      ],
+      "row_heights_mm": [
+        38
+      ],
+      "rows": [
+        [
+          {
+            "background": "#F8FAFC",
+            "vertical_align": "CENTER",
+            "padding_mm": [
+              8,
+              8,
+              6,
+              6
+            ],
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "2026학년도 1학기 특수학급",
+                "text_style": {
+                  "font": "한컴돋움",
+                  "size": 16,
+                  "bold": true,
+                  "color": "#1B365D"
+                },
+                "paragraph_style": {
+                  "align": "CENTER",
+                  "after": 3
+                }
+              },
+              {
+                "type": "paragraph",
+                "text": "에버랜드 현장체험학습 운영 계획서",
+                "text_style": {
+                  "font": "한컴돋움",
+                  "size": 22,
+                  "bold": true,
+                  "color": "#0F172A"
+                },
+                "paragraph_style": {
+                  "align": "CENTER",
+                  "after": 4
+                }
+              },
+              {
+                "type": "paragraph",
+                "text": "- 세상과 소통하고 꿈을 키우는 봄빛 나들이 -",
+                "text_style": {
+                  "font": "한컴돋움",
+                  "size": 11,
+                  "color": "#475569"
+                },
+                "paragraph_style": {
+                  "align": "CENTER"
+                }
+              }
+            ]
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {
+        "before": 18
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        35,
+        135
+      ],
+      "row_heights_mm": [
+        8.5,
+        8.5,
+        8.5,
+        8.5
+      ],
+      "rows": [
+        [
+          {
+            "text": "일    시",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1B365D"
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": " 2026년 5월 14일 (목) 09:00 ~ 16:30",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5
+            }
+          }
+        ],
+        [
+          {
+            "text": "장    소",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1B365D"
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": " 에버랜드 (경기도 용인시 처인구 포곡읍)",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5
+            }
+          }
+        ],
+        [
+          {
+            "text": "대    상",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1B365D"
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": " 만승초등학교 특수학급 재학생 12명 (도움 1·2반)",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5
+            }
+          }
+        ],
+        [
+          {
+            "text": "인 솔 자",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1B365D"
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": " 특수교사 2명, 실무사 2명, 자원봉사자 2명 (계 6명)",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {
+        "before": 20
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2026.  4.",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 12,
+        "bold": true,
+        "color": "#334155"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "after": 5
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "만 승 초 등 학 교",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 17,
+        "bold": true,
+        "color": "#0F172A",
+        "letter_spacing": 5
+      },
+      "paragraph_style": {
+        "align": "CENTER"
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "목    차",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 20,
+        "bold": true,
+        "color": "#1B365D",
+        "letter_spacing": 8
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "page_break": true,
+        "before": 15,
+        "after": 12
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        140,
+        30
+      ],
+      "row_heights_mm": [
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10
+      ],
+      "rows": [
+        [
+          {
+            "text": " Ⅰ. 운영 목적",
+            "background": "#F8FAFC",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1E293B"
+            }
+          },
+          {
+            "text": "1 ",
+            "background": "#F8FAFC",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "color": "#64748B"
+            },
+            "paragraph_style": {
+              "align": "RIGHT"
+            }
+          }
+        ],
+        [
+          {
+            "text": " Ⅱ. 기본 방침",
+            "background": "#FFFFFF",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1E293B"
+            }
+          },
+          {
+            "text": "1 ",
+            "background": "#FFFFFF",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "color": "#64748B"
+            },
+            "paragraph_style": {
+              "align": "RIGHT"
+            }
+          }
+        ],
+        [
+          {
+            "text": " Ⅲ. 세부 운영 계획",
+            "background": "#F8FAFC",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1E293B"
+            }
+          },
+          {
+            "text": "1 ",
+            "background": "#F8FAFC",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "color": "#64748B"
+            },
+            "paragraph_style": {
+              "align": "RIGHT"
+            }
+          }
+        ],
+        [
+          {
+            "text": " Ⅳ. 일일 활동 일정표",
+            "background": "#FFFFFF",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1E293B"
+            }
+          },
+          {
+            "text": "2 ",
+            "background": "#FFFFFF",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "color": "#64748B"
+            },
+            "paragraph_style": {
+              "align": "RIGHT"
+            }
+          }
+        ],
+        [
+          {
+            "text": " Ⅴ. 학생 편성 및 인솔 지도 계획",
+            "background": "#F8FAFC",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1E293B"
+            }
+          },
+          {
+            "text": "2 ",
+            "background": "#F8FAFC",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "color": "#64748B"
+            },
+            "paragraph_style": {
+              "align": "RIGHT"
+            }
+          }
+        ],
+        [
+          {
+            "text": " Ⅵ. 안전사고 예방 및 위급상황 대응 매뉴얼",
+            "background": "#FFFFFF",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1E293B"
+            }
+          },
+          {
+            "text": "3 ",
+            "background": "#FFFFFF",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "color": "#64748B"
+            },
+            "paragraph_style": {
+              "align": "RIGHT"
+            }
+          }
+        ],
+        [
+          {
+            "text": " Ⅶ. 소요 예산 내역",
+            "background": "#F8FAFC",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1E293B"
+            }
+          },
+          {
+            "text": "3 ",
+            "background": "#F8FAFC",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "color": "#64748B"
+            },
+            "paragraph_style": {
+              "align": "RIGHT"
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "2026학년도 1학기 특수학급 현장체험학습 계획",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 16,
+        "bold": true,
+        "color": "#0F172A"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "page_break": true,
+        "before": 6,
+        "after": 10
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        12,
+        158
+      ],
+      "row_heights_mm": [
+        7
+      ],
+      "rows": [
+        [
+          {
+            "text": "Ⅰ",
+            "background": "#1B365D",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 11,
+              "bold": true,
+              "color": "#FFFFFF"
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": " 운영 목적",
+            "background": "#F1F5F9",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 11,
+              "bold": true,
+              "color": "#1E293B"
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "  □ 단체 활동을 통한 사회 적응력 및 대인관계 형성 능력 향상",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10,
+        "bold": true
+      },
+      "paragraph_style": {
+        "before": 4,
+        "after": 2
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "    ○ 교실을 벗어나 대자연과 놀이 문화를 체험함으로써 정서적 안정감과 풍부한 감성 함양",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 9.5
+      },
+      "paragraph_style": {
+        "after": 2
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "    ○ 대중이용시설(놀이공원, 식당, 화장실 등) 이용 예절 습득을 통한 기본 생활습관 형성",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 9.5
+      },
+      "paragraph_style": {
+        "after": 6
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        12,
+        158
+      ],
+      "row_heights_mm": [
+        7
+      ],
+      "rows": [
+        [
+          {
+            "text": "Ⅱ",
+            "background": "#1B365D",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 11,
+              "bold": true,
+              "color": "#FFFFFF"
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": " 기본 방침",
+            "background": "#F1F5F9",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 11,
+              "bold": true,
+              "color": "#1E293B"
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "  □ 학생 안전 최우선 원칙 확립 및 1:2 밀착 인솔 보호 체계 구축",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10,
+        "bold": true
+      },
+      "paragraph_style": {
+        "before": 4,
+        "after": 2
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "    ○ 학생의 장애 유형 및 개별 건강 상태를 사전에 면밀히 파악하여 무리 없는 코스 운영",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 9.5
+      },
+      "paragraph_style": {
+        "after": 2
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "    ○ 사전 학부모 동의서 수렴 및 여행자 안심보험 전원 가입 의무화",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 9.5
+      },
+      "paragraph_style": {
+        "after": 6
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        12,
+        158
+      ],
+      "row_heights_mm": [
+        7
+      ],
+      "rows": [
+        [
+          {
+            "text": "Ⅲ",
+            "background": "#1B365D",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 11,
+              "bold": true,
+              "color": "#FFFFFF"
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": " 세부 추진 계획",
+            "background": "#F1F5F9",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 11,
+              "bold": true,
+              "color": "#1E293B"
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "  □ 개요",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10,
+        "bold": true
+      },
+      "paragraph_style": {
+        "before": 4,
+        "after": 3
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        28,
+        57,
+        28,
+        57
+      ],
+      "row_heights_mm": [
+        7,
+        7,
+        7
+      ],
+      "rows": [
+        [
+          {
+            "text": "일  시",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "2026. 5. 14.(목) 09:00~16:30",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "장  소",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "에버랜드 (경기 용인시)",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          }
+        ],
+        [
+          {
+            "text": "참가 인원",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "총 18명 (학생 12명, 교직원 6명)",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "이동 수단",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "전세버스 1대 (45인승)",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          }
+        ],
+        [
+          {
+            "text": "소요 예산",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "금 1,480,000원 (전액 학교 지원)",
+            "col_span": 3,
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "  □ 일일 활동 일정표",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10,
+        "bold": true
+      },
+      "paragraph_style": {
+        "before": 5,
+        "after": 3
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        25,
+        48,
+        45,
+        52
+      ],
+      "row_heights_mm": [
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ],
+      "rows": [
+        [
+          {
+            "text": "시  간",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "활동 내용",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "장  소",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "지도 및 유의사항",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9.5,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          }
+        ],
+        [
+          {
+            "text": "09:00~09:30",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "출석 확인 및 사전 안전교육",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            }
+          },
+          {
+            "text": "만승초 특수학급 교실",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "건강상태 확인, 비상명찰 착용",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            }
+          }
+        ],
+        [
+          {
+            "text": "09:30~10:40",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "에버랜드로 이동 (전세버스)",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            }
+          },
+          {
+            "text": "학교 → 에버랜드",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "전원 안전벨트 착용 확인",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            }
+          }
+        ],
+        [
+          {
+            "text": "10:40~12:20",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "로스트밸리 및 주토피아 관람",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            }
+          },
+          {
+            "text": "에버랜드 동물원 구역",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "조별 이동 및 안전거리 유지",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            }
+          }
+        ],
+        [
+          {
+            "text": "12:20~13:30",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "점심 식사 및 휴식",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            }
+          },
+          {
+            "text": "원내 지정 레스토랑",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "알레르기 확인, 식사 지도",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            }
+          }
+        ],
+        [
+          {
+            "text": "13:30~15:20",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "사파리월드 및 테마정원 산책",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            }
+          },
+          {
+            "text": "포시즌스가든 일대",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "기념사진 촬영, 낙오 방지",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 9
+            }
+          }
+        ]
+      ]
+    }
+  ]
+}

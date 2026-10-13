@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "action": "create",
+  "format": "hwpx",
+  "output": "연구대회_보고서_대주제_양식.hwpx",
+  "overwrite_output": true,
+  "page": {
+    "width_mm": 210,
+    "height_mm": 297,
+    "margins_mm": [20, 20, 15, 15]
+  },
+  "blocks": [
+    {
+      "type": "table",
+      "columns_mm": [170],
+      "row_heights_mm": [10],
+      "rows": [
+        [
+          {"text": "Ⅰ. 연구의 필요성 및 목적", "background": "#1B365D", "text_style": {"font": "한컴돋움", "size": 14, "bold": true, "color": "#FFFFFF"}, "paragraph_style": {"align": "LEFT", "left": 10}}
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {"before": 5}
+    },
+    {
+      "type": "paragraph",
+      "text": "1. 연구의 필요성",
+      "text_style": {"font": "한컴돋움", "size": 12, "bold": true, "color": "#1B365D"},
+      "paragraph_style": {"before": 3, "after": 2}
+    },
+    {
+      "type": "paragraph",
+      "text": "□ 인공지능(AI) 기반 교육 환경 변화와 특수교육 현장의 요구",
+      "text_style": {"font": "한컴돋움", "size": 10.5, "bold": true},
+      "paragraph_style": {"left": 5, "after": 2}
+    },
+    {
+      "type": "paragraph",
+      "text": "○ 디지털 대전환 시대에 발맞추어 특수교육대상학생을 위한 맞춤형 AI 코딩 및 개별화 조판 교육의 필요성이 대두됨.",
+      "paragraph_style": {"left": 10, "line": 160}
+    },
+    {
+      "type": "paragraph",
+      "text": "○ 한컴오피스 호환 나래팩 엔진을 적용하여 문서 작성 부담을 줄이고 학생 개별 성취 수준을 극대화함.",
+      "paragraph_style": {"left": 10, "line": 160}
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {"before": 5}
+    },
+    {
+      "type": "table",
+      "columns_mm": [35, 65, 70],
+      "row_heights_mm": [8, 14, 14, 14],
+      "rows": [
+        [
+          {"text": "연구 영역", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "기존 현장 실태 및 문제점", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "본 연구의 실천 혁신 방안", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "교육과정 재구성", "background": "#F8FAFC", "paragraph_style": {"align": "CENTER"}},
+          {"text": "○ 교과별 분절적 시수 운영\n○ 학생 흥미 결여 및 피로도 증가", "paragraph_style": {"line": 140}},
+          {"text": "○ 블록코딩-조판 융합 프로젝트 설계\n○ 실생활 마트 계산 연계 실천", "paragraph_style": {"line": 140}}
+        ],
+        [
+          {"text": "교수·학습 방법", "background": "#F8FAFC", "paragraph_style": {"align": "CENTER"}},
+          {"text": "○ 교사 주도 일방향 설명 위주\n○ 지원인력의 전적 대행 의존", "paragraph_style": {"line": 140}},
+          {"text": "○ 상호작용형 AI 프롬프트 피드백\n○ 단계적 잔존 능력 활성화 유도", "paragraph_style": {"line": 140}}
+        ],
+        [
+          {"text": "평가 및 환류", "background": "#F8FAFC", "paragraph_style": {"align": "CENTER"}},
+          {"text": "○ 일회성 지필 평가 중심\n○ 개별 성장 기록 누적 한계", "paragraph_style": {"line": 140}},
+          {"text": "○ 루브릭 기반 상시 포트폴리오 누적\n○ 학부모 및 다면적 실시간 환류", "paragraph_style": {"line": 140}}
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "description": "2쪽 스마트 2열 그리드 목차 템플릿",
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "2026.  4.",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 12,
+        "bold": true,
+        "color": "#334155"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "after": 5
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "만 승 초 등 학 교",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 17,
+        "bold": true,
+        "color": "#0F172A",
+        "letter_spacing": 5
+      },
+      "paragraph_style": {
+        "align": "CENTER"
+      }
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "action": "create",
+  "format": "hwpx",
+  "output": "교수학습_과정안_표준양식.hwpx",
+  "overwrite_output": true,
+  "page": {
+    "width_mm": 210,
+    "height_mm": 297,
+    "margins_mm": [20, 20, 15, 15]
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "( 특수 / 통합 )과 교수·학습 과정안",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 16,
+        "bold": true,
+        "color": "#1B365D"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "before": 5,
+        "after": 8
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [25, 60, 25, 60],
+      "row_heights_mm": [8, 8, 8],
+      "rows": [
+        [
+          {"text": "일  시", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "2026. 10. 15.(목) 3교시", "paragraph_style": {"align": "CENTER"}},
+          {"text": "대  상", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "초등 3~4학년 (남 3, 여 2)", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "단  원", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "4. 우리 동네 기관 이용하기", "paragraph_style": {"align": "CENTER"}},
+          {"text": "차  시", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "2 / 4 차시", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "학습주제", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "마트에서 필요한 물건을 찾고 계산하는 방법 익히기", "col_span": 3, "paragraph_style": {"align": "LEFT"}}
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {"before": 5}
+    },
+    {
+      "type": "table",
+      "columns_mm": [20, 25, 80, 25, 20],
+      "row_heights_mm": [8, 20, 45, 18],
+      "rows": [
+        [
+          {"text": "단계", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "학습요소", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "교수·학습 활동 (교사 / 학생)", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "자료(□) 및 유의점(※)", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "시간", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "도입", "background": "#F8FAFC", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "동기유발\n및\n학습문제", "paragraph_style": {"align": "CENTER"}},
+          {"text": "○ 지난 시간 배운 마트 이용 경험 회상하기\n - 마트에 가서 샀던 물건 이야기 나누기\n○ 학습 문제 확인하기\n - 마트에서 필요한 물건을 바구니에 담고 계산해 봅시다.", "paragraph_style": {"line": 150}},
+          {"text": "□ 마트 전경 사진\n※ 친숙한 마트 환경을 제시하여 흥미 유발", "paragraph_style": {"line": 150}},
+          {"text": "5분", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "전개", "background": "#F8FAFC", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "활동 1\n활동 2\n활동 3", "paragraph_style": {"align": "CENTER"}},
+          {"text": "○ [활동 1] 쇼핑 리스트 확인 및 물건 탐색하기\n - 살 물건 목록 카드 확인하기\n○ [활동 2] 모의 마트에서 물건 바구니에 담기\n - 물건 코너별 위치 확인 및 담기 실습\n○ [활동 3] 계산대에서 바코드 찍고 계산하기\n - 카드/모형 화폐로 결제 완료하기", "paragraph_style": {"line": 150}},
+          {"text": "□ 물품 카드\n□ 모의 계산대\n※ 수준별 단서(사진 카드, 문자 카드) 차등 제공", "paragraph_style": {"line": 150}},
+          {"text": "28분", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "정리", "background": "#F8FAFC", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "정리 및 차시예고", "paragraph_style": {"align": "CENTER"}},
+          {"text": "○ 배운 내용 정리 및 칭찬 스티커 부여\n○ 다음 차시 예고: 영수증 확인 및 거스름돈 챙기기", "paragraph_style": {"line": 150}},
+          {"text": "□ 칭찬판", "paragraph_style": {"line": 150}},
+          {"text": "7분", "paragraph_style": {"align": "CENTER"}}
+        ]
+      ]
+    }
+  ]
+}

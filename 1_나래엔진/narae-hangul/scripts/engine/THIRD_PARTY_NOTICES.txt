@@ -1,0 +1,57 @@
+나래 한글 (Narae Hangul) third-party notices
+
+PySide6 / Shiboken6 / Qt 6.12.0
+  Copyright The Qt Company Ltd. and other contributors.
+  The installed PySide6 distribution declares:
+  LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only.
+  LGPL and GPL license texts accompany this distribution in licenses/.
+  Official source repositories:
+  https://code.qt.io/cgit/pyside/pyside-setup.git/
+  https://code.qt.io/cgit/qt/qtbase.git/
+  https://download.qt.io/official_releases/QtForPython/
+  https://download.qt.io/official_releases/qt/
+  Qt DLLs and the PySide6 modules are in app/NaraeHangul/_internal.
+  This is a dynamically linked folder distribution. The application source,
+  requirements and build.ps1 are provided to rebuild against other libraries.
+
+Python 3.13
+  Copyright Python Software Foundation and contributors.
+  See licenses/Python-LICENSE.txt.
+  Source: https://www.python.org/downloads/source/
+
+olefile 0.47 (development/verification dependency)
+  Copyright Philippe Lagadec and contributors.
+  BSD-style license in licenses/olefile-LICENSE.txt.
+  https://github.com/decalage2/olefile
+
+PyInstaller 6.22.3 (build tool and executable bootstrap)
+  GPL-2.0-or-later with PyInstaller's bootloader exception.
+  https://pyinstaller.org/en/stable/license.html
+  https://github.com/pyinstaller/pyinstaller
+
+FontTools 4.66.1 (user-local HFT outline cache conversion)
+  Copyright Just van Rossum and contributors.
+  MIT license in licenses/fonttools-LICENSE.txt.
+  Additional component notices are in licenses/fonttools-LICENSE.external.txt.
+  https://github.com/fonttools/fonttools
+  Installed HFT files and generated font caches are not distributed.
+
+PyCryptodome 3.23.0 (AES decoding of read-only HWP distribution views)
+  Public-domain and BSD-2-Clause code.
+  See licenses/pycryptodome-LICENSE.rst.
+  https://www.pycryptodome.org/
+
+pypdf 6.13.0 (exact Unicode semantic text for source-layout PDFs)
+  Copyright Mathieu Fenniak and contributors.
+  BSD-3-Clause license in licenses/pypdf-LICENSE.txt.
+  https://github.com/py-pdf/pypdf
+  The invisible PDF font is generated independently from two blank glyphs.
+  No installed fonts or native document assets are included in that layer.
+
+REA 6.4.0 and Ghidra (analysis tools, not bundled in the editor runtime)
+  https://github.com/morluto/rea (MIT)
+  https://github.com/NationalSecurityAgency/ghidra (Apache-2.0)
+
+HWP public file-format acknowledgement
+  본 제품은 한컴의 HWP 문서 파일(.hwp) 공개 문서를 참고하여 개발하였습니다.
+  https://www.store.hancom.com/support/downloadCenter/hwpOwpml

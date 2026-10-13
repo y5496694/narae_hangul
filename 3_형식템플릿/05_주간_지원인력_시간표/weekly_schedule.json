@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "action": "create",
+  "format": "hwpx",
+  "output": "주간_특수교육_지원인력_배치_시간표.hwpx",
+  "overwrite_output": true,
+  "page": {
+    "width_mm": 210,
+    "height_mm": 297,
+    "margins_mm": [20, 20, 15, 15]
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "2026학년도 특수교육대상학생 지원인력 주간 활동 시간표",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 16,
+        "bold": true,
+        "color": "#1B365D"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "before": 5,
+        "after": 8
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [25, 25, 60, 60],
+      "row_heights_mm": [8, 8],
+      "rows": [
+        [
+          {"text": "지원인력 성명", "background": "#F0F4F8", "text_style": {"font": "한컴돋움", "size": 10, "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "홍길동 (특수교육지도사)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "주간 담당 학급", "background": "#F0F4F8", "text_style": {"font": "한컴돋움", "size": 10, "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "특수학급 (사랑반) 및 3학년 2반 통합학급", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "중점 지원 학생", "background": "#F0F4F8", "text_style": {"font": "한컴돋움", "size": 10, "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "김만승 (3-2)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "주요 지원 영역", "background": "#F0F4F8", "text_style": {"font": "한컴돋움", "size": 10, "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "통합수업 학습활동 참여 보조, 이동 및 신변처리 지원", "paragraph_style": {"align": "CENTER"}}
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {"before": 6}
+    },
+    {
+      "type": "paragraph",
+      "text": "□ 요일별 세부 지원 시간표",
+      "text_style": {"font": "한컴돋움", "size": 11, "bold": true, "color": "#1B365D"},
+      "paragraph_style": {"before": 4, "after": 3}
+    },
+    {
+      "type": "table",
+      "columns_mm": [20, 25, 25, 25, 25, 25, 25],
+      "row_heights_mm": [8, 9, 9, 9, 9, 9, 9],
+      "rows": [
+        [
+          {"text": "교시", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "시간", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "월요일", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "화요일", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "수요일", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "목요일", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "금요일", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "등교", "background": "#F0F4F8", "paragraph_style": {"align": "CENTER"}},
+          {"text": "08:40~09:00", "paragraph_style": {"align": "CENTER"}},
+          {"text": "등교지도/맞이", "col_span": 5, "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "1교시", "background": "#F0F4F8", "paragraph_style": {"align": "CENTER"}},
+          {"text": "09:00~09:40", "paragraph_style": {"align": "CENTER"}},
+          {"text": "국어(통합)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "국어(특수)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "사회(통합)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "국어(통합)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "도덕(통합)", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "2교시", "background": "#F0F4F8", "paragraph_style": {"align": "CENTER"}},
+          {"text": "09:50~10:30", "paragraph_style": {"align": "CENTER"}},
+          {"text": "수학(통합)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "수학(특수)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "음악(통합)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "체육(통합)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "수학(통합)", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "3교시", "background": "#F0F4F8", "paragraph_style": {"align": "CENTER"}},
+          {"text": "10:40~11:20", "paragraph_style": {"align": "CENTER"}},
+          {"text": "특수(개별)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "과학(통합)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "체육(통합)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "사회(통합)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "미술(통합)", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "4교시", "background": "#F0F4F8", "paragraph_style": {"align": "CENTER"}},
+          {"text": "11:30~12:10", "paragraph_style": {"align": "CENTER"}},
+          {"text": "창체(통합)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "미술(통합)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "특수(적응)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "과학(통합)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "미술(통합)", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "점심", "background": "#F0F4F8", "paragraph_style": {"align": "CENTER"}},
+          {"text": "12:10~13:10", "paragraph_style": {"align": "CENTER"}},
+          {"text": "급식지도 및 식사 보조 / 휴게 지원", "col_span": 5, "paragraph_style": {"align": "CENTER"}}
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {"before": 5}
+    },
+    {
+      "type": "paragraph",
+      "text": "□ 인력 지원 시 유의사항 및 안전 준수사항",
+      "text_style": {"font": "한컴돋움", "size": 11, "bold": true, "color": "#1B365D"},
+      "paragraph_style": {"before": 3, "after": 2}
+    },
+    {
+      "type": "paragraph",
+      "text": "○ 학생의 자립 능력 신장을 위해 전적인 대행보다는 잔존 능력 활용을 우선 유도함.",
+      "paragraph_style": {"indent": 15, "line": 160}
+    },
+    {
+      "type": "paragraph",
+      "text": "○ 위기 행동 및 건강상 이상 징후 발생 시 특수교사 및 통합학급 담임교사에게 즉시 보고함.",
+      "paragraph_style": {"indent": 15, "line": 160}
+    }
+  ]
+}

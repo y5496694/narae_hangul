@@ -1,0 +1,148 @@
+{
+  "schema": 1,
+  "action": "create",
+  "format": "hwpx",
+  "output": "회의록_협의록_표준양식.hwpx",
+  "overwrite_output": true,
+  "page": {
+    "width_mm": 210,
+    "height_mm": 297,
+    "margins_mm": [20, 20, 15, 15]
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "개별화교육지원팀(IEP) 협의회 회의록",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 17,
+        "bold": true,
+        "color": "#1B365D"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "before": 4,
+        "after": 7
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [25, 60, 25, 60],
+      "row_heights_mm": [8, 8, 8, 8],
+      "rows": [
+        [
+          {"text": "일  시", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "2026. 10. 15.(목) 15:30 ~ 16:30", "paragraph_style": {"align": "CENTER"}},
+          {"text": "장  소", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "학습도움실 (특수학급)", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "대  상", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "김만승 (3학년 1반)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "주 재 자", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "교감 홍길동 (인)", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "참석자", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "교감, 통합학급교사, 특수교사, 학부모, 특수교육지도사 (총 5명)", "col_span": 3, "paragraph_style": {"left": 3}}
+        ],
+        [
+          {"text": "안  건", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "1. 2학기 개별화교육목표 수정·보완\n2. 통합학급 수업 지원 및 지원인력 배치 협의", "col_span": 3, "paragraph_style": {"left": 3, "line": 140}}
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {"before": 5}
+    },
+    {
+      "type": "paragraph",
+      "text": "□ 협의 내용 및 결정 사항",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 11,
+        "bold": true,
+        "color": "#1B365D"
+      },
+      "paragraph_style": {
+        "after": 3
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [30, 40, 75, 25],
+      "row_heights_mm": [8, 18, 18, 18],
+      "rows": [
+        [
+          {"text": "구분", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "주요 발언자", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "협의 및 발언 내용", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "결정 사항", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "개별화 목표\n(학습 지도)", "background": "#F8FAFC", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "특수교사\n통합학급교사", "paragraph_style": {"align": "CENTER"}},
+          {"text": "○ 국어: 일상 낱말 읽기에서 문장 구성으로 단계 상향 필요\n○ 수학: 10 이하 덧셈 연산 구체물 조작 반복 지도 합의", "paragraph_style": {"left": 2, "line": 140}},
+          {"text": "목표 수정\n반영 합의", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "생활 지도 및\n통합 환경", "background": "#F8FAFC", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "학부모\n통합학급교사", "paragraph_style": {"align": "CENTER"}},
+          {"text": "○ 급식실 이동 및 체육 시간 착석 지도 시 긍정적 행동지원 필요\n○ 또래 도우미 친구 지정하여 자연스러운 통합 분위기 조성", "paragraph_style": {"left": 2, "line": 140}},
+          {"text": "또래도우미\n운영 연계", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "지원인력\n배치 시간", "background": "#F8FAFC", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "교감\n특수교육지도사", "paragraph_style": {"align": "CENTER"}},
+          {"text": "○ 이동이 잦은 2, 4교시(체육, 미술) 및 급식 지도 시간 집중 지원\n○ 주당 지원 시간 배분표 작성하여 공유하기로 함", "paragraph_style": {"left": 2, "line": 140}},
+          {"text": "시간표\n확정 반영", "paragraph_style": {"align": "CENTER"}}
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {"before": 5}
+    },
+    {
+      "type": "paragraph",
+      "text": "□ 향후 조치 계획 및 서명",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 11,
+        "bold": true,
+        "color": "#1B365D"
+      },
+      "paragraph_style": {
+        "after": 3
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [35, 75, 35, 25],
+      "row_heights_mm": [8, 9, 9],
+      "rows": [
+        [
+          {"text": "추진 과제", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "세부 내용", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "담당자", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "기 한", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "IEP 계획서 보완", "paragraph_style": {"align": "CENTER"}},
+          {"text": "협의 결과 반영하여 2학기 목표 최종 출력 및 서명", "paragraph_style": {"left": 2}},
+          {"text": "특수교사 이나래", "paragraph_style": {"align": "CENTER"}},
+          {"text": "10. 19.", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "통합수업 자료 공유", "paragraph_style": {"align": "CENTER"}},
+          {"text": "수준별 학습지 및 AAC 시각 단서 카드 제공", "paragraph_style": {"left": 2}},
+          {"text": "특수교사 / 통합교사", "paragraph_style": {"align": "CENTER"}},
+          {"text": "매주 월", "paragraph_style": {"align": "CENTER"}}
+        ]
+      ]
+    }
+  ]
+}

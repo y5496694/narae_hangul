@@ -1,0 +1,162 @@
+{
+  "schema": 1,
+  "action": "create",
+  "format": "hwpx",
+  "output": "가정통신문_신청서_표준양식.hwpx",
+  "overwrite_output": true,
+  "page": {
+    "width_mm": 210,
+    "height_mm": 297,
+    "margins_mm": [20, 20, 15, 15]
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "가 정 통 신 문",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 20,
+        "bold": true,
+        "color": "#1B365D",
+        "letter_spacing": 20
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "before": 5,
+        "after": 5
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2026학년도 2학기 방과후 맞춤형 특기적성 프로그램 신청 안내",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 14,
+        "bold": true,
+        "color": "#333333"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "after": 8
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "  학부모님 안녕하십니까?\n  아침저녁으로 선선한 바람이 불어오는 결실의 계절을 맞이하여 학부모님 가정에 건강과 행복이 가득하기를 기원합니다.\n  본교에서는 학생들의 소질 계발과 전인적 성장을 도모하고자 2026학년도 2학기 맞춤형 방과후 프로그램을 다음과 같이 개설·운영하오니, 참가를 희망하는 학부모님께서는 아래 내용을 확인하시고 신청서를 제출하여 주시기 바랍니다.",
+      "paragraph_style": {
+        "align": "JUSTIFY",
+        "line": 160,
+        "after": 6
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [30, 140],
+      "row_heights_mm": [9, 9, 9, 9, 9],
+      "rows": [
+        [
+          {"text": "운영 기간", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "2026. 10. 19.(월) ~ 2026. 12. 18.(금) (총 9주간)", "paragraph_style": {"left": 3}}
+        ],
+        [
+          {"text": "운영 대상", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "전교생 및 특수교육대상학생 중 희망자", "paragraph_style": {"left": 3}}
+        ],
+        [
+          {"text": "개설 강좌", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "AI 코딩 & 컴퓨터(화·목), 토탈공예 & 미술(월·수), 방송댄스(금)", "paragraph_style": {"left": 3}}
+        ],
+        [
+          {"text": "수 강 료", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "전액 학교 예산 지원 (무료, 특수교육대상학생 우선 배정)", "paragraph_style": {"left": 3}}
+        ],
+        [
+          {"text": "제출 기한", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "2026. 10. 16.(금) 16:30까지 담임교사에게 제출", "paragraph_style": {"left": 3}}
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "2026.  10.  12.",
+      "text_style": {
+        "font": "한컴바탕",
+        "size": 12,
+        "bold": true
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "before": 6,
+        "after": 3
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "만 승 초 등 학 교 장 [직인생략]",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 15,
+        "bold": true,
+        "color": "#1B365D"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "after": 6
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "-----------------------------------------  절  취  선  -----------------------------------------",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 9,
+        "color": "#888888"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "after": 6
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2학기 방과후 맞춤형 프로그램 참가 신청서",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 13,
+        "bold": true,
+        "color": "#1B365D"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "after": 4
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [25, 60, 25, 60],
+      "row_heights_mm": [8, 8, 8, 12],
+      "rows": [
+        [
+          {"text": "학생 성명", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "", "paragraph_style": {"align": "CENTER"}},
+          {"text": "학 년 반", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "   학년   반   번", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "희망 강좌", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "1지망:                   / 2지망:                  ", "col_span": 3, "paragraph_style": {"left": 3}}
+        ],
+        [
+          {"text": "보호자 성명", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "               (서명/인)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "비상연락처", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "010 -      -      ", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "개인정보 동의", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "방과후 프로그램 운영 및 출결 관리를 위한 개인정보 수집·이용에 동의합니다. ( [  ] 동의함  /  [  ] 동의하지 않음 )", "col_span": 3, "paragraph_style": {"left": 3, "line": 140}}
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "schema": 1,
+  "action": "create",
+  "format": "hwpx",
+  "output": "체크리스트_평가표_양식.hwpx",
+  "overwrite_output": true,
+  "page": {
+    "width_mm": 210,
+    "height_mm": 297,
+    "margins_mm": [20, 20, 15, 15]
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "개별화교육계획(IEP) 성취도 점검 체크리스트 및 평가표",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 16,
+        "bold": true,
+        "color": "#1B365D"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "before": 5,
+        "after": 8
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [25, 30, 25, 30, 25, 35],
+      "row_heights_mm": [8, 8],
+      "rows": [
+        [
+          {"text": "학생 성명", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "김만승", "paragraph_style": {"align": "CENTER"}},
+          {"text": "학  년", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "3학년", "paragraph_style": {"align": "CENTER"}},
+          {"text": "평가 일시", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "2026. 10. 15.", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "평가 교과", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "기본 교육과정 국어/수학", "col_span": 3, "paragraph_style": {"align": "LEFT"}},
+          {"text": "평 가 자", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "교사 이나래 (인)", "paragraph_style": {"align": "CENTER"}}
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {"before": 5}
+    },
+    {
+      "type": "table",
+      "columns_mm": [25, 65, 20, 20, 20, 20],
+      "row_heights_mm": [8, 11, 11, 11, 11, 11],
+      "rows": [
+        [
+          {"text": "영역", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "평가 요소 및 성취 기준", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "상 (3)", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "중 (2)", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "하 (1)", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "비고", "background": "#1B365D", "text_style": {"color": "#FFFFFF", "bold": true}, "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "국어\n(듣기·말하기)", "background": "#F8FAFC", "row_span": 2, "paragraph_style": {"align": "CENTER"}},
+          {"text": "상대방의 말을 끝까지 듣고 질문에 알맞게 답할 수 있는가?", "paragraph_style": {"line": 140}},
+          {"text": "○", "paragraph_style": {"align": "CENTER"}},
+          {"text": "", "paragraph_style": {"align": "CENTER"}},
+          {"text": "", "paragraph_style": {"align": "CENTER"}},
+          {"text": "자립 수행", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "자신의 감정과 요구를 2어절 이상의 문장으로 표현하는가?", "paragraph_style": {"line": 140}},
+          {"text": "", "paragraph_style": {"align": "CENTER"}},
+          {"text": "○", "paragraph_style": {"align": "CENTER"}},
+          {"text": "", "paragraph_style": {"align": "CENTER"}},
+          {"text": "시각단서 활용", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "수학\n(수와 연산)", "background": "#F8FAFC", "row_span": 2, "paragraph_style": {"align": "CENTER"}},
+          {"text": "1부터 50까지의 수를 바르게 세고 쓸 수 있는가?", "paragraph_style": {"line": 140}},
+          {"text": "○", "paragraph_style": {"align": "CENTER"}},
+          {"text": "", "paragraph_style": {"align": "CENTER"}},
+          {"text": "", "paragraph_style": {"align": "CENTER"}},
+          {"text": "수모형 활용", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "한 자리 수 덧셈 구체물 조작을 통해 정확히 계산하는가?", "paragraph_style": {"line": 140}},
+          {"text": "", "paragraph_style": {"align": "CENTER"}},
+          {"text": "○", "paragraph_style": {"align": "CENTER"}},
+          {"text": "", "paragraph_style": {"align": "CENTER"}},
+          {"text": "연산블록 보조", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "기본생활\n(신변자립)", "background": "#F8FAFC", "paragraph_style": {"align": "CENTER"}},
+          {"text": "수업 후 자신의 학용품을 필통과 사물함에 스스로 정리하는가?", "paragraph_style": {"line": 140}},
+          {"text": "○", "paragraph_style": {"align": "CENTER"}},
+          {"text": "", "paragraph_style": {"align": "CENTER"}},
+          {"text": "", "paragraph_style": {"align": "CENTER"}},
+          {"text": "정리습관 우수", "paragraph_style": {"align": "CENTER"}}
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {"before": 5}
+    },
+    {
+      "type": "table",
+      "columns_mm": [30, 140],
+      "row_heights_mm": [22],
+      "rows": [
+        [
+          {"text": "종합 의견\n및\n환류 계획", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "학생은 시각적 구조화 자료와 연산 구체물을 활용할 때 매우 안정적인 성취를 보임. 차기 학기에는 구체물 의존도를 점진적으로 줄이고 일상생활 마트 계산 및 문장 표현 기회를 단계적으로 확대할 계획임.", "paragraph_style": {"line": 150}}
+        ]
+      ]
+    }
+  ]
+}

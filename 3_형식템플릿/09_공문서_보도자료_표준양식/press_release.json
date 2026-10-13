@@ -1,0 +1,109 @@
+{
+  "schema": 1,
+  "action": "create",
+  "format": "hwpx",
+  "output": "공문서_보도자료_표준양식.hwpx",
+  "overwrite_output": true,
+  "page": {
+    "width_mm": 210,
+    "height_mm": 297,
+    "margins_mm": [20, 20, 15, 15]
+  },
+  "blocks": [
+    {
+      "type": "table",
+      "columns_mm": [35, 75, 25, 35],
+      "row_heights_mm": [8, 8, 8],
+      "rows": [
+        [
+          {"text": "배포 일시", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "2026. 10. 15.(목) 즉시 배포 가능", "paragraph_style": {"align": "CENTER"}},
+          {"text": "담당 부서", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "특수교육부", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "보도 시점", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "배포 즉시 보도하여 주시기 바랍니다.", "paragraph_style": {"align": "CENTER"}},
+          {"text": "담  당  자", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "교사 이나래 (043-123-4567)", "paragraph_style": {"align": "CENTER"}}
+        ],
+        [
+          {"text": "총 매 수", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "총 2매 (사진 2매 별첨)", "paragraph_style": {"align": "CENTER"}},
+          {"text": "홈페이지", "background": "#F0F4F8", "text_style": {"bold": true}, "paragraph_style": {"align": "CENTER"}},
+          {"text": "http://school.cbe.go.kr", "paragraph_style": {"align": "CENTER"}}
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {"before": 6}
+    },
+    {
+      "type": "paragraph",
+      "text": "만승초, AI 기반 나래팩 활용 특수학급 맞춤형 조판 교육 실시",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 17,
+        "bold": true,
+        "color": "#1B365D"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "before": 4,
+        "after": 4
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "- 한컴오피스 호환 나래팩 도입으로 디지털 격차 해소 및 자기표현 능력 신장 -",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 11,
+        "bold": true,
+        "color": "#5A6A80"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "after": 8
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [170],
+      "row_heights_mm": [18],
+      "rows": [
+        [
+          {
+            "background": "#F8FAFC",
+            "vertical_align": "CENTER",
+            "padding_mm": [6, 6, 4, 4],
+            "text": "【핵심 요약】 만승초등학교(교장 이만승)는 2026년 10월 15일 특수학급 학생들을 대상으로 AI 자연어 조판 엔진 '나래팩'을 활용한 스마트 문서 작성 및 표 편집 교육을 성공적으로 운영하였다. 이번 프로그램을 통해 학생들은 자신만의 이야기책과 현장체험학습 계획서를 완성하는 뜻깊은 시간을 가졌다."
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {"before": 5}
+    },
+    {
+      "type": "paragraph",
+      "text": "□ 본문 내용",
+      "text_style": {"font": "한컴돋움", "size": 11, "bold": true, "color": "#1B365D"},
+      "paragraph_style": {"before": 2, "after": 2}
+    },
+    {
+      "type": "paragraph",
+      "text": "○ 만승초등학교는 특수교육대상학생의 정보화 역량 강화와 개별화 교육 지원을 위해 최신 한컴 2024 표준 규격을 탑재한 '나래팩' 엔진을 교육 현장에 선제적으로 도입하였다.",
+      "paragraph_style": {"line": 160}
+    },
+    {
+      "type": "paragraph",
+      "text": "○ 학생들은 복잡한 키보드 조작 없이도 '제목 셀과 본문 셀을 병합해줘'와 같은 직관적인 AI 자연어 명령으로 자유롭게 표를 편집하며 높은 흥미와 자신감을 나타냈다.",
+      "paragraph_style": {"line": 160}
+    }
+  ]
+}

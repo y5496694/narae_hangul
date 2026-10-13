@@ -1,0 +1,233 @@
+{
+  "description": "1쪽 모던 카드형 표지 템플릿",
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "2026학년도 만승 특수교육 교육과정 운영 계획",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10,
+        "color": "#718096"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "before": 10,
+        "after": 4
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        170
+      ],
+      "row_heights_mm": [
+        2
+      ],
+      "rows": [
+        [
+          {
+            "text": "",
+            "background": "#1B365D"
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {
+        "before": 15
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        170
+      ],
+      "row_heights_mm": [
+        38
+      ],
+      "rows": [
+        [
+          {
+            "background": "#F8FAFC",
+            "vertical_align": "CENTER",
+            "padding_mm": [
+              8,
+              8,
+              6,
+              6
+            ],
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "2026학년도 1학기 특수학급",
+                "text_style": {
+                  "font": "한컴돋움",
+                  "size": 16,
+                  "bold": true,
+                  "color": "#1B365D"
+                },
+                "paragraph_style": {
+                  "align": "CENTER",
+                  "after": 3
+                }
+              },
+              {
+                "type": "paragraph",
+                "text": "에버랜드 현장체험학습 운영 계획서",
+                "text_style": {
+                  "font": "한컴돋움",
+                  "size": 22,
+                  "bold": true,
+                  "color": "#0F172A"
+                },
+                "paragraph_style": {
+                  "align": "CENTER",
+                  "after": 4
+                }
+              },
+              {
+                "type": "paragraph",
+                "text": "- 세상과 소통하고 꿈을 키우는 봄빛 나들이 -",
+                "text_style": {
+                  "font": "한컴돋움",
+                  "size": 11,
+                  "color": "#475569"
+                },
+                "paragraph_style": {
+                  "align": "CENTER"
+                }
+              }
+            ]
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {
+        "before": 18
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        35,
+        135
+      ],
+      "row_heights_mm": [
+        8.5,
+        8.5,
+        8.5,
+        8.5
+      ],
+      "rows": [
+        [
+          {
+            "text": "일    시",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1B365D"
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": " 2026년 5월 14일 (목) 09:00 ~ 16:30",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5
+            }
+          }
+        ],
+        [
+          {
+            "text": "장    소",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1B365D"
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": " 에버랜드 (경기도 용인시 처인구 포곡읍)",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5
+            }
+          }
+        ],
+        [
+          {
+            "text": "대    상",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1B365D"
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": " 만승초등학교 특수학급 재학생 12명 (도움 1·2반)",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5
+            }
+          }
+        ],
+        [
+          {
+            "text": "인 솔 자",
+            "background": "#EDF2F7",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5,
+              "bold": true,
+              "color": "#1B365D"
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": " 특수교사 2명, 실무사 2명, 자원봉사자 2명 (계 6명)",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10.5
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "",
+      "paragraph_style": {
+        "before": 20
+      }
+    }
+  ]
+}

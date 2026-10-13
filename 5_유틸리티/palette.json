@@ -1,0 +1,42 @@
+{
+  "Navy (신뢰/행정/보고서)": {
+    "primary": "#1B365D",
+    "secondary": "#2E5B88",
+    "light_bg": "#F8FAFC",
+    "table_header": "#EDF2F7",
+    "border": "#CBD5E1",
+    "text": "#0F172A"
+  },
+  "Forest (친환경/체험학습/생태)": {
+    "primary": "#1E4D2B",
+    "secondary": "#2D6A4F",
+    "light_bg": "#F4F7F4",
+    "table_header": "#E8F0EA",
+    "border": "#B7D1BC",
+    "text": "#1A2E20"
+  },
+  "Burgundy (품격/행사/표창)": {
+    "primary": "#6B1D2F",
+    "secondary": "#8B263E",
+    "light_bg": "#FAF5F6",
+    "table_header": "#F3E8EB",
+    "border": "#D8B4BC",
+    "text": "#2C0F16"
+  },
+  "Charcoal (모던/공식공문/기안)": {
+    "primary": "#2D3748",
+    "secondary": "#4A5568",
+    "light_bg": "#F7FAFC",
+    "table_header": "#EDF2F7",
+    "border": "#E2E8F0",
+    "text": "#1A202C"
+  },
+  "Indigo (창의/미래교육/AI)": {
+    "primary": "#2A3B8F",
+    "secondary": "#3E52B5",
+    "light_bg": "#F5F6FC",
+    "table_header": "#E9ECF8",
+    "border": "#BAC4EC",
+    "text": "#10163A"
+  }
+}

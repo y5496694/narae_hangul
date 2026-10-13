@@ -1,0 +1,176 @@
+{
+  "schema": 1,
+  "action": "create",
+  "format": "hwpx",
+  "output": "official_draft.hwpx",
+  "overwrite_output": true,
+  "page": {
+    "width_mm": 210,
+    "height_mm": 297,
+    "margins_mm": [
+      20,
+      20,
+      15,
+      15
+    ]
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "만 승 초 등 학 교",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 18,
+        "bold": true,
+        "letter_spacing": 6
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "before": 10,
+        "after": 8
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        30,
+        55,
+        30,
+        55
+      ],
+      "row_heights_mm": [
+        8,
+        8
+      ],
+      "rows": [
+        [
+          {
+            "text": "수신자",
+            "background": "#F1F5F9",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "내부결재",
+            "col_span": 3,
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10
+            }
+          }
+        ],
+        [
+          {
+            "text": "제  목",
+            "background": "#F1F5F9",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "2026학년도 1학기 특수학급 현장체험학습 운영 계획(안)",
+            "col_span": 3,
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10,
+              "bold": true
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "1. 관련: 2026학년도 만승초등학교 특수교육 운영계획",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10
+      },
+      "paragraph_style": {
+        "before": 10,
+        "after": 4
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2. 특수학급 학생들의 사회 적응력 신장 및 다양한 문화 체험의 기회를 제공하고자 2026학년도 1학기 특수학급 에버랜드 현장체험학습을 다음과 같이 추진하고자 하오니 결재하여 주시기 바랍니다.",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10
+      },
+      "paragraph_style": {
+        "after": 8
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "  가. 일시: 2026. 5. 14.(목) 09:00 ~ 16:30",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10
+      },
+      "paragraph_style": {
+        "after": 3
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "  나. 장소: 에버랜드 (경기도 용인시)",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10
+      },
+      "paragraph_style": {
+        "after": 3
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "  다. 대상: 특수학급 재학생 12명 및 인솔교직원 6명 (총 18명)",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10
+      },
+      "paragraph_style": {
+        "after": 3
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "  라. 소요예산: 금 1,480,000원 (특수교육운영비)",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10
+      },
+      "paragraph_style": {
+        "after": 8
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "붙임  2026학년도 1학기 특수학급 현장체험학습 계획서 1부.  끝.",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10
+      },
+      "paragraph_style": {
+        "before": 8
+      }
+    }
+  ]
+}

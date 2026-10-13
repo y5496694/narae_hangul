@@ -1,0 +1,209 @@
+{
+  "schema": 1,
+  "action": "create",
+  "format": "hwpx",
+  "output": "training_report.hwpx",
+  "overwrite_output": true,
+  "page": {
+    "width_mm": 210,
+    "height_mm": 297,
+    "margins_mm": [
+      20,
+      20,
+      15,
+      15
+    ]
+  },
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "2026. 사회적 장애인식개선 연수 결과보고서",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 16,
+        "bold": true,
+        "color": "#0F172A"
+      },
+      "paragraph_style": {
+        "align": "CENTER",
+        "before": 10,
+        "after": 10
+      }
+    },
+    {
+      "type": "table",
+      "columns_mm": [
+        30,
+        55,
+        30,
+        55
+      ],
+      "row_heights_mm": [
+        8,
+        8,
+        8
+      ],
+      "rows": [
+        [
+          {
+            "text": "연 수 명",
+            "background": "#F1F5F9",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "2026 사회적 장애인식개선(통합교육) 교직원 연수",
+            "col_span": 3,
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10
+            }
+          }
+        ],
+        [
+          {
+            "text": "일    시",
+            "background": "#F1F5F9",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "2026. 4. 23.(목) 15:30 ~ 16:30",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10
+            }
+          },
+          {
+            "text": "장    소",
+            "background": "#F1F5F9",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "본교 시청각실",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10
+            }
+          }
+        ],
+        [
+          {
+            "text": "참석 대상",
+            "background": "#F1F5F9",
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10,
+              "bold": true
+            },
+            "paragraph_style": {
+              "align": "CENTER"
+            }
+          },
+          {
+            "text": "전교직원 42명 (참석 40명, 공가 2명)",
+            "col_span": 3,
+            "vertical_align": "CENTER",
+            "text_style": {
+              "font": "한컴돋움",
+              "size": 10
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "type": "paragraph",
+      "text": "1. 연수 목적 및 주요 내용",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 11,
+        "bold": true
+      },
+      "paragraph_style": {
+        "before": 8,
+        "after": 4
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "  □ 장애인에 대한 사회적 편견 해소 및 긍정적 인식 확산",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10
+      },
+      "paragraph_style": {
+        "after": 2
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "  □ 통합교육 환경에서의 협력적 지도 방안 모색",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10
+      },
+      "paragraph_style": {
+        "after": 6
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "2. 연수 만족도 및 평가 결과",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 11,
+        "bold": true
+      },
+      "paragraph_style": {
+        "before": 6,
+        "after": 4
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "  □ 전반적 만족도: 96.5% (매우 만족 및 만족 응답 비율)",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10
+      },
+      "paragraph_style": {
+        "after": 2
+      }
+    },
+    {
+      "type": "paragraph",
+      "text": "  □ 향후 통합학급 운영 시 장애학생 개별 행동중재 지원 요청 의견 수렴",
+      "text_style": {
+        "font": "한컴돋움",
+        "size": 10
+      }
+    }
+  ]
+}
