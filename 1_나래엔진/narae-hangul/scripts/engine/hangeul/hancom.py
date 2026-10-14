@@ -103,6 +103,7 @@ def operations(bridge, ops):
         return value
     for index,op in enumerate(ops):
         if not isinstance(op,dict): raise HancomError("operation must be an object")
+        bridge.activate_document()
         kind=op.get("op")
         if kind=="hancom_action":
             _keys(op,("op","action","parameters"),"Hancom action")

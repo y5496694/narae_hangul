@@ -12,6 +12,8 @@ import base64
 import hashlib
 import zlib
 import tempfile
+import ctypes
+import shutil
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -78,20 +80,59 @@ class HancomBridge:
     def __init__(self, visible=False):
         import pythoncom
         import win32com.client
-        pythoncom.CoInitialize()
-        self._com, self.hwp, self.receipts = pythoncom, None, []
+        import win32process
+        # pywin32 caches main-thread initialization, so its helpers do not
+        # balance nested bridge lifetimes. Match native initialization and
+        # uninitialization calls without tearing down another caller's COM.
+        ole32 = ctypes.WinDLL("ole32")
+        initialize = ole32.CoInitializeEx
+        initialize.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
+        initialize.restype = ctypes.c_long
+        status = initialize(None, pythoncom.COINIT_APARTMENTTHREADED)
+        if status & 0xffffffff == 0x80010106: status = initialize(None, pythoncom.COINIT_MULTITHREADED)
+        if status < 0: raise HancomError(f"COM initialization failed: {status & 0xffffffff:#x}")
+        self._uninitialize = ole32.CoUninitialize
+        self._uninitialize.argtypes = []
+        self._uninitialize.restype = None
+        self._com, self._hwp, self.receipts = pythoncom, None, []
+        self._document = self._previous_document = self._window = None
+        self._document_id = self._previous_document_id = self._window_handle = None
+        self._owns_process = False
+        self._old_message_mode = None
         self.visible = bool(visible)
+        prior_processes = set(win32process.EnumProcesses())
         try:
-            # Own the instance: never attach to, edit, or Quit a user's session.
             for attempt in range(3):
                 try:
-                    self.hwp = win32com.client.DispatchEx("HWPFrame.HwpObject")
-                    self.hwp.XHwpWindows.Item(0).Visible = bool(visible)
+                    self._hwp = win32com.client.DispatchEx("HWPFrame.HwpObject")
+                    self._window = self._hwp.XHwpWindows.Active_XHwpWindow
                     break
                 except pythoncom.com_error as error:
                     if attempt == 2 or error.hresult & 0xffffffff not in (0x80010105, 0x800706ba, 0x800706be): raise
-                    self.hwp = None
+                    self._hwp = None
                     time.sleep(.2)
+            process_id = win32process.GetWindowThreadProcessId(self._window.WindowHandle)[1]
+            self._owns_process = process_id not in prior_processes
+            documents = self._hwp.XHwpDocuments
+            current = documents.Active_XHwpDocument
+            if self._owns_process and documents.Count == 1 and self._hwp.IsEmpty and not current.Path:
+                self._document = current
+            else:
+                # Hancom can return the SAME application even for DispatchEx.
+                # Own a separate tab, never the current user document. Keep
+                # the root automation object bound to its original window.
+                self._previous_document = current
+                self._previous_document_id = current.DocumentID
+                prior_ids = {documents.Item(i).DocumentID for i in range(documents.Count)}
+                created = documents.Add(True)
+                if created is None or created.DocumentID in prior_ids:
+                    raise HancomError("Could not create an isolated Hancom document")
+                self._document = created
+                self._window = self._hwp.XHwpWindows.Active_XHwpWindow
+            self._document.SetActive_XHwpDocument()
+            self._document_id = self._document.DocumentID
+            self._window_handle = self._window.WindowHandle
+            if self._owns_process or visible: self._window.Visible = bool(visible)
             configured = os.environ.get("NARAE_HANCOM_SECURITY_MODULE")
             module_names = (configured,) if configured else ("NaraeHangulFilePathChecker", "FilePathCheckerModule")
             self.security_module_registered = False
@@ -100,32 +141,65 @@ class HancomBridge:
                     self.security_module_registered = True
                     self.security_module_name = module_name
                     break
-            self.hwp.SetMessageBoxMode(0x00020000)
+            self._old_message_mode = self._hwp.GetMessageBoxMode()
+            self._hwp.SetMessageBoxMode(0x00020000)
+            # File I/O replaces Hancom's native document objects. Retain only
+            # stable identifiers across Open/SaveAs, not their COM wrappers.
+            self._document = self._previous_document = self._window = None
         except Exception:
             self.close()
             raise
 
     def close(self):
         try:
-            if self.hwp is not None:
+            if self._hwp is not None:
                 try:
-                    self.hwp.Clear(1)
-                except Exception:
-                    pass
-                try:
-                    self.hwp.Quit()
+                    if self._old_message_mode is not None: self._hwp.SetMessageBoxMode(self._old_message_mode)
                 except Exception: pass
-                # Quit can return before the server has retired its class
-                # factory. Bound the pause; never retry document mutations.
+                try:
+                    if self._document_id is not None:
+                        # Quit is application-wide. Document collections can
+                        # be scoped/cached per controller; never infer that a
+                        # count of one means no other user window exists.
+                        self.activate_document()
+                        active = self._hwp.XHwpDocuments.Active_XHwpDocument
+                        active.Close(False)
+                        if self._previous_document_id is not None:
+                            previous = self._hwp.XHwpDocuments.FindItem(self._previous_document_id)
+                            if previous is not None: previous.SetActive_XHwpDocument()
+                except Exception: pass
+                # Bound the retirement pause; never retry document mutations.
                 time.sleep(.1)
         finally:
-            self.hwp = None
+            self._document = self._previous_document = self._window = self._hwp = None
             if self._com is not None:
-                self._com.CoUninitialize()
+                self._uninitialize()
                 self._com = None
 
     def __enter__(self): return self
     def __exit__(self, *args): self.close()
+
+    @property
+    def hwp(self):
+        return self._hwp
+
+    def activate_document(self):
+        if self._document_id is not None and self._hwp.XHwpDocuments.Active_XHwpDocument.DocumentID != self._document_id:
+            selected = self._hwp.XHwpDocuments.FindItem(self._document_id)
+            if selected is None: raise HancomError("The job's document was closed")
+            selected.SetActive_XHwpDocument()
+
+    @hwp.setter
+    def hwp(self, value):
+        self._hwp = value
+
+    def _refresh_document(self):
+        # Document COM objects may become stale after file I/O; refresh from
+        # the root interface and refuse any switch into another user window.
+        active_window = self._hwp.XHwpWindows.Active_XHwpWindow
+        if active_window.WindowHandle != self._window_handle:
+            raise HancomError("Hancom switched outside the window owned by this job")
+        self._document_id = self._hwp.XHwpDocuments.Active_XHwpDocument.DocumentID
 
     @staticmethod
     def check(value, label):
@@ -136,18 +210,26 @@ class HancomBridge:
     def run(self, action): return self.check(self.hwp.HAction.Run(action), action)
 
     def open_doc(self, path):
+        self.activate_document()
         if not self.security_module_registered and not self.visible:
             raise HancomError("Hancom file access module is not registered. Configure an approved FilePathCheckDLL under HKCU/Software/HNC/HwpAutomation/Modules and set NARAE_HANCOM_SECURITY_MODULE to its registry value name. Refusing to hang on a hidden permission dialog.")
         path = Path(path).resolve()
         fmt = "HWPX" if path.suffix.lower() == ".hwpx" else "HWP"
-        return self.check(self.hwp.Open(str(path), fmt, "versionwarning:false"), "Open")
+        result = self.check(self.hwp.Open(str(path), fmt, "versionwarning:false"), "Open")
+        self._refresh_document()
+        return result
 
     def save_doc(self, path=None):
-        if path is None: return self.check(self.hwp.Save(), "Save")
+        self.activate_document()
+        if path is None:
+            result = self.check(self.hwp.Save(), "Save")
+            return result
         path = Path(path).resolve()
-        return self.check(self.hwp.SaveAs(str(path), "HWPX" if path.suffix.lower() == ".hwpx" else "HWP", ""), "SaveAs")
+        result = self.check(self.hwp.SaveAs(str(path), "HWPX" if path.suffix.lower() == ".hwpx" else "HWP", ""), "SaveAs")
+        return result
 
     def xml(self):
+        self.activate_document()
         value = self.hwp.GetTextFile("HWPML2X", "")
         if not isinstance(value, str) or not value: raise HancomError("HWPML verification export failed")
         return value
@@ -237,6 +319,7 @@ class HancomBridge:
             else: raise HancomError(f"Unsupported parameter: {key}")
 
     def execute_action(self, name, parameters=None):
+        self.activate_document()
         if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", name): raise HancomError("Invalid action identifier")
         if parameters is None: return self.run(name)
         if name == "InsertText" and isinstance(parameters.get("Text"), str):
@@ -363,6 +446,7 @@ class HancomBridge:
         self.style(index,merged,op)
 
     def apply_operations_on_hwp(self, operations):
+        self.activate_document()
         if not isinstance(operations,list): raise HancomError("operations must be an array")
         from .automation import _edit, _keys
         from .geometry import DocumentModel, PageLayout
@@ -461,8 +545,21 @@ class HancomBridge:
 
     def save_verified(self,target):
         expected=verification_snapshot(self.xml())
-        self.save_doc(target); self.check(self.hwp.Clear(1),"Clear for readback"); self.open_doc(target)
-        if verification_snapshot(self.xml())!=expected: raise HancomError("Saved text, structure or formatting differs from edited Hancom document")
+        self.save_doc(target)
+        # Clear can fault in Hancom 2024 when an automation controller is
+        # reused across documents. A unique copy forces an actual disk load
+        # without relying on Clear or an already-open document cache.
+        target = Path(target).resolve()
+        handle, name = tempfile.mkstemp(prefix=".narae-readback-", suffix=target.suffix, dir=target.parent)
+        os.close(handle)
+        readback = Path(name)
+        try:
+            shutil.copyfile(target, readback)
+            self.open_doc(readback)
+            if verification_snapshot(self.xml())!=expected: raise HancomError("Saved text, structure or formatting differs from edited Hancom document")
+        finally:
+            self.open_doc(target)
+            readback.unlink(missing_ok=True)
         return {"uses_hancom_runtime":True,"hancom_version":self.hwp.Version,"operation_results":self.receipts,"saved_content_verified":True,
                 "verification_scope":"HWPML body with resolved character, paragraph, style and border-fill references", "visual_parity_verified":False}
 

@@ -108,6 +108,29 @@ class NativeRegressionTests(unittest.TestCase):
             with self.subTest(table_index=index):
                 self.check_operation({"op":"set_cell_text","table_index":index,"row":0,"col":1,"text":"시험\n두 번째 줄"})
 
+    def test_other_document_and_com_lifetime_are_preserved(self):
+        for first_close in ("second", "first"):
+            with self.subTest(first_close=first_close):
+                first=HancomBridge(); second=None
+                try:
+                    first.execute_action("InsertText",{"Text":"NARAE_SESSION_SENTINEL"})
+                    saved=self.folder/("session-"+first_close+".hwp")
+                    first.save_doc(saved)
+                    second=HancomBridge()
+                    self.assertNotIn("NARAE_SESSION_SENTINEL",second.xml())
+                    second.open_doc(saved)
+                    second.execute_action("InsertText",{"Text":"NARAE_SECOND_SESSION"})
+                    if first_close=="second":
+                        second.close();second=None
+                        self.assertIn("NARAE_SESSION_SENTINEL",first.xml())
+                        self.assertNotIn("NARAE_SECOND_SESSION",first.xml())
+                    else:
+                        first.close();first=None
+                        self.assertIn("NARAE_SECOND_SESSION",second.xml())
+                finally:
+                    if second is not None: second.close()
+                    if first is not None: first.close()
+
     def test_clear_and_append(self):
         self.check_operation({"op":"set_cell_text","table_index":0,"row":0,"col":1,"text":""})
         self.check_operation({"op":"set_cell_text","table_index":0,"row":0,"col":1,"text":" 추가","append":True})
