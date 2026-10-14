@@ -30,7 +30,7 @@ DLL은 [한컴 공식 개발 가이드](https://developer.hancom.com/hwpautomati
 
 ## 생성·편집 작업
 
-`action: hancom`에 `input`이 없으면 새 문서, 있으면 기존 문서 편집입니다. 출력 확장자로 HWP/HWPX를 선택합니다. 상대 경로는 작업 JSON 위치를 기준으로 합니다. 기존 출력 덮어쓰기는 `overwrite_output: true`, 원본 덮어쓰기는 `overwrite_source: true`를 명시해야 합니다. 원본 SHA-256을 `expected_input_sha256`으로 잠글 수 있습니다.
+`action: hancom`에 `input`이 없으면 새 문서, 있으면 기존 문서 편집입니다. 출력 확장자로 HWP/HWPX를 선택합니다. input/output의 상대 경로는 작업 JSON 위치를 기준으로 합니다. 원시 COM 인자의 파일 경로는 한컴에 그대로 전달되므로 절대 경로를 사용합니다. 기존 출력 덮어쓰기는 `overwrite_output: true`, 원본 덮어쓰기는 `overwrite_source: true`를 명시해야 합니다. 원본 SHA-256을 `expected_input_sha256`으로 잠글 수 있습니다.
 
 ```json
 {
