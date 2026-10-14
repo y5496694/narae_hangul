@@ -1,11 +1,11 @@
 ---
 name: narae-pack
-description: "나래팩(NaraePack): 한컴오피스 100% 호환 HWP/HWPX 자동화 엔진, GUI 에디터, 형식/문구 템플릿 및 조판 가이드 통합 패키지"
+description: "나래팩(NaraePack): HWP/HWPX 자동화 엔진, 설치된 한컴 COM 인터페이스, AI 스킬, 형식/문구 템플릿 및 조판 가이드"
 ---
 
 # 📖 나래팩 (NaraePack) 완벽 활용 가이드
 
-나래팩은 한컴오피스와의 완벽한 양방향 호환성을 보장하는 **HWP/HWPX 조판 엔진, AI 에이전트 스킬, 형식/문구 템플릿 및 조판 유틸리티**를 총망라한 통합 패키지입니다.
+나래팩은 **HWP/HWPX 조판 엔진, 한컴 실행 경로, AI 에이전트 스킬, 형식/문구 템플릿 및 조판 유틸리티**를 묶은 패키지입니다. 독립 엔진의 전체 기능 일치·쪽 나눔·픽셀 일치는 보장하지 않습니다. 설치된 한컴의 기능은 [전체 COM 인터페이스](../1_나래엔진/narae-hangul/references/hancom.md)로 조회·실행하고, `verify`로 의도한 결과를 확인하세요.
 
 ---
 
@@ -76,7 +76,7 @@ python scripts/narae.py run job.json --python python.exe
 
 ## 🏛️ 한컴오피스 REA(Reverse Engineering Anything) 공식 조판 규격 준수
 
-* 나래팩의 모든 한글 조판, 표 제어, 그림 배치, 폰트 및 테두리 서식은 **한컴오피스 바이너리, COM 오토메이션(`HWPFrame.HwpObject`), OWPML 표준 규격**을 역공학하여 도출한 [hancom_rea_spec.md](file:///c:/Users/y5496/OneDrive/바탕%20화면/나래팩ver1.0/5_유틸리티/hancom_rea_spec.md)를 100% 준수합니다.
+* 단위·서식 참고는 [hancom_rea_spec.md](../5_유틸리티/hancom_rea_spec.md), 실제 분석 및 검증 범위는 [hancom_rea_findings.md](../5_유틸리티/hancom_rea_findings.md)를 확인합니다. 전체 기능 일치나 모든 문서의 무손실 보존을 검증한 것으로 해석하지 않습니다.
 * 임의의 추정이나 비표준 속성 생성을 엄격히 금지하며, 단위 환산(1 mm = 283.465 HWPUNIT, 1 pt = 100 HWPUNIT), 선 종류(`SOLID`, `DOUBLE_SLIM`, `NONE` 등), 선 굵기(`0.12 mm`, `0.2 mm`, `0.5 mm` 등), 셀 정렬 규칙을 완벽하게 적용합니다.
 
 ---
@@ -118,7 +118,7 @@ python scripts/narae.py run job.json --python python.exe
 
 ## 🤖 Table & Object AI Commander 활용 가이드
 
-AI 어시스턴트는 사용자의 자연어 요청을 [table_ai_commander.py](file:///c:/Users/y5496/OneDrive/바탕%20화면/나래팩ver1.0/5_유틸리티/table_ai_commander.py)를 통해 즉시 문서에 반영할 수 있습니다.
+AI 어시스턴트는 사용자의 자연어 요청을 [table_ai_commander.py](../5_유틸리티/table_ai_commander.py)로 실행할 수 있습니다. Windows에 한컴이 설치되어 있으면 원본 재생성 대신 검사되는 한컴 저장 경로를 사용합니다.
 
 ### 사용 예시:
 ```bash

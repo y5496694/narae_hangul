@@ -1,6 +1,6 @@
-# 🏛️ 한컴오피스 REA(Reverse Engineering Anything) 공식 조판 규격서
+# 한컴오피스 단위·서식 참고 규격
 
-본 문서는 **한컴오피스(v13.0.0.711)** 바이너리, COM 오토메이션(`HWPFrame.HwpObject`), OWPML(HWPX) 표준 XML 스펙을 역공학 및 런타임 분해 분석(REA)하여 도출한 나래팩 엔진의 엄밀한 기준 사양서입니다.
+이 문서는 단위·서식 설정의 참고 자료입니다. 한컴의 공식 인증이나 전체 기능 일치 검증서가 아닙니다. 실제 REA/Ghidra/Frida 분석 결과와 검증 범위는 [hancom_rea_findings.md](hancom_rea_findings.md), 설치된 한컴의 액션·파라미터 조회는 [hancom.md](../1_나래엔진/narae-hangul/references/hancom.md)를 따릅니다.
 
 ---
 
@@ -19,8 +19,8 @@
 | 속성 | 한컴 2024 파라미터 / XML | 허용 범위 및 기본값 | 비고 |
 | :--- | :--- | :--- | :--- |
 | **글자 크기** | `Height` / `@height` | 1 pt ~ 1,000 pt (100 ~ 100,000 HWPUNIT) | 본문 표준 10pt (1,000 HWPUNIT) |
-| **자간** | `Spacing` / `<hh:spacing>` | **-50% ~ +50%** | **줄넘김 방지 표준 -5% ~ -10%** |
-| **장평** | `Ratio` / `<hh:ratio>` | **50% ~ 200%** | 표준 100% |
+| **자간** | `SpacingHangul` 등 언어별 속성 / `<hh:spacing>` | **-50% ~ +50%** | **줄넘김 방지 표준 -5% ~ -10%** |
+| **장평** | `RatioHangul` 등 언어별 속성 / `<hh:ratio>` | **50% ~ 200%** | 표준 100% |
 | **굵기** | `Bold` / `<hh:bold/>` | 0 (False) 또는 1 (True) | 제목 및 강조 |
 | **기울임** | `Italic` / `<hh:italic/>` | 0 또는 1 | 참고 및 영문 |
 | **밑줄** | `Underline` / `<hh:underline>` | 위치(BOTTOM), 모양(SOLID), 색상 | 서식 강조 |
@@ -32,13 +32,15 @@
 
 | 정렬 방식 | 한컴 정수값 | OWPML 속성값 | 비고 |
 | :--- | :---: | :--- | :--- |
-| **양쪽 정렬** | 3 | `JUSTIFY` | 공문서/보고서 본문 기본값 |
-| **가운데 정렬** | 2 | `CENTER` | 표 헤더, 표지, 대주제 기본값 |
-| **왼쪽 정렬** | 0 | `LEFT` | 개조식 항목 기본값 |
-| **오른쪽 정렬** | 1 | `RIGHT` | 날짜, 서명, 발행처 기본값 |
+| **양쪽 정렬** | 0 | `JUSTIFY` | 공문서/보고서 본문 기본값 |
+| **가운데 정렬** | 3 | `CENTER` | 표 헤더, 표지, 대주제 기본값 |
+| **왼쪽 정렬** | 1 | `LEFT` | 개조식 항목 기본값 |
+| **오른쪽 정렬** | 2 | `RIGHT` | 날짜, 서명, 발행처 기본값 |
 | **배분 정렬** | 4 | `DISTRIBUTE` | 양 끝 배분 |
 
 * **줄간격 (Line Spacing)**: 기본 `PERCENT` 160% (교육/행정 공문서 표준)
+
+COM 액션은 `ParagraphShape`, 파라미터셋은 `ParaShape`, 정렬 항목은 `AlignType`입니다. `Align`은 한컴에서 조용히 무시될 수 있으므로 사용하지 않습니다.
 * **문단 여백 (Margin)**: `intent`(들여쓰기), `left`, `right`, `prev`(앞), `next`(뒤) (단위: HWPUNIT)
 
 ---
@@ -106,10 +108,10 @@
 | :--- | :--- | :--- |
 | **셀 병합** | `TableCellBlock` → `TableCellBlockExtend` → `TableMergeCell` | `<hp:tc>`의 `rowSpan`, `colSpan` 갱신 및 내부 포함 셀 합병 제거 |
 | **셀 분할** | `TableCellBlock` → `TableSplitCell` (`Rows`, `Cols`, `Merge`) | 너비/높이 HWPUNIT 정밀 등분 및 서브 `<hp:tc>` 연속 생성/주소 재색인 |
-| **셀 내용 지정/교체** | `TableCellBlock` → `SelectAll` → `Delete` → `InsertText` | `<hp:tc>/<hp:subList>/<hp:p>` 내 텍스트 치환 및 `<hh:charPr>` 적용 |
+| **셀 내용 지정/교체** | 실제 표·셀에 진입 → `MoveListBegin` → 셀 안 `SelectAll` → `Delete` → `InsertText` 액션 | `<hp:tc>/<hp:subList>/<hp:p>` 내 텍스트 치환 및 `<hh:charPr>` 적용 |
 | **셀 서식/테두리** | `CellBorderFill` (`HCellBorderFill` pset: Left/Right/Top/Bottom) | `<hh:borderFill>` 개별 border 생성 및 `@borderFillIDRef` 연결 |
 | **글자 서식 (굵기/크기)** | `CharShape` (`HCharShape` pset: Height, Bold, Spacing) | `<hh:charPr>` 헤더 생성 및 문단 내 `<hp:run>` 링크 |
 | **표 위치/정렬 수정** | `TablePropertyDialog` / `ShapeObject` (Align, TreatAsChar) | `<hp:tbl>`의 `<hp:pos>` 및 `<hp:outMargin>` 속성 직접 수정 |
 | **그림 크기/위치 수정** | `ShapeObject` (Width, Height, TreatAsChar, HorzAlign) | `<hp:pic>`의 `<hp:sz>`, `<hp:pos>`, `<hp:outMargin>` 속성 직접 수정 |
-| **행 추가/삭제** | `TableInsertRow` / `TableDeleteRow` | `<hp:tr>` 요소 추가/삭제 및 내부 `rowAddr` 전체 재인덱싱 |
+| **행 추가/삭제** | `TableInsertUpperRow` / `TableInsertLowerRow` / `TableDeleteRow` | `<hp:tr>` 요소 추가/삭제 및 내부 `rowAddr` 전체 재인덱싱 |
 

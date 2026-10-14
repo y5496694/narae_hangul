@@ -27,7 +27,7 @@ SCHEMA = 1
 _APP = None
 _LIMITATIONS = [
     "한컴과 동일한 전체 기능·쪽 나눔·픽셀 배치는 아직 검증되지 않았습니다.",
-    "원본 편집은 문단·셀의 텍스트와 지원 글자/문단 서식에 한정합니다. 표 구조·그림 변경은 거부합니다.",
+    "독립 보존 편집에는 지원 범위가 있습니다. 고급 HWP 표·그림 편집에는 Windows 한컴 COM이 필요합니다.",
     "HWP 3.0 원본은 표현 가능한 텍스트만 보존 편집하며 서식 변경은 거부합니다.",
 ]
 
@@ -408,6 +408,20 @@ def _edit(model, operations):
         _keys(operation, allowed[operation["op"]], "operation")
         kind, target = operation.get("op"), operation.get("target", "*")
         if kind in ("merge_cells", "split_cell", "set_cell_text", "set_cell_style", "modify_table", "modify_image", "insert_row", "delete_row"):
+            for key in ("table_index", "image_index", "row", "col", "row_index", "start_row", "start_col", "row_span", "col_span", "rows", "cols"):
+                if key in operation:
+                    _integer(operation[key], key, 1 if key in ("row_span", "col_span", "rows", "cols") else 0)
+            for key in ("text", "match_text", "find_text", "from_text", "to_text"):
+                if key in operation: _text(operation[key], key)
+            _bools(operation, ("append", "bold", "treat_as_char"), "operation")
+            if "text_style" in operation: _style(operation["text_style"])
+            if "paragraph_style" in operation: _style(operation["paragraph_style"], paragraph=True)
+            for key in ("width_mm", "height_mm", "font_size_pt", "size_pt"):
+                if key in operation: _number(operation[key], key, .01)
+            for key in ("padding_mm", "out_margin_mm", "in_margin_mm"):
+                if key in operation:
+                    if not isinstance(operation[key], list) or len(operation[key]) != 4: raise ValueError(f"{key} requires four values")
+                    for value in operation[key]: _number(value, key)
             continue
         if target == "*" and kind == "replace_text":
             selected = [p for p in paragraphs.values() if not any(r.image is not None or r.field is not None for r in p.runs)]
@@ -563,6 +577,11 @@ def _verify_readback(expected, actual, creation=False):
 
 def run_job(job, base_dir=None):
     """Execute one JSON job. Raise on refusal; never reconstruct imports."""
+    if isinstance(job, dict) and job.get("action") in ("hancom", "hancom_capabilities"):
+        if job.get("schema", SCHEMA) != SCHEMA:
+            raise ValueError("Unsupported automation schema")
+        from .hancom import run_hancom_job
+        return run_hancom_job(job, Path(base_dir or Path.cwd()).resolve())
     _keys(job, ("schema", "action", "input", "output", "format", "page", "blocks", "operations", "preview",
                 "overwrite_output", "overwrite_source", "expected_input_sha256"), "job")
     if job.get("schema", SCHEMA) != SCHEMA:
@@ -629,15 +648,22 @@ def run_job(job, base_dir=None):
                 from .hwp_native import patch_hwp_source
                 from .hwpx_native import patch_hwpx_source, patch_hwpx_merge_cells
                 adv_ops = [op for op in (operations or []) if op.get("op") in ("merge_cells", "split_cell", "set_cell_text", "set_cell_style", "modify_table", "modify_image", "insert_row", "delete_row")]
+                if adv_ops:
+                    # Preserve ordinary text/format edits in a mixed job before
+                    # applying structural edits. Previously these were dropped.
+                    if not (patch_hwp_source if source_format == "hwp" else patch_hwpx_source)(model, staged["document"]):
+                        raise ValueError("Native preservation refused before advanced editing")
+                    native_readback = load_document(staged["document"])
+                    _verify_readback(model, native_readback.model)
                 if adv_ops and source_format == "hwpx":
                     from .hwpx_advanced import apply_advanced_hwpx_operations
-                    source_bytes = Path(source).read_bytes()
+                    source_bytes = staged["document"].read_bytes()
                     patched_bytes = apply_advanced_hwpx_operations(source_bytes, adv_ops)
                     staged["document"].write_bytes(patched_bytes)
                 elif adv_ops and source_format == "hwp":
                     from .hwp_automation_bridge import patch_hwp_advanced
-                    if not patch_hwp_advanced(source, staged["document"], adv_ops):
-                        raise ValueError("Hancom Office HWP advanced table automation failed")
+                    result.update(patch_hwp_advanced(staged["document"], staged["document"], adv_ops))
+                    result["preservation"] = "hancom_runtime_save"
                 else:
                     if not (patch_hwp_source if source_format == "hwp" else patch_hwpx_source)(model, staged["document"]):
                         raise ValueError("Native preservation refused: " + getattr(model, "_hwp_preservation_error", "unsupported text/style or structural change"))
@@ -647,7 +673,7 @@ def run_job(job, base_dir=None):
             if not (operations and any(op.get("op") in ("merge_cells", "split_cell", "set_cell_text", "set_cell_style", "modify_table", "modify_image", "insert_row", "delete_row") for op in operations)):
                 _verify_readback(model, reopened.model, action == "create")
             model = reopened.model
-            result["modeled_content_verified"] = True
+            result["modeled_content_verified"] = not bool(action == "edit" and adv_ops) or result.get("saved_content_verified", False)
             result["output_sha256"] = _sha(staged["document"])
             if action == "edit":
                 result["byte_exact_copy"] = result["output_sha256"] == result["input_sha256"]

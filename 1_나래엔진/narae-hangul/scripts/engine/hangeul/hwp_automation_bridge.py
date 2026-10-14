@@ -1,302 +1,485 @@
-"""Hancom Office 2024 COM Automation Bridge for native HWP documents.
+"""Hancom COM bridge with explicit targeting and saved-content verification.
 
-Engineered directly from Hancom Office 2024 runtime specifications (REA analysis):
-- HWPFrame.HwpObject (CLSID {5E6A8276-CF1C-42B8-BCED-319548B02AF6}, version 13.0)
-- Table Actions: TableMergeCell, TableSplitCell, TableCellBlock, TableCellBlockExtend
-- Border & Fill: CellBorderFill action with HCellBorderFill parameter set
-- Typography: CharShape (Height: 1pt=100, Spacing: -50~50%, Ratio: 50~200%, Bold, TextColor)
-- Paragraph Shape: ParagraphShape (Align: 0=Left, 1=Right, 2=Center, 3=Justify, LineSpacing: 160%)
-- LineType: None=0, Solid=1, Dash=2, Dot=3, DashDot=4, DashDotDot=5, Circle=7, DoubleSlim=8
-- LineWidth: 0.1mm=0, 0.12mm=1, 0.15mm=2, 0.2mm=3, 0.25mm=4, 0.3mm=5, 0.4mm=6, 0.5mm=7, 0.6mm=8, 0.7mm=9, 1.0mm=10
+The raw action interface exposes the installed Hancom runtime; it does not
+claim that the independent renderer implements every Hancom feature.
 """
 from __future__ import annotations
-
-import os
-from pathlib import Path
 import re
-from typing import Any
+import os
+import math
+import time
+import base64
+import hashlib
+import zlib
+import tempfile
+from pathlib import Path
+import xml.etree.ElementTree as ET
 
-LINE_TYPES = {
-    "NONE": 0, "SOLID": 1, "DASH": 2, "DOT": 3, "DASHDOT": 4, "DASH_DOT": 4,
-    "DASHDOTDOT": 5, "DASH_DOT_DOT": 5, "CIRCLE": 7, "DOUBLESLIM": 8, "DOUBLE_SLIM": 8,
-    "SLIMTHICK": 9, "THICKSLIM": 10, "SLIMTHICKSLIM": 11
-}
 
-LINE_WIDTHS = {
-    "0.1MM": 0, "0.12MM": 1, "0.15MM": 2, "0.2MM": 3, "0.25MM": 4, "0.3MM": 5,
-    "0.4MM": 6, "0.5MM": 7, "0.6MM": 8, "0.7MM": 9, "1.0MM": 10, "1.5MM": 11,
-    "2.0MM": 12, "3.0MM": 13, "4.0MM": 14, "5.0MM": 15
-}
+class HancomError(ValueError):
+    pass
 
-def parse_color_hex(hex_str: str) -> tuple[int, int, int]:
-    """Parse #RRGGBB into (r, g, b) components."""
-    hex_str = hex_str.lstrip("#")
-    if len(hex_str) == 6:
-        return int(hex_str[0:2], 16), int(hex_str[2:4], 16), int(hex_str[4:6], 16)
-    return 0, 0, 0
 
-def hex_to_hwp_color(hwp: Any, hex_str: str) -> int:
-    r, g, b = parse_color_hex(hex_str)
-    return hwp.RGBColor(r, g, b)
+def integer(value, label):
+    if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value <= 100000:
+        raise HancomError(f"{label} must be a nonnegative integer")
+    return value
+
+
+def paragraph_xml_text(paragraph):
+    return "".join(c.text or "" if c.tag == "CHAR" else "\n" if c.tag == "LINEBREAK" else "\t" if c.tag == "TAB" else ""
+                   for text in paragraph.findall("TEXT") for c in text)
+
+
+def cell_text(cell):
+    return "\n".join(paragraph_xml_text(p) for p in cell.findall("./PARALIST/P"))
+
+
+def snapshot(xml):
+    root = ET.fromstring(xml)
+    tables = []
+    for table in root.findall(".//TABLE"):
+        cells = [{"row": int(c.get("RowAddr", 0)), "col": int(c.get("ColAddr", 0)),
+                  "row_span": int(c.get("RowSpan", 1)), "col_span": int(c.get("ColSpan", 1)),
+                  "text": cell_text(c)} for c in table.findall("./ROW/CELL")]
+        tables.append({"rows": int(table.get("RowCount", 0)), "cols": int(table.get("ColCount", 0)),
+                       "cells": sorted(cells, key=lambda c: (c["row"], c["col"]))})
+    return {"text": "\n".join(paragraph_xml_text(p) for p in root.findall("./BODY//P")), "tables": tables}
+
+
+def verification_snapshot(xml):
+    root = ET.fromstring(xml)
+    maps = {}
+    binaries = {}
+    for entry in root.findall("./TAIL/BINDATASTORAGE/BINDATA"):
+        data = base64.b64decode(entry.text or "")
+        if len(data) != int(entry.get("Size", len(data))):
+            try: data = zlib.decompress(data, -15)
+            except zlib.error: pass
+        binaries[entry.get("Id")] = hashlib.sha256(data).hexdigest()
+    for name, path in (("CharShape", "CHARSHAPELIST/CHARSHAPE"), ("ParaShape", "PARASHAPELIST/PARASHAPE"), ("BorderFill", "BORDERFILLLIST/BORDERFILL"), ("Style", "STYLELIST/STYLE")):
+        maps[name] = {e.get("Id"): e for e in root.findall("./HEAD/MAPPINGTABLE/" + path)}
+    def canonical(element, ancestors=()):
+        attrs = {}
+        for name, value in element.attrib.items():
+            if name in ("Id", "InstId", "InstID", "Dirty"): continue
+            attrs[name] = binaries[value] if name == "BinItem" and value in binaries else canonical(maps[name][value]) if name in maps and value in maps[name] else value
+        if element.tag == "SIZE" and ancestors[-2:] == ("TABLE", "SHAPEOBJECT"):
+            # Hancom recalculates aggregate table height on load/save. Cell
+            # heights, width and all requested cell formatting remain checked.
+            attrs.pop("Height", None)
+        return {"tag": element.tag, "attributes": attrs,
+                "children": [canonical(e, ancestors + (element.tag,)) for e in element if e.tag not in ("LINESegLIST",)],
+                "text": element.text or ""}
+    return {"content": snapshot(xml), "body": canonical(root.find("BODY")), "embedded_sha256": sorted(binaries.values())}
+
 
 class HancomBridge:
-    def __init__(self, visible: bool = False):
+    def __init__(self, visible=False):
+        import pythoncom
         import win32com.client
-        self.hwp = win32com.client.Dispatch("HWPFrame.HwpObject")
-        self.hwp.RegisterModule("FilePathCheckDLL", "FilePathCheckerModule")
-        if visible:
-            self.hwp.XHwpWindows.Item(0).Visible = True
-        else:
-            self.hwp.SetMessageBoxMode(0x00020000) # suppress dialog popups
+        pythoncom.CoInitialize()
+        self._com, self.hwp, self.receipts = pythoncom, None, []
+        self.visible = bool(visible)
+        try:
+            # Own the instance: never attach to, edit, or Quit a user's session.
+            for attempt in range(3):
+                try:
+                    self.hwp = win32com.client.DispatchEx("HWPFrame.HwpObject")
+                    self.hwp.XHwpWindows.Item(0).Visible = bool(visible)
+                    break
+                except pythoncom.com_error as error:
+                    if attempt == 2 or error.hresult & 0xffffffff not in (0x80010105, 0x800706ba, 0x800706be): raise
+                    self.hwp = None
+                    time.sleep(.2)
+            configured = os.environ.get("NARAE_HANCOM_SECURITY_MODULE")
+            module_names = (configured,) if configured else ("NaraeHangulFilePathChecker", "FilePathCheckerModule")
+            self.security_module_registered = False
+            for module_name in module_names:
+                if self.hwp.RegisterModule("FilePathCheckDLL", module_name):
+                    self.security_module_registered = True
+                    self.security_module_name = module_name
+                    break
+            self.hwp.SetMessageBoxMode(0x00020000)
+        except Exception:
+            self.close()
+            raise
 
     def close(self):
         try:
-            self.hwp.Quit()
-        except Exception:
+            if self.hwp is not None:
+                try:
+                    self.hwp.Clear(1)
+                except Exception:
+                    pass
+                try:
+                    self.hwp.Quit()
+                except Exception: pass
+                # Quit can return before the server has retired its class
+                # factory. Bound the pause; never retry document mutations.
+                time.sleep(.1)
+        finally:
+            self.hwp = None
+            if self._com is not None:
+                self._com.CoUninitialize()
+                self._com = None
+
+    def __enter__(self): return self
+    def __exit__(self, *args): self.close()
+
+    @staticmethod
+    def check(value, label):
+        if value is False or value == 0:
+            raise HancomError(f"Hancom rejected {label}")
+        return value
+
+    def run(self, action): return self.check(self.hwp.HAction.Run(action), action)
+
+    def open_doc(self, path):
+        if not self.security_module_registered and not self.visible:
+            raise HancomError("Hancom file access module is not registered. Configure an approved FilePathCheckDLL under HKCU/Software/HNC/HwpAutomation/Modules and set NARAE_HANCOM_SECURITY_MODULE to its registry value name. Refusing to hang on a hidden permission dialog.")
+        path = Path(path).resolve()
+        fmt = "HWPX" if path.suffix.lower() == ".hwpx" else "HWP"
+        return self.check(self.hwp.Open(str(path), fmt, "versionwarning:false"), "Open")
+
+    def save_doc(self, path=None):
+        if path is None: return self.check(self.hwp.Save(), "Save")
+        path = Path(path).resolve()
+        return self.check(self.hwp.SaveAs(str(path), "HWPX" if path.suffix.lower() == ".hwpx" else "HWP", ""), "SaveAs")
+
+    def xml(self):
+        value = self.hwp.GetTextFile("HWPML2X", "")
+        if not isinstance(value, str) or not value: raise HancomError("HWPML verification export failed")
+        return value
+
+    def snapshot(self): return snapshot(self.xml())
+
+    def controls(self, kind):
+        result, ctrl = [], self.hwp.HeadCtrl
+        while ctrl:
+            if ctrl.CtrlID == kind: result.append(ctrl)
+            ctrl = ctrl.Next
+        return result
+
+    def table(self, index):
+        integer(index, "table_index")
+        tables = self.snapshot()["tables"]
+        if index >= len(tables): raise HancomError(f"Unknown table_index: {index}")
+        return tables[index]
+
+    @staticmethod
+    def cell(table, row, col):
+        integer(row, "row"); integer(col, "col")
+        for cell in table["cells"]:
+            if cell["row"] <= row < cell["row"] + cell["row_span"] and cell["col"] <= col < cell["col"] + cell["col_span"]:
+                return cell
+        raise HancomError(f"Unknown cell: ({row}, {col})")
+
+    def move_to_cell(self, index, row, col):
+        table = self.table(index)
+        cell = self.cell(table, row, col)
+        controls = self.controls("tbl")
+        if len(controls) != len(self.snapshot()["tables"]): raise HancomError("COM/HWPML table inventories disagree")
+        ctrl = controls[index]
+        self.hwp.HAction.Run("Cancel")
+        self.check(self.hwp.SetPosBySet(ctrl.GetAnchorPos(0)), "table anchor")
+        self.run("SelectCtrlReverse"); self.run("ShapeObjTableSelCell"); self.run("Cancel")
+        for _ in range(table["cells"].index(cell)): self.run("TableRightCell")
+        parent = self.hwp.ParentCtrl
+        if parent is None or parent.CtrlID != "tbl" or parent.GetCtrlInstID() != ctrl.GetCtrlInstID():
+            raise HancomError("Navigation left the requested table")
+        return cell
+
+    def target(self, op):
+        if "target_table" in op: raise HancomError("COM requires numeric table_index")
+        index = integer(op.get("table_index", 0), "table_index")
+        table = self.table(index)
+        search = op.get("match_text", op.get("find_text"))
+        if search is not None:
+            if not isinstance(search, str) or not search: raise HancomError("Text selector must be nonempty")
+            matches = [c for c in table["cells"] if search in c["text"]]
+            if len(matches) != 1: raise HancomError(f"Text selector must match once; found {len(matches)}")
+            row, col = matches[0]["row"], matches[0]["col"]
+        else:
+            row, col = op.get("row", op.get("start_row", 0)), op.get("col", op.get("start_col", 0))
+        return index, self.move_to_cell(index, row, col)
+
+    def set_parameters(self, pset, parameters):
+        if not isinstance(parameters, dict): raise HancomError("parameters must be an object")
+        allowed = set()
+        try:
+            set_id = {"Table": "ShapeObject", "ParagraphShape": "ParaShape"}.get(str(pset.SetID), str(pset.SetID))
+            wrapper = getattr(self.hwp.HParameterSet, "H" + set_id)
+            info = wrapper._oleobj_.GetTypeInfo()
+            for index in range(info.GetTypeAttr().cFuncs):
+                func = info.GetFuncDesc(index)
+                if func.invkind in (2, 4, 8):
+                    name = info.GetNames(func.memid)[0]
+                    if name != "HSet": allowed.update((name, name[0].upper() + name[1:]))
+        except AttributeError:
             pass
+        for key, value in parameters.items():
+            if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", key): raise HancomError("Invalid parameter name")
+            # SetItem accepts invented names and Execute can silently ignore
+            # them. Check the runtime's declarations/defaults before writing.
+            if key not in allowed and not pset.ItemExist(key): raise HancomError(f"Unknown parameter {pset.SetID}.{key}; inspect hancom_capabilities first")
+            if isinstance(value, dict):
+                if set(value) != {"$set", "items"}: raise HancomError("Nested parameter requires $set and items")
+                self.set_parameters(pset.CreateItemSet(key, value["$set"]), value["items"])
+            elif isinstance(value, list):
+                array = pset.CreateItemArray(key, len(value))
+                for i, item in enumerate(value):
+                    if isinstance(item, (dict, list)): raise HancomError("Parameter arrays accept scalar values")
+                    array.SetItem(i, item)
+            elif value is None or isinstance(value, (str, int, float, bool)):
+                if isinstance(value, float) and not math.isfinite(value): raise HancomError("Parameter must be finite")
+                self.check(pset.SetItem(key, value), f"parameter {key}")
+            else: raise HancomError(f"Unsupported parameter: {key}")
 
-    def __enter__(self):
-        return self
+    def execute_action(self, name, parameters=None):
+        if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", name): raise HancomError("Invalid action identifier")
+        if parameters is None: return self.run(name)
+        if name == "InsertText" and isinstance(parameters.get("Text"), str):
+            parameters = dict(parameters)
+            # Hancom InsertText discards bare LF. Jobs use LF; the runtime
+            # requires CRLF to create paragraph breaks inside the current cell.
+            parameters["Text"] = parameters["Text"].replace("\r\n", "\n").replace("\r", "\n").replace("\n", "\r\n")
+        action = self.hwp.CreateAction(name)
+        if action is None: raise HancomError(f"Unknown action: {name}")
+        pset = action.CreateSet()
+        if pset is None: raise HancomError(f"{name} has no parameter set; omit parameters")
+        self.check(action.GetDefault(pset), f"GetDefault {name}")
+        self.set_parameters(pset, parameters)
+        return self.check(action.Execute(pset), name)
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
+    def replace_cell_text(self, index, cell, text, append=False):
+        if not isinstance(text, str): raise HancomError("text must be a string")
+        self.move_to_cell(index, cell["row"], cell["col"])
+        if append: self.run("MoveListEnd")
+        else:
+            self.run("MoveListBegin")
+            if cell["text"]: self.run("SelectAll"); self.run("Delete")
+        if text: self.execute_action("InsertText", {"Text": text})
+        expected = (cell["text"] if append else "") + text
+        if self.cell(self.table(index), cell["row"], cell["col"])["text"] != expected:
+            raise HancomError("Cell text readback failed")
 
-    def open_doc(self, file_path: str | Path) -> bool:
-        abs_path = str(Path(file_path).resolve())
-        return self.hwp.Open(abs_path, "HWP", "versionwarning:false")
+    def color(self, text):
+        if not isinstance(text, str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", text): raise HancomError("color must be #RRGGBB")
+        return self.hwp.RGBColor(*(int(text[i:i+2],16) for i in (1,3,5)))
 
-    def save_doc(self, file_path: str | Path | None = None) -> bool:
-        if file_path:
-            abs_path = str(Path(file_path).resolve())
-            return self.hwp.SaveAs(abs_path)
-        return self.hwp.Save()
+    def style(self, index, cell, op):
+        if set(op) & {"border_fill", "char_pr", "para_pr"}: raise HancomError("HWPX reference IDs are not COM parameter values")
+        self.move_to_cell(index, cell["row"], cell["col"]); self.run("TableCellBlock")
+        text = dict(op.get("text_style", {}))
+        text.update({v: op[k] for k,v in {"size_pt":"size", "font_size_pt":"size", "bold":"bold", "letter_spacing":"letter_spacing", "color":"color"}.items() if k in op})
+        params = {}
+        for key, value in text.items():
+            if key in ("font", "stretch", "letter_spacing"):
+                prefix = {"font":"FaceName", "stretch":"Ratio", "letter_spacing":"Spacing"}[key]
+                params.update({prefix+lang:value for lang in ("Hangul","Latin","Hanja","Japanese","Other","Symbol","User")})
+            elif key == "size": params["Height"] = round(float(value)*100)
+            elif key in ("color","background"): params[{"color":"TextColor","background":"ShadeColor"}[key]] = self.color(value)
+            elif key in ("bold","italic","underline","strike","superscript","subscript"):
+                params[{"bold":"Bold","italic":"Italic","underline":"UnderlineType","strike":"StrikeOutType","superscript":"SuperScript","subscript":"SubScript"}[key]] = int(bool(value))
+            else: raise HancomError(f"Unsupported COM text style: {key}")
+        if params:
+            self.execute_action("CharShape", params)
+            if any(self.hwp.CharShape.Item(k) != v for k, v in params.items()): raise HancomError("Character style readback failed")
+        para = dict(op.get("paragraph_style", {}))
+        if "align" in op: para["align"] = op["align"]
+        params = {}
+        for key,value in para.items():
+            if key == "align": params["AlignType"] = {"JUSTIFY":0,"LEFT":1,"RIGHT":2,"CENTER":3,"DISTRIBUTE":4,"DISTRIBUTE_SPACE":5}[value.upper()]
+            elif key == "line_type": params["LineSpacingType"] = {"PERCENT":0,"FIXED":1,"BETWEEN_LINES":2,"AT_LEAST":3}[value.upper()]
+            elif key in ("left","right","indent","before","after","line"):
+                params[{"left":"LeftMargin","right":"RightMargin","indent":"Indentation","before":"PrevSpacing","after":"NextSpacing","line":"LineSpacing"}[key]] = round(float(value)*(1 if key == "line" else 100))
+            else: raise HancomError(f"Unsupported COM paragraph style: {key}")
+        if params:
+            self.execute_action("ParagraphShape",params)
+            if any(self.hwp.ParaShape.Item(k) != v for k, v in params.items()): raise HancomError("Paragraph style readback failed")
+        border, params = op.get("border",{}), {}
+        for side in ("Left","Right","Top","Bottom"):
+            spec = border.get(side.lower(), border)
+            if isinstance(spec,str): spec={"type":spec}
+            for key,value in spec.items():
+                if key == "type": params["BorderType"+side]=self.hwp.HwpLineType(value)
+                elif key == "width": params["BorderWidth"+side]=self.hwp.HwpLineWidth(str(value).replace(" ",""))
+                elif key == "color": params["BorderColor"+side]=self.color(value)
+        if "background" in op:
+            params["FillAttr"]={"$set":"DrawFillAttr","items":{"Type":1,"WinBrushFaceColor":self.color(op["background"]),"WinBrushHatchColor":0}}
+        if params: self.execute_action("CellBorderFill",params)
+        if any(k in op for k in ("vertical_align","padding_mm","width_mm","height_mm")):
+            shape = self.hwp.CellShape
+            cellset = shape.Item("Cell")
+            expected_cell = {}
+            if "vertical_align" in op: expected_cell["VertAlign"] = {"TOP":0,"CENTER":1,"BOTTOM":2}[op["vertical_align"].upper()]
+            if "padding_mm" in op:
+                if len(op["padding_mm"]) != 4: raise HancomError("padding_mm needs four values")
+                expected_cell["HasMargin"] = 1
+                for side,value in zip(("Left","Right","Top","Bottom"),op["padding_mm"]): expected_cell["Margin"+side] = self.hwp.MiliToHwpUnit(float(value))
+            for key,parameter in (("width_mm","Width"),("height_mm","Height")):
+                if key in op: expected_cell[parameter] = self.hwp.MiliToHwpUnit(float(op[key]))
+            self.set_parameters(cellset, expected_cell)
+            shape.SetItem("Cell", cellset)
+            self.hwp.CellShape=shape
+            if any(self.hwp.CellShape.Item("Cell").Item(k) != v for k, v in expected_cell.items()): raise HancomError("Cell property readback failed")
+        self.run("Cancel")
 
-    def find_and_move_to_text(self, text: str) -> bool:
-        """Find text in document and move selection there."""
-        self.hwp.InitScan()
-        self.hwp.ReleaseScan()
-        self.hwp.MovePos(2) # move to top (doc start)
+    def merge(self, op):
+        index, cell = self.target(op)
+        table = self.table(index)
+        texts = op.get("find_texts", op.get("cell_texts"))
+        if "from_text" in op and "to_text" in op: texts=[op["from_text"],op["to_text"]]
+        if texts:
+            matches=[]
+            for text in texts:
+                found=[c for c in table["cells"] if text in c["text"]]
+                if len(found)!=1: raise HancomError("Each merge selector must match exactly once")
+                matches.extend(found)
+            row,col=min(c["row"] for c in matches),min(c["col"] for c in matches)
+            er,ec=max(c["row"]+c["row_span"] for c in matches),max(c["col"]+c["col_span"] for c in matches)
+        else:
+            row,col=cell["row"],cell["col"]
+            er,ec=row+integer(op.get("row_span",1),"row_span"),col+integer(op.get("col_span",1),"col_span")
+        if not (row<er<=table["rows"] and col<ec<=table["cols"]): raise HancomError("Invalid merge rectangle")
+        selected=[c for c in table["cells"] if c["row"]<er and c["row"]+c["row_span"]>row and c["col"]<ec and c["col"]+c["col_span"]>col]
+        if any(c["row"]<row or c["col"]<col or c["row"]+c["row_span"]>er or c["col"]+c["col_span"]>ec for c in selected): raise HancomError("Merge cuts through an existing merged cell")
+        if len(selected)>1:
+            positions={}
+            for c in table["cells"]:
+                self.move_to_cell(index,c["row"],c["col"]); positions[self.hwp.GetPos()[0]]=c
+            self.move_to_cell(index,row,col); self.run("TableCellBlock"); self.run("TableCellBlockExtend")
+            for action,axis,goal in (("TableRightCell","col",ec-1),("TableLowerCell","row",er-1)):
+                for _ in table["cells"]:
+                    current=positions.get(self.hwp.GetPos()[0])
+                    if current and current[axis]<=goal<current[axis]+current[axis+"_span"]: break
+                    self.run(action)
+                else: raise HancomError("Cannot extend merge selection")
+            self.run("TableMergeCell"); self.hwp.HAction.Run("Cancel")
+        after=self.table(index); merged=self.cell(after,row,col)
+        if merged["row_span"]!=er-row or merged["col_span"]!=ec-col or len(after["cells"])!=len(table["cells"])-len(selected)+1: raise HancomError("Merge structure readback failed")
+        if "text" in op: self.replace_cell_text(index,merged,op["text"])
+        self.style(index,merged,op)
 
-        act = self.hwp.CreateAction("RepeatFind")
-        pset = self.hwp.CreateSet("FindReplace")
-        act.GetDefault(pset)
-        pset.SetItem("FindString", text)
-        pset.SetItem("Direction", 0) # forward
-        pset.SetItem("MatchCase", 0)
-        pset.SetItem("SeveralWords", 0)
-        pset.SetItem("UseWildCards", 0)
-        pset.SetItem("WholeWordOnly", 0)
-        pset.SetItem("AutoSpell", 0)
-        return act.Execute(pset)
-
-    def apply_operations_on_hwp(self, operations: list[dict]) -> None:
-        """Execute table operations on the active HWP document."""
+    def apply_operations_on_hwp(self, operations):
+        if not isinstance(operations,list): raise HancomError("operations must be an array")
+        from .automation import _edit, _keys
+        from .geometry import DocumentModel, PageLayout
         for op in operations:
-            kind = op.get("op")
-
-            if kind == "merge_cells":
-                search_texts = op.get("find_texts") or op.get("cell_texts") or []
-                if op.get("match_text"):
-                    search_texts.append(op["match_text"])
-                if op.get("from_text") and op.get("to_text"):
-                    search_texts.extend([op["from_text"], op["to_text"]])
-
-                if search_texts and len(search_texts) >= 2:
-                    # Find first cell text
-                    t1 = search_texts[0]
-                    t2 = search_texts[1]
-                    if self.find_and_move_to_text(t1):
-                        self.hwp.HAction.Run("TableCellBlock") # F5 block start
-                        self.hwp.HAction.Run("TableCellBlockExtend") # F5 extend
-                        # Search second text to extend selection
-                        self.find_and_move_to_text(t2)
-                        self.hwp.HAction.Run("TableMergeCell") # Merge selected cells
-                elif op.get("start_row") is not None and op.get("start_col") is not None:
-                    # Move to table start and navigate
-                    self.hwp.MovePos(2)
-                    self.hwp.HAction.Run("TableCellBlock")
-                    self.hwp.HAction.Run("TableCellBlockExtend")
-                    col_span = op.get("col_span", 1)
-                    row_span = op.get("row_span", 1)
-                    for _ in range(col_span - 1):
-                        self.hwp.HAction.Run("TableRightCell")
-                    for _ in range(row_span - 1):
-                        self.hwp.HAction.Run("TableDownCell")
-                    self.hwp.HAction.Run("TableMergeCell")
-
-                # If text replacement specified
-                if op.get("text") is not None:
-                    self.hwp.HAction.Run("SelectAll")
-                    self.hwp.HAction.Run("Delete")
-                    self.hwp.InsertText(op["text"])
-
-                # Apply character shape
-                if any(k in op for k in ("font_size_pt", "size_pt", "bold", "letter_spacing", "color")):
-                    self._apply_char_shape(op)
-
-                # Apply paragraph alignment
-                if op.get("align"):
-                    self._apply_para_align(op["align"])
-
-                # Apply cell border/fill
-                if op.get("border") or op.get("background"):
-                    self._apply_cell_border_fill(op.get("border"), op.get("background"))
-
-            elif kind == "split_cell":
-                search_text = op.get("match_text") or op.get("find_text")
-                if search_text:
-                    self.find_and_move_to_text(search_text)
-
-                self.hwp.HAction.Run("TableCellBlock")
-                split_act = self.hwp.CreateAction("TableSplitCell")
-                pset = self.hwp.CreateSet("TableSplitCell")
-                split_act.GetDefault(pset)
-                pset.SetItem("Rows", op.get("rows", 1))
-                pset.SetItem("Cols", op.get("cols", 1))
-                pset.SetItem("Merge", 0)
-                split_act.Execute(pset)
-
-                # If texts specified for sub-cells
-                texts = op.get("texts") or []
-                if texts:
-                    self.hwp.InsertText(texts[0])
-
-            elif kind == "set_cell_text":
-                search_text = op.get("match_text") or op.get("find_text")
-                if search_text:
-                    if self.find_and_move_to_text(search_text):
-                        self.hwp.HAction.Run("TableCellBlock")
-                elif op.get("row") is not None and op.get("col") is not None:
-                    self.hwp.MovePos(2)
-                    self.hwp.HAction.Run("TableCellBlock")
-                    for _ in range(op.get("col", 0)):
-                        self.hwp.HAction.Run("TableRightCell")
-                    for _ in range(op.get("row", 0)):
-                        self.hwp.HAction.Run("TableDownCell")
-
-                # Clear and insert new text
-                if not op.get("append", False):
-                    self.hwp.HAction.Run("SelectAll")
-                    self.hwp.HAction.Run("Delete")
-                self.hwp.InsertText(op.get("text", ""))
-
-                if any(k in op for k in ("font_size_pt", "size_pt", "bold", "letter_spacing", "color")):
-                    self._apply_char_shape(op)
-                if op.get("align"):
-                    self._apply_para_align(op["align"])
-                if op.get("border") or op.get("background"):
-                    self._apply_cell_border_fill(op.get("border"), op.get("background"))
-
-            elif kind == "set_cell_style":
-                search_text = op.get("match_text")
-                if search_text:
-                    self.find_and_move_to_text(search_text)
-                    self.hwp.HAction.Run("TableCellBlock")
-                elif op.get("row") is not None and op.get("col") is not None:
-                    self.hwp.MovePos(2)
-                    self.hwp.HAction.Run("TableCellBlock")
-                    for _ in range(op.get("col", 0)):
-                        self.hwp.HAction.Run("TableRightCell")
-                    for _ in range(op.get("row", 0)):
-                        self.hwp.HAction.Run("TableDownCell")
-
-                if op.get("border") or op.get("background"):
-                    self._apply_cell_border_fill(op.get("border"), op.get("background"))
-
-                if any(k in op for k in ("font_size_pt", "size_pt", "bold", "letter_spacing", "color")):
-                    self._apply_char_shape(op)
-
-                if op.get("align"):
-                    self._apply_para_align(op["align"])
-
-            elif kind == "modify_table":
-                # Hancom table property adjustment
-                pass
-
-    def _apply_char_shape(self, op: dict):
-        act = self.hwp.CreateAction("CharShape")
-        pset = self.hwp.CreateSet("CharShape")
-        act.GetDefault(pset)
-
-        size_pt = op.get("font_size_pt", op.get("size_pt"))
-        if size_pt is not None:
-            pset.SetItem("Height", round(float(size_pt) * 100))
-
-        if op.get("bold") is not None:
-            pset.SetItem("Bold", 1 if op["bold"] else 0)
-
-        if op.get("letter_spacing") is not None:
-            spacing = max(-50, min(50, int(op["letter_spacing"])))
-            pset.SetItem("Spacing", spacing)
-
-        if op.get("stretch") or op.get("ratio"):
-            ratio = max(50, min(200, int(op.get("stretch") or op.get("ratio"))))
-            pset.SetItem("Ratio", ratio)
-
-        if op.get("color"):
-            pset.SetItem("TextColor", hex_to_hwp_color(self.hwp, op["color"]))
-
-        act.Execute(pset)
-
-    def _apply_para_align(self, align_str: str):
-        align_map = {"LEFT": 0, "RIGHT": 1, "CENTER": 2, "JUSTIFY": 3, "DISTRIBUTE": 4}
-        val = align_map.get(align_str.upper(), 3)
-        act = self.hwp.CreateAction("ParagraphShape")
-        pset = self.hwp.CreateSet("ParagraphShape")
-        act.GetDefault(pset)
-        pset.SetItem("Align", val)
-        act.Execute(pset)
-
-    def _apply_cell_border_fill(self, border_spec: dict | None, bg_color: str | None):
-        act = self.hwp.CreateAction("CellBorderFill")
-        pset = self.hwp.CreateSet("CellBorderFill")
-        act.GetDefault(pset)
-
-        if border_spec:
-            has_sides = any(k in border_spec for k in ("left", "right", "top", "bottom"))
-            base_type_name = str(border_spec.get("type", "SOLID")).upper()
-            base_type = LINE_TYPES.get(base_type_name, 1)
-
-            w_str = str(border_spec.get("width", "0.12mm")).upper().replace(" ", "")
-            if not w_str.endswith("MM"):
-                w_str += "MM"
-            base_width = LINE_WIDTHS.get(w_str, 1)
-            base_color = hex_to_hwp_color(self.hwp, border_spec.get("color", "#000000"))
-
-            for side in ("Left", "Right", "Top", "Bottom"):
-                side_key = side.lower()
-                side_spec = border_spec.get(side_key) if has_sides else None
-                if side_spec:
-                    if isinstance(side_spec, str):
-                        s_type = LINE_TYPES.get(side_spec.upper(), base_type)
-                        s_width = base_width
-                        s_color = base_color
-                    elif isinstance(side_spec, dict):
-                        s_type = LINE_TYPES.get(str(side_spec.get("type", base_type_name)).upper(), base_type)
-                        sw_str = str(side_spec.get("width", w_str)).upper().replace(" ", "")
-                        if not sw_str.endswith("MM"):
-                            sw_str += "MM"
-                        s_width = LINE_WIDTHS.get(sw_str, base_width)
-                        s_color = hex_to_hwp_color(self.hwp, side_spec.get("color", "#000000")) if "color" in side_spec else base_color
-                    else:
-                        s_type, s_width, s_color = base_type, base_width, base_color
+            if not isinstance(op, dict): raise HancomError("operation must be an object")
+            if op.get("op") in ("insert_image", "insert_photo"):
+                _keys(op, ("op", "table_index", "row", "col", "match_text", "find_text", "image_path", "image_bytes", "width_mm", "height_mm"), "image operation")
+            else:
+                _edit(DocumentModel([], PageLayout()), [op])
+        for number,op in enumerate(operations):
+            before=self.snapshot(); before_state=verification_snapshot(self.xml()); kind=op.get("op")
+            if kind=="merge_cells": self.merge(op)
+            elif kind in ("insert_image", "insert_photo"):
+                index, cell = self.target(op)
+                self.replace_cell_text(index, cell, "")
+                self.move_to_cell(index, cell["row"], cell["col"])
+                with tempfile.TemporaryDirectory(prefix="narae-picture-") as temporary:
+                    if op.get("image_path"):
+                        picture_path = Path(op["image_path"]).resolve()
+                    elif isinstance(op.get("image_bytes"), bytes):
+                        picture_path = Path(temporary) / "picture.png"
+                        picture_path.write_bytes(op["image_bytes"])
+                    else: raise HancomError("insert_image requires image_path or image_bytes")
+                    if not picture_path.is_file(): raise HancomError("Image file does not exist")
+                    picture = self.hwp.InsertPicture(str(picture_path), True, 1, False, False, 0,
+                                                     float(op.get("width_mm", 30)), float(op.get("height_mm", 30)))
+                    if picture is None: raise HancomError("InsertPicture failed")
+                    properties = picture.Properties
+                    properties.SetItem("TreatAsChar", 1)
+                    picture.Properties = properties
+            elif kind in ("set_cell_text","set_cell_style","split_cell"):
+                index,cell=self.target(op)
+                if kind=="set_cell_text": self.replace_cell_text(index,cell,op.get("text",""),op.get("append",False))
+                if kind=="split_cell":
+                    rows,cols=integer(op.get("rows",1),"rows"),integer(op.get("cols",1),"cols")
+                    if not rows or not cols or rows*cols<=1: raise HancomError("Split must create at least two cells")
+                    texts = op.get("texts", [])
+                    if texts and (not isinstance(texts, list) or len(texts) != rows * cols or any(not isinstance(t, str) for t in texts)): raise HancomError("Split texts require one string per resulting cell")
+                    self.run("TableCellBlock"); self.execute_action("TableSplitCell",{"Rows":rows,"Cols":cols,"Merge":0}); self.hwp.HAction.Run("Cancel")
+                    after=self.table(index)
+                    if len(after["cells"])!=len(before["tables"][index]["cells"])+rows*cols-1: raise HancomError("Split structure readback failed")
+                    if texts:
+                        # Splitting inserts logical grid lines. Hancom can
+                        # renumber every list, so old list IDs are not stable.
+                        original = before["tables"][index]
+                        end_row = cell["row"] + cell["row_span"] + after["rows"] - original["rows"]
+                        end_col = cell["col"] + cell["col_span"] + after["cols"] - original["cols"]
+                        new_cells = [c for c in after["cells"] if cell["row"] <= c["row"] < end_row and cell["col"] <= c["col"] < end_col]
+                        if len(new_cells) != len(texts): raise HancomError("Could not identify every split cell")
+                        for target, text in zip(new_cells, texts): self.replace_cell_text(index, target, text)
                 else:
-                    s_type, s_width, s_color = base_type, base_width, base_color
+                    table=self.table(index); scope=op.get("apply_to","cell")
+                    scope = {"col": "column", "all": "table"}.get(scope, scope)
+                    scopes={"cell":[self.cell(table,cell["row"],cell["col"])],"table":table["cells"],"header":[c for c in table["cells"] if c["row"]==0],"row":[c for c in table["cells"] if c["row"]==cell["row"]],"column":[c for c in table["cells"] if c["col"]==cell["col"]]}
+                    if scope not in scopes: raise HancomError("Unknown apply_to")
+                    for c in scopes[scope]: self.style(index,c,op)
+            elif kind in ("insert_row","delete_row"):
+                index=integer(op.get("table_index",0),"table_index"); table=self.table(index); row=integer(op.get("row_index"),"row_index")
+                if "target_table" in op: raise HancomError("Use numeric table_index")
+                if row>table["rows"] or (kind=="delete_row" and (row==table["rows"] or table["rows"]==1)): raise HancomError("Invalid row_index")
+                self.move_to_cell(index,min(row,table["rows"]-1),0)
+                if kind=="insert_row": self.execute_action("TableInsertLowerRow" if row==table["rows"] else "TableInsertUpperRow",{"Count":1})
+                else: self.execute_action("TableDeleteRow",{"Type":0})
+                self.hwp.HAction.Run("Cancel")
+                if self.table(index)["rows"]!=table["rows"]+(1 if kind=="insert_row" else -1): raise HancomError("Row count readback failed")
+                if "height_mm" in op:
+                    for c in self.table(index)["cells"]:
+                        if c["row"]==row: self.style(index,c,{"height_mm":op["height_mm"]})
+            elif kind in ("modify_table", "modify_image"):
+                is_table = kind == "modify_table"
+                index = integer(op.get("table_index" if is_table else "image_index", 0), "object_index")
+                if is_table:
+                    ctrls = self.controls("tbl")
+                else:
+                    picture_ids = [p.find("SHAPEOBJECT").get("InstId") for p in ET.fromstring(self.xml()).findall(".//PICTURE")]
+                    by_id = {c.GetCtrlInstID(): c for c in self.controls("gso")}
+                    if any(pid not in by_id for pid in picture_ids): raise HancomError("COM/HWPML picture inventories disagree")
+                    ctrls = [by_id[pid] for pid in picture_ids]
+                    if "replace_image_path" in op or "replace_image_data" in op: raise HancomError("Use a native picture replacement action or InsertPicture/DeleteCtrl for image data replacement")
+                if index >= len(ctrls): raise HancomError("Unknown object_index")
+                ctrl = ctrls[index]; params = {}
+                if "target_table" in op or "target_image" in op: raise HancomError("Use numeric object indices")
+                if "treat_as_char" in op: params["TreatAsChar"]=int(bool(op["treat_as_char"]))
+                if "align" in op: params["HorzAlign"]=self.hwp.HAlign(op["align"])
+                for key,parameter in (("width_mm","Width"),("height_mm","Height")):
+                    if key in op: params[parameter]=self.hwp.MiliToHwpUnit(float(op[key]))
+                for key,prefix in (("out_margin_mm","OutsideMargin"),("in_margin_mm","CellMargin")):
+                    if key in op:
+                        if len(op[key])!=4: raise HancomError("Margins need four values")
+                        params.update({prefix+s:self.hwp.MiliToHwpUnit(float(v)) for s,v in zip(("Left","Right","Top","Bottom"),op[key])})
+                properties=ctrl.Properties; self.set_parameters(properties,params); ctrl.Properties=properties
+                if any(ctrl.Properties.Item(k)!=v for k,v in params.items()): raise HancomError("Table property readback failed")
+            else: raise HancomError(f"Unsupported Hancom operation: {kind}; use the raw Hancom action/method interface")
+            self.receipts.append({"index":number,"op":kind,"content_changed":before_state!=verification_snapshot(self.xml()),"runtime_checked":True})
+        return self.receipts
 
-                pset.SetItem(f"BorderType{side}", s_type)
-                pset.SetItem(f"BorderWidth{side}", s_width)
-                pset.SetItem(f"BorderColor{side}", s_color)
+    def save_verified(self,target):
+        expected=verification_snapshot(self.xml())
+        self.save_doc(target); self.check(self.hwp.Clear(1),"Clear for readback"); self.open_doc(target)
+        if verification_snapshot(self.xml())!=expected: raise HancomError("Saved text, structure or formatting differs from edited Hancom document")
+        return {"uses_hancom_runtime":True,"hancom_version":self.hwp.Version,"operation_results":self.receipts,"saved_content_verified":True,
+                "verification_scope":"HWPML body with resolved character, paragraph, style and border-fill references", "visual_parity_verified":False}
 
-        if bg_color and bg_color.startswith("#"):
-            pset.SetItem("FillAttr", 1)
-            pset.SetItem("FaceColor", hex_to_hwp_color(self.hwp, bg_color))
 
-        act.Execute(pset)
-
-def patch_hwp_advanced(source_file: str | Path, target_file: str | Path, operations: list[dict]) -> bool:
-    """Open HWP source, apply advanced Hancom operations, and save to target."""
-    with HancomBridge() as bridge:
-        if not bridge.open_doc(source_file):
-            return False
-        bridge.apply_operations_on_hwp(operations)
-        return bridge.save_doc(target_file)
+def patch_hwp_advanced(source_file,target_file,operations):
+    source, target = Path(source_file).resolve(), Path(target_file).resolve()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    handle, temporary = tempfile.mkstemp(prefix=".narae-hancom-", suffix=target.suffix, dir=target.parent)
+    os.close(handle)
+    staged = Path(temporary)
+    try:
+        with HancomBridge() as bridge:
+            bridge.open_doc(source); bridge.apply_operations_on_hwp(operations)
+            result = bridge.save_verified(staged)
+        if hashlib.sha256(source.read_bytes()).hexdigest() != source_hash: raise HancomError("Input changed during Hancom editing")
+        os.replace(staged, target)
+        return result
+    finally:
+        staged.unlink(missing_ok=True)

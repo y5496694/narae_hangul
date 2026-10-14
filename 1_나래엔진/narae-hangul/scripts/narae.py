@@ -14,7 +14,7 @@ import venv
 
 SKILL = Path(__file__).resolve().parents[1]
 ENGINE = SKILL / "scripts" / "engine"
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 MODULES = ("PySide6", "olefile", "fontTools", "Crypto", "pypdf")
 
 
@@ -73,7 +73,23 @@ def choose_runtime(args) -> tuple[list[str], dict[str, str], str]:
     raise ValueError("나래 한글 실행 경로를 --engine으로 지정하거나 narae.py setup을 실행하세요.")
 
 
-def setup() -> dict:
+def install_hancom_module(module_path: str) -> dict:
+    """Register the explicitly supplied module; never download/replace a DLL implicitly."""
+    if os.name != "nt": raise ValueError("한컴 COM 모듈은 Windows에서만 등록할 수 있습니다.")
+    import winreg
+    import shutil
+    source = Path(module_path).expanduser().resolve()
+    if not source.is_file() or source.suffix.lower() != ".dll": raise ValueError("승인된 한컴 FilePathCheckDLL 파일 경로를 지정하세요.")
+    target = cache_python().parent.parent / "FilePathCheckerModule.dll"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if source != target: shutil.copy2(source, target)
+    name = "NaraeHangulFilePathChecker"
+    with winreg.CreateKey(winreg.HKEY_CURRENT_USER, r"Software\HNC\HwpAutomation\Modules") as key:
+        winreg.SetValueEx(key, name, 0, winreg.REG_SZ, str(target))
+    return {"module_name": name, "module_path": str(target)}
+
+
+def setup(module_path=None) -> dict:
     python = cache_python()
     requirements = ENGINE / "requirements.txt"
     if not requirements.is_file():
@@ -87,7 +103,9 @@ def setup() -> dict:
     if process.returncode:
         raise ValueError("독립 엔진 의존성 설치가 실패했습니다. pip 오류를 확인하세요.")
     source_command(python)
-    return {"success": True, "python": str(python), "version": VERSION}
+    response = {"success": True, "python": str(python), "version": VERSION}
+    if module_path: response["hancom_module"] = install_hancom_module(module_path)
+    return response
 
 
 def write_result(path: Path | None, response: dict) -> None:
@@ -150,7 +168,11 @@ def main() -> int:
     parser.add_argument("--result", help="엔진 결과 JSON 저장 경로")
     parser.add_argument("--engine", help="NaraeHangul.exe 경로")
     parser.add_argument("--python", help="포함된 소스 엔진에 사용할 Python 경로")
+    parser.add_argument("--hancom", action="store_true", help="doctor에서 한컴 COM/파일 접근 모듈도 확인")
+    parser.add_argument("--hancom-module", help="setup에서 명시적으로 지정한 승인된 FilePathCheckDLL 등록")
     args = parser.parse_args()
+    if args.hancom and args.action != "doctor": parser.error("--hancom은 doctor에서만 사용합니다.")
+    if args.hancom_module and args.action != "setup": parser.error("--hancom-module은 setup에서만 사용합니다.")
     try:
         if args.action == "run":
             if not args.job:
@@ -159,11 +181,24 @@ def main() -> int:
         elif args.action == "setup":
             if args.engine or args.python:
                 parser.error("setup은 별도 스킬 가상환경을 구성합니다.")
-            response, code = setup(), 0
+            response, code = setup(args.hancom_module), 0
         else:
             command, _, runtime = choose_runtime(args)
             response, code = {"success": True, "version": VERSION,
                               "runtime": runtime, "command": command}, 0
+            if args.hancom:
+                with tempfile.TemporaryDirectory(prefix="narae-doctor-") as temporary:
+                    job = Path(temporary) / "doctor.json"
+                    job.write_text('{"action":"hancom_capabilities"}', encoding="utf-8")
+                    args.job, args.result = str(job), None
+                    code, diagnostic = run(args)
+                    if not diagnostic.get("success"):
+                        response.update(success=False, hancom_error=diagnostic.get("error"))
+                    else:
+                        response["hancom"] = {"version": diagnostic["hancom_version"], "security_module_registered": diagnostic["security_module_registered"],
+                                              "com_members": len(diagnostic["members"]), "parameter_sets": len(diagnostic["parameter_sets"]),
+                                              "documented_actions": len(diagnostic["action_catalog"]["identifiers"])}
+                        if not diagnostic["security_module_registered"]: response["success"], code = False, 1
     except (OSError, ValueError, json.JSONDecodeError) as error:
         response, code = {"success": False, "error": str(error)}, 1
     if hasattr(sys.stdout, "reconfigure"):
