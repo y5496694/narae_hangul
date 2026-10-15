@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -509,6 +510,25 @@ def execute_ai_table_command(
 
     ext = src.suffix.lower()
     try:
+        # HWP source editing must not reconstruct a reduced model: it can
+        # discard fields, controls, or unsupported formatting. Prefer the
+        # checked native Hancom route for both formats when it is installed.
+        use_hancom = ext == ".hwp"
+        if ext == ".hwpx" and sys.platform == "win32":
+            try:
+                import pythoncom
+            except ImportError:
+                pass
+            else:
+                try:
+                    pythoncom.CLSIDFromProgID("HWPFrame.HwpObject")
+                    use_hancom = True
+                except pythoncom.com_error:
+                    pass
+        if use_hancom:
+            report = patch_hwp_advanced(src, dst, ops)
+            return {"success": True, "format": ext[1:], "file": str(dst), "command": command,
+                    "operations_applied": ops, **report}
         if ext == ".hwpx":
             hwpx_bytes = src.read_bytes()
             result_bytes = apply_advanced_hwpx_operations(hwpx_bytes, ops)
@@ -516,21 +536,6 @@ def execute_ai_table_command(
             return {
                 "success": True,
                 "format": "hwpx",
-                "file": str(dst),
-                "command": command,
-                "operations_applied": ops
-            }
-        elif ext == ".hwp":
-            # 1. Native HWP 5.0 editing (COM-free, 100% reliable)
-            ok = apply_native_hwp_operations(src, ops, dst)
-            if not ok:
-                # 2. Fallback to Hancom COM bridge if available
-                ok = patch_hwp_advanced(src, dst, ops)
-            if not ok:
-                return {"success": False, "error": "Native HWP and Hancom COM operations both failed"}
-            return {
-                "success": True,
-                "format": "hwp",
                 "file": str(dst),
                 "command": command,
                 "operations_applied": ops
