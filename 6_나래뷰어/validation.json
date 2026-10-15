@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-15T23:06:03+09:00",
+  "date_kst": "2026-10-16T00:11:30+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "4f22fd8c9c21903773448b46803cdec6243d313b",
+  "base_commit": "0fd9614281c5578563913d820936b2319a870681",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -50,8 +50,8 @@
       "independent_pages": 2,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.021801209606810437,
-      "changed_fraction_max": 0.11203343256239982,
+      "changed_fraction_min": 0.019472020546253768,
+      "changed_fraction_max": 0.06516790366249546,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -65,8 +65,8 @@
       "independent_pages": 7,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.05409218874176646,
-      "changed_fraction_max": 0.15570544682264936,
+      "changed_fraction_min": 0.054034941203410604,
+      "changed_fraction_max": 0.15504541638042899,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -81,7 +81,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.23455438965144107,
+      "changed_fraction_max": 0.23325790128279386,
       "errors": [],
       "independent_identical_pages": 2
     },
@@ -110,8 +110,8 @@
       "independent_pages": 4,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.013126523794770943,
-      "changed_fraction_max": 0.12275892724848125,
+      "changed_fraction_min": 0.012246483205143748,
+      "changed_fraction_max": 0.12270953721538994,
       "errors": [],
       "independent_identical_pages": 0
     }
@@ -169,23 +169,23 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 40,
+      "run": 46,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
       "scope": "viewer, picture effects, outline and bitmap HFT; fresh sequential run",
-      "log_sha256": "7666a08cc374e497e7e90861af5e8a377f962efc054e63342475220d51024c7e"
+      "log_sha256": "947222256b3088e0e86dc046cdd0266da4b71ed81404324a8166c0d863d5eb67"
     },
     "full_native_rerun": {
       "complete": false,
       "reason": "An earlier full-suite attempt encountered COM server launch errors and was interrupted; do not count it as passed."
     },
     "repository_portable": {
-      "run": 61,
+      "run": 67,
       "failures": 0,
       "errors": 0,
-      "skipped": 26,
-      "log_sha256": "8605ef3258fc5c483e3d5f607b64bef48be10a6a0e21fca39435c52b331baccb"
+      "skipped": 28,
+      "log_sha256": "f04826b3f4f3d03b4fbefc7c712636f0f00d09abd67bff6815a9a350f7dd38b3"
     }
   },
   "rea": {
@@ -449,6 +449,69 @@
         "parameters": {
           "procedure": "0x1001b570"
         }
+      },
+      {
+        "query": "pdf-emf-page-frame",
+        "evidence_id": "ev_d861aec056a3c11c9d94740710c9033e72ddc556b0c53074c6cbf2ad7473c27e",
+        "record_sha256": "714988b57c84ec59d52fb986e364497cc3cea7871d9fe2379afa9c04a7182ec9",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100a3de0"
+        }
+      },
+      {
+        "query": "pdf-bitmap-emit",
+        "evidence_id": "ev_4aea6b5bd3a4ac219764199f8213f6cdec0463d2be2a5f9f5dffb9d9898e7862",
+        "record_sha256": "e6a2366977e7a7b98452e7a304e57d1988ea0bf9e18d1c0593261e8bd9e49e7a",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10025380"
+        }
+      },
+      {
+        "query": "pdf-jpeg-bitmap-classification",
+        "evidence_id": "ev_6ff0cbd79bc186f120fc5f70ae48b59871454924383a33356fb0f0f99a3aa8cc",
+        "record_sha256": "99bfbd15bf08510e177bc2dfb3de23d4ab1877750f229d56d92670dad69877de",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10025190"
+        }
+      },
+      {
+        "query": "pdf-bitmap-readback",
+        "evidence_id": "ev_5b4c58180f64da43a75f46fd298f81d3c03e6cbb0b41eaf2aad150de181e8ccf",
+        "record_sha256": "919dd6b5a722d411435c7fa2a6a5ab7e375aa10fec3fc33f2be0a2540c3606d1",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1002dd00"
+        }
+      },
+      {
+        "query": "pdf-native-text-glyph-output",
+        "evidence_id": "ev_98697a6347b33d53ae3b6583d985a63166ed1cd7426c4b42d86d58c1d50b793c",
+        "record_sha256": "5f0fb9544b4ecdf482bfd0f686ec126a8b6a3beaf6c42e56f1e7dc9699903bd3",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10019420"
+        }
+      },
+      {
+        "query": "pdf-native-font-emulation-flags",
+        "evidence_id": "ev_0cab8e699e7ce67fc252698e909145e0b43d8a1fdd8a4dcf055c7001c1e09c84",
+        "record_sha256": "8a820fd6f562c924a877dac2ac6f2bd9f6840326275c9db63e6fbec6a4a2b358",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100189f0"
+        }
+      },
+      {
+        "query": "pdf-native-text-transform",
+        "evidence_id": "ev_6e2ad39d439bfb5edb0a77e2a32d6411010d872acb0cee976b8d21205d1ae150",
+        "record_sha256": "3ef651a4957483d1c8d3bf64dacd664e7948556f6b95e8b877232b1ee4ee8ab3",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1001ca00"
+        }
       }
     ],
     "sessions_closed": true,
@@ -477,18 +540,18 @@
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "24681ef3fcd1527b6ad6b6e16bcb93ea41cd4794b61546aade010b0eb470af45",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "4587748f83491c327ceafbac94def80ef09bdf9575f20c11888b13f607492e94",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "aaae813c439dd364b316c7a82af2706065764a23620930c46792c95236aa0182",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ce85282e3baef73c3c4668410ea8d6e6ed9ff963df212fd97c8907be817bc7b6",
-    "tests/test_viewer.py": "762e35e946f289665adda8b63478edf85f8d0a06faf8b2d14a2b29bd7495d7c5",
-    "2_나래스킬/narae-viewer/SKILL.md": "faa8d72107dba9f430ab922b8db2d4aa583334c1a4d07a9c72e9781eb6088934",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "f46987c958f1bedf7077d04b59070f6d32c6eb968cdf7a50771a5364078c421c",
+    "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
+    "2_나래스킬/narae-viewer/SKILL.md": "434f971510dffb0deb714481fccba19a1ed1cd000f8156ffe7a573d5c05a0e6d",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "9ddea78197436c54cf2fdbfca98a3910e56868b64908461d894308f496f2b4ef",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "2e68c193c865883a87c7857751013ed14ca21c2075fe71585c82cdd4c632053d",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft_cff.py": "9e2df4fb3baadc44f4a5402077f21a0d38f91bec828610e4a1115fd5edd161cc",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "287d84f8aedb878d393bb660204ddf7058e6e94f0bfc5212f57189a50e5bdb1a",
-    "tests/test_font_appearance.py": "7a7bac20895a975bd645ff0d06a8f5712c791b6fc048f0b9730a9eb153da862b",
+    "tests/test_font_appearance.py": "0fa1a3f4fd1f0689ea81858dcccb4d955263093ec1b0e05eaffaa0b4129e925d",
     "tests/test_bitmap_fonts.py": "7c38c0e9174e775c9e1dc0e94d65251c10801cf54fb729e46347ae8aa93cd2bc"
   },
   "cropped_picture_flip": {
@@ -677,5 +740,51 @@
       "missing script faces and fallback",
       "hinting and vertical metrics"
     ]
+  },
+  "text_style_and_flow": {
+    "source_control_slots": "UTF16 positions preserved; U+200B tracking suppressed; inline width preserved",
+    "tracking": "percentage of individual glyph advance and half-em spaces; native integer accumulation remains unresolved",
+    "synthetic_italic_shear": 0.333333,
+    "real_italic_face_preserved": true,
+    "native_italic_fixture_pages": 20,
+    "italic_comparison_scope": "native text matrices, independent encoded paths and bitmap transform/payload; excludes full-page pixel parity and per-glyph fallback styles",
+    "declared_line_height": "declared maximum character size and 0.85 baseline unless fontLineHeight is set; preserve paragraph end style size",
+    "native_line_metric_families": [
+      "함초롬바탕",
+      "맑은 고딕",
+      "Arial",
+      "한양신명조"
+    ],
+    "native_line_metric_sizes_pt": [
+      13,
+      20
+    ],
+    "native_baseline_grid_samples": 32,
+    "all_sample_baseline_metrics_equal": true,
+    "baseline_grid_scope": "line origin and offset independently rounded to 600dpi; independent PDF painting coordinates remain fractional",
+    "transparent_fill": "HWPX winBrush faceColor none maps to no fill; renderer ignores invalid fill colors",
+    "whole_page_pixel_parity_verified": false,
+    "native_style_local_report_sha256": "326be8e458b1243fc156aaf54352db06634bc35d2dc55a61b2f1e476a4cb38b8",
+    "native_line_height_local_report_sha256": "7026e302ff9e500d91f2616763bdcf1ba17d75ccd25397cc6783541b809cfc5b"
+  },
+  "page_frame_and_compression_analysis": {
+    "native_pdf_driver": "HNCE2PTP.dll",
+    "static_observations": [
+      "EMF frame-to-device and whole-point paper truncation",
+      "lfWidth / upright tmAveCharWidth text horizontal scaling",
+      "synthetic italic shear 0.333333; real italic face bypass",
+      "bitmap color classification and automatic JPEG quality branches"
+    ],
+    "empirical_observations": [
+      "filled path output correlates with persistent 3-decimal text transform formatting",
+      "native JPEG quantization matches standard quality tables in inspected images"
+    ],
+    "remaining": [
+      "primitive-specific coordinate rounding and PDF number formatting",
+      "native raster sampling/downsample grid and color-count-dependent compression",
+      "source alpha PDF path and native initial brush phase"
+    ],
+    "sessions_closed": true,
+    "raw_decompilation_distributed": false
   }
 }

@@ -59,7 +59,7 @@ class TextStyle:
     superscript: bool = False
     subscript: bool = False
     stretch: int = 100
-    letter_spacing: int = 0  # percent of the character's nominal em width
+    letter_spacing: int = 0  # percent of the individual character's nominal advance
     language_fonts: tuple = ()  # HANGUL/LATIN/HANJA/JAPANESE/OTHER/SYMBOL/USER
     font_type: str = "TTF"
     language_font_types: tuple = ()  # preserve HFT/TTF for each script independently
@@ -721,7 +721,8 @@ def _load_hwpx(path):
                 fill = _desc(e, "winBrush")
                 sides = tuple(Border(_attr(_child(e, n), "type", "NONE"), _dimension_pt(_attr(_child(e, n), "width")),
                     _attr(_child(e, n), "color", "#000000")) for n in ("leftBorder", "rightBorder", "topBorder", "bottomBorder"))
-                borders[e.get("id")] = BorderFill(sides, fill.get("faceColor", "") if fill is not None else "")
+                background = fill.get("faceColor", "") if fill is not None else ""
+                borders[e.get("id")] = BorderFill(sides, "" if background.lower()=="none" else background)
         bindata = {}
         if "Contents/content.hpf" in names:
             package = _safe_xml(z.read("Contents/content.hpf"))
@@ -805,6 +806,7 @@ def _load_hwpx(path):
                 padding=tuple(_num(_attr(_child(text, "textMargin"), n)) / 100 for n in ("left", "right", "top", "bottom")),
                 borders=(border,) * 4, background=_attr(fill, "faceColor"), anchor_segments=owner.line_segments,
                 source_para_id=owner.source_id, source_index=owner.source_index, scope=dict(owner.scope))
+            if d.background.lower()=="none":d.background=""
             if line is not None:
                 d.line_options = {k: (_int(line.get(k)) if k in ("headfill","tailfill","alpha") else line.get(k)) for k in
                     ("endCap","headStyle","tailStyle","headfill","tailfill","headSz","tailSz","outlineStyle","alpha") if line.get(k) is not None}

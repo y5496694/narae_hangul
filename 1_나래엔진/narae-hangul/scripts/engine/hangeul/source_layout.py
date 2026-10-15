@@ -21,6 +21,7 @@ from .picture_effects import apply_tone,pdf_alpha_tile,image_is_opaque
 SYNTHETIC_BOLD_PROPERTY=0x108001
 SCRIPT_OFFSET_PROPERTY=0x108002
 BITMAP_FONT_PROPERTY=0x108003
+SYNTHETIC_ITALIC_PROPERTY=0x108004
 TEXT_DPI=600
 TEXT_UNIT_PT=72/TEXT_DPI
 TEXT_TO_VIEW=96/TEXT_DPI
@@ -176,6 +177,7 @@ class SourceLayout:
         self._families=set(QFontDatabase.families())
         self._fonts={}
         self._synthetic_bolds={}
+        self._synthetic_italics={}
         self._script_styles={}
         self._script_ambiguities={}
         self._script_offsets={}
@@ -338,14 +340,30 @@ class SourceLayout:
             if not line.isValid():break
             indent=paragraph.style.indent if not lines else 0
             line.setLineWidth(max(1,available-indent)/TEXT_UNIT_PT)
-            height=line.height()*TEXT_UNIT_PT
-            if y+height>self.body_height and y>0:y=0
             style=paragraph.style
+            if style.font_line_height:
+                height=line.height()*TEXT_UNIT_PT
+                baseline=line.ascent()*TEXT_UNIT_PT
+            else:
+                # Unless fontLineHeight is set, native HWP measures the line
+                # from the declared character size, not the face's ascent +
+                # descent + leading. Qt's larger metrics accumulated into
+                # extra vertical space and moved signatures to another page.
+                first=line.textStart();last=first+line.textLength()
+                sizes=[f.format.font().pointSizeF() for f in layout.formats()
+                       if f.start<last and f.start+f.length>first]
+                if first==0 and paragraph.runs and (paragraph.runs[0].source_start or 0)>0:
+                    sizes.append(paragraph.default_style.size)
+                if last>=len(layout.text().encode('utf-16le'))//2 and paragraph.end_style:
+                    sizes.append(paragraph.end_style.size)
+                height=max(sizes,default=paragraph.default_style.size)
+                baseline=.85*height
+            if y+height>self.body_height and y>0:y=0
             pitch=(height*style.line/100 if style.line_type=='PERCENT' else
                    height+style.line if style.line_type=='BETWEEN_LINES' else
                    max(height,style.line) if style.line_type=='AT_LEAST' else style.line)
             lines.append(dict(text_start=line.textStart(),y_pt=y,height_pt=height,text_height_pt=height,
-                              baseline_pt=line.ascent()*TEXT_UNIT_PT,spacing_pt=max(0,pitch-height),
+                              baseline_pt=baseline,spacing_pt=max(0,pitch-height),
                               x_pt=style.left+indent,width_pt=max(1,available-indent),flags=0))
             y+=max(height,pitch)
         layout.endLayout()
@@ -683,14 +701,15 @@ class SourceLayout:
         font.setStyleStrategy(QFont.StyleStrategy.PreferAntialias|QFont.StyleStrategy.NoSubpixelAntialias|QFont.StyleStrategy.ForceOutline)
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         font.setPointSizeF(style.size)
-        font.setBold(style.bold and not self._synthetic_bold(style,fallback));font.setItalic(style.italic)
+        font.setBold(style.bold and not self._synthetic_bold(style,fallback))
+        font.setItalic(style.italic and not self._synthetic_italic(style,fallback))
         font.setUnderline(style.underline);font.setStrikeOut(style.strike)
         font.setStretch(style.stretch)
         font.setKerning(getattr(style,'use_kerning',False))
-        font.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing,0)
-        if style.letter_spacing:
-            nominal=QFontMetricsF(font,self._metrics_device).horizontalAdvance('H')
-            font=self._font_with_advance(font,'H',nominal+style.size*style.letter_spacing/100/TEXT_UNIT_PT)
+        # Native advances apply spacing as a percentage of each character's
+        # width. A narrow Latin letter and a half-em space must not receive
+        # the full-em increment previously used for every character.
+        font.setLetterSpacing(QFont.SpacingType.PercentageSpacing,100+style.letter_spacing)
         self._fonts[key]=font
         return font
 
@@ -706,11 +725,20 @@ class SourceLayout:
         if not fallback and style.font in BITMAP_FAMILIES and style.font in self._source_fonts:
             fmt.setProperty(BITMAP_FONT_PROPERTY,style.font)
         if self._synthetic_bold(style,fallback):fmt.setProperty(SYNTHETIC_BOLD_PROPERTY,style.size*.02/TEXT_UNIT_PT)
+        if self._synthetic_italic(style,fallback):fmt.setProperty(SYNTHETIC_ITALIC_PROPERTY,.333333)
         return fmt
+
+    def _synthetic_italic(self,style,fallback=False):
+        if not style.italic:return False
+        family=self._fallback_font_family(style.font) if fallback else self._font_family(style.font)
+        if family not in self._synthetic_italics:
+            self._synthetic_italics[family]=not any(QFontDatabase.italic(family,face) for face in QFontDatabase.styles(family))
+        return self._synthetic_italics[family]
 
     def _font_with_advance(self,font,character,advance):
         """Fit one native control advance without guessing Qt's DPI scaling."""
         result=QFont(font)
+        result.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing,0)
         nominal=QFontMetricsF(result,self._metrics_device).horizontalAdvance(character)
         probe=QFont(result)
         probe.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing,result.letterSpacing()+1)
@@ -858,7 +886,7 @@ class SourceLayout:
                     # advance for ordinary spaces, independent of the face's
                     # proportional space glyph. Keep its font and extra spacing.
                     space_font=QFont(self._font(effective,fallback))
-                    target=effective.size/TEXT_UNIT_PT*(effective.stretch/200+effective.letter_spacing/100)
+                    target=effective.size/TEXT_UNIT_PT*effective.stretch/200*(1+effective.letter_spacing/100)
                     space_font=self._font_with_advance(space_font,' ',target)
                     fmt.setFont(space_font)
                 background=QColor(run.style.background)
@@ -880,7 +908,30 @@ class SourceLayout:
             gap=QTextLayout.FormatRange();gap.start=cursor;gap.length=text_units-cursor
             gap.format=self._char_format(style)
             ranges.append(gap)
-        layout.setFormats(ranges);layout.beginLayout();line=layout.createLine()
+        # HWP control records occupy UTF-16 source slots, not glyph advance.
+        # Qt applies tracking even to U+200B. Negative tracking on a leading
+        # section/header control can therefore move an entire centred title.
+        # Keep every source slot (and inline spacer) but suppress tracking on
+        # the zero-width padding, including controls between literal runs.
+        control_ranges=[]
+        for item in ranges:
+            segment=_utf16_slice(text,item.start,item.start+item.length)
+            if '\u200b' not in segment:
+                control_ranges.append(item);continue
+            cursor=item.start;groups=[]
+            for character in segment:
+                units=len(character.encode('utf-16le'))//2;zero=character=='\u200b'
+                if groups and groups[-1][2]==zero:groups[-1][1]+=units
+                else:groups.append([cursor,units,zero])
+                cursor+=units
+            for offset,length,zero in groups:
+                part=QTextLayout.FormatRange();part.start=offset;part.length=length
+                part.format=QTextCharFormat(item.format)
+                if zero:
+                    font=QFont(part.format.font());font.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing,0)
+                    part.format.setFont(font)
+                control_ranges.append(part)
+        layout.setFormats(control_ranges);layout.beginLayout();line=layout.createLine()
         if continued:line.setNumColumns(text_units,command.rect[2]/TEXT_UNIT_PT)
         else:line.setLineWidth(command.rect[2]/TEXT_UNIT_PT)
         baseline=command.extra['line']['baseline_pt']/TEXT_UNIT_PT
@@ -926,6 +977,7 @@ class SourceLayout:
             if fmt.background().style()!=Qt.BrushStyle.NoBrush:
                 painter.fillRect(QRectF(min(first,last),line.y(),abs(last-first),line.height()),fmt.background())
             stroke=fmt.property(SYNTHETIC_BOLD_PROPERTY) or 0
+            slant=fmt.property(SYNTHETIC_ITALIC_PROPERTY) or 0
             painter.setPen(QPen(color,stroke) if stroke else Qt.PenStyle.NoPen);painter.setBrush(color)
             bitmap_family=fmt.property(BITMAP_FONT_PROPERTY)
             segments=[]
@@ -940,6 +992,9 @@ class SourceLayout:
                         y=round(command.extra['line']['baseline_pt']/TEXT_UNIT_PT)-em+math.floor(.2*em)+top
                         painter.save();painter.setRenderHint(QPainter.RenderHint.LosslessImageRendering,True)
                         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform,False)
+                        if slant:
+                            baseline=command.extra['line']['baseline_pt']/TEXT_UNIT_PT
+                            painter.translate(0,baseline);painter.shear(-slant,0);painter.translate(0,-baseline)
                         painter.drawImage(QRectF(x,y,ink.width(),ink.height()),ink);painter.restore()
                     else:segments.append((cursor,length))
                     cursor+=length
@@ -956,6 +1011,10 @@ class SourceLayout:
                 stretch=fmt.fontStretch()/100 or 1
                 for path,position in zip(paths,positions):
                     if stretch!=1:path=QTransform().scale(stretch,1).map(path)
+                    # Native PDF uses a 1/3 shear when the selected face has no
+                    # italic style (HNCE2PTP text transform). Keep real italic
+                    # faces, and shear each outline about its own baseline.
+                    if slant:path=QTransform().shear(-slant,0).map(path)
                     path.translate(position);painter.drawPath(path)
             metrics=QFontMetricsF(fmt.font(),self._metrics_device)
             painter.setPen(QPen(color,max(.5/TEXT_TO_VIEW,metrics.lineWidth())))
@@ -968,7 +1027,8 @@ class SourceLayout:
     def _draw_box(self,painter,command,background=True):
         x,y,width,height=(v/.75 for v in command.rect)
         source=command.source
-        if background and source.background:painter.fillRect(QRectF(x,y,width,height),QColor(source.background))
+        fill=QColor(source.background)
+        if background and fill.isValid():painter.fillRect(QRectF(x,y,width,height),fill)
         for side,border in enumerate(source.borders):
             if border.style=='NONE' or border.width_pt<=0:continue
             points=[(x,y,x,y+height),(x+width,y,x+width,y+height),(x,y,x+width,y),(x,y+height,x+width,y+height)]
@@ -1176,8 +1236,9 @@ class SourceLayout:
                 # Paint every cell background before the shared edges. A later
                 # neighbour's fill must not erase half of an antialiased border.
                 for cell in cells:
-                    if cell.source.background:
-                        painter.fillRect(QRectF(*(v/.75 for v in cell.rect)),QColor(cell.source.background))
+                    fill=QColor(cell.source.background)
+                    if fill.isValid():
+                        painter.fillRect(QRectF(*(v/.75 for v in cell.rect)),fill)
                 for cell in cells:self._draw_box(painter,cell,background=False)
             else:self._draw_box(painter,command)
 
