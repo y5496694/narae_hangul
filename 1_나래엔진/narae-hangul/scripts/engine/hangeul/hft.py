@@ -2,13 +2,14 @@
 
 No native DLL is imported. Fonts are read from the user's installation.
 Implemented: group inventory, direct/KS outline glyphs and direct bitmap glyphs.
-Implemented Hangul bitmap composition for map kind 2. Full Jaso, map kind 4,
-vendor variations and native strike selection remain incomplete.
+Implemented Hangul bitmap composition for map kind 2 and Full Jaso kind 3.
+Map kind 4 offsets and other vendor variations remain incomplete.
 """
 from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 import hashlib
+import re
 import struct
 MAX_FONT_BYTES = 32 * 1024 * 1024
 
@@ -23,6 +24,39 @@ class Glyph:
     bounds: tuple[int,int,int,int]
     operations: tuple
     provenance: dict
+
+    def bitmap_mask(self, em_pixels):
+        """Independent monochrome raster, with its origin relative to the em.
+
+        Enlargement expands integer pixel cell boundaries; reduction splats
+        every set source bit with OR composition. The requested printer em
+        is rounded to the nearest integer. Returns a Pillow L mask and
+        (left, top) in full-em pixels.
+        """
+        import math
+        from PIL import Image,ImageDraw
+        if not self.kind.startswith('bitmap'):raise HftError('Not a bitmap glyph')
+        if not 0<float(em_pixels)<=8192:raise HftError('Bitmap em exceeds rendering limit')
+        em=max(1,math.floor(float(em_pixels)+.5));scale=em/self.units_per_em
+        rectangles=[]
+        for op,x,y,w,h in self.operations:
+            if op!='R':raise HftError('Invalid bitmap operation')
+            left=math.floor(x*scale+1e-9);right=math.floor((x+w)*scale+1e-9)
+            top=math.floor((self.units_per_em-y-h)*scale+1e-9)
+            bottom=math.floor((self.units_per_em-y)*scale+1e-9)
+            if em<self.units_per_em:
+                # Reduction splats every set source bit and ORs collisions.
+                # Preserve strokes whose scaled cell boundaries collapse.
+                right=math.floor((x+w-1)*scale+1e-9)+1
+                bottom=math.floor((self.units_per_em-y-1)*scale+1e-9)+1
+            if right>left and bottom>top:rectangles.append((left,top,right,bottom))
+        if not rectangles:return Image.new('L',(1,1)),(0,0)
+        left=min(r[0] for r in rectangles);top=min(r[1] for r in rectangles)
+        right=max(r[2] for r in rectangles);bottom=max(r[3] for r in rectangles)
+        if (right-left)*(bottom-top)>16_777_216:raise HftError('Bitmap surface exceeds limit')
+        image=Image.new('L',(right-left,bottom-top));draw=ImageDraw.Draw(image)
+        for x,y,r,b in rectangles:draw.rectangle((x-left,y-top,r-left-1,b-top-1),fill=255)
+        return image,(left,top)
 
     def painter_path(self, em_size=1000, native_pdf_quantization=False):
         """Qt path; outlines apply observed 0.15em native baseline adjustment.
@@ -64,6 +98,25 @@ class HftFont:
         checksum=self.u16(42);header=bytearray(self.data[:512]);header[42:44]=b'\0\0'
         if sum(header)&65535!=checksum:raise HftError('Header checksum mismatch')
         self.sha256=hashlib.sha256(self.data).hexdigest()
+        self.unicode_tables={}
+        self.mapping_sources=[]
+        # REA LoadUnicodeTbl: general symbols are indexed by Unicode; the
+        # CJK table starts at U+3400. Tables belong to this installation and
+        # are read as data, never copied into a distribution or executed.
+        base=self.path.resolve().parent.parent.parent
+        code_dir=next((p for p in (base/'Bin'/'Code',base/'Code') if (p/'u300_gen.dat').is_file()),None)
+        if code_dir is not None:
+            for name,count in (('gen',0x4000),('cjk',0x6f00)):
+                path=code_dir/('u300_'+name+'.dat')
+                if not path.is_file():continue
+                if path.stat().st_size>128*1024:raise HftError('Unicode mapping table exceeds limit')
+                with path.open('rb') as stream:data=stream.read(128*1024+1)
+                if len(data)>128*1024:raise HftError('Unicode mapping table exceeds limit')
+                header=re.search(rb'Data count : (\d+) *\r?\n',data[:640])
+                if b'Unicode version : 3.00' not in data[:640] or not header or int(header[1])!=count or len(data)-header.end()!=count*2:
+                    raise HftError('Invalid installed Unicode mapping table')
+                self.unicode_tables[name]=struct.unpack('<'+'H'*count,data[header.end():])
+                self.mapping_sources.append({'path':str(path),'sha256':hashlib.sha256(data).hexdigest()})
         self.family=self.data[44:108].split(b'\0')[0].decode('johab','replace')
         self.vendor_hint=self.data[308:340].split(b'\0')[0].decode('ascii','replace')
         self.outline_count=self.u16(422);self.bitmap_count=self.u16(424)
@@ -136,10 +189,20 @@ class HftFont:
     def u16(self,offset):return self.unpack('<H',offset)[0]
     def u32(self,offset):return self.unpack('<I',offset)[0]
 
-    @staticmethod
-    def hchar(character):
+    def hchar(self,character):
         if len(character)!=1:raise HftError('One Unicode character required')
-        if ord(character)<128:return ord(character)
+        code=ord(character)
+        if code<128:return code
+        if not 0xac00<=code<=0xd7a3:
+            table=self.unicode_tables.get('gen')
+            if code<0x4000 and table is not None:
+                value=table[code]
+                if value!=0x3441:return value
+            table=self.unicode_tables.get('cjk')
+            index=code-0x3400 if 0x3400<=code<=0x9fff else code-0x8c00 if 0xf900<=code<=0xfaff else -1
+            if table is not None and 0<=index<len(table) and table[index]!=0x3441:
+                return table[index]
+            raise HftError('Unicode→HChar mapping unavailable')
         try:b=character.encode('johab')
         except UnicodeEncodeError as exc:raise HftError('Unicode→HChar mapping incomplete') from exc
         if len(b)!=2:raise HftError('Unsupported HChar width')
@@ -162,6 +225,10 @@ class HftFont:
             try:return codes.index(code)
             except ValueError:return None
         if kind==2:return self._composite_indices(record,code)
+        if kind==3:
+            if (code&0x83c0)!=0x8000 or 0xe829<=code<=0xe83f:return None
+            if 0x20<=code&255<=0x3f and code>>8 in (0xec,0xf0,0xf4,0xf8,0xfc):return None
+            return ((code>>5)&0x3e0)|((code&0x20)<<5)|(code&0x1f)
         raise HftError(f'Glyph map kind {kind} not implemented')
 
     def _composite_indices(self,record,code):
@@ -195,6 +262,9 @@ class HftFont:
         groups=[g for g in self.groups if g['kind']==int(prefer_outline) and (strike is None or g['strike']==strike)]
         if not groups and prefer_outline:
             groups=[g for g in self.groups if g['kind']==0 and (strike is None or g['strike']==strike)]
+        # Printer output selects the largest available bitmap strike. Smaller
+        # strikes are retained for explicit diagnostic requests.
+        if groups and not groups[0]['kind']:groups.sort(key=lambda g:g['strike'],reverse=True)
         for g in groups:
             for record in g['children']:
                 try:index=self.glyph_index(record,character)
@@ -235,7 +305,8 @@ class HftFont:
         data=self.slice(offset,length)
         if self.vendor_hint.startswith('Hanyang outline font for HWP 2.1'):
             data=self.decode_hanyang(data)
-        elif self.vendor_hint:raise HftError(f'Unsupported outline vendor {self.vendor_hint!r}')
+        elif self.vendor_hint and not self.vendor_hint.startswith('Human Font for HWP 2.1'):
+            raise HftError(f'Unsupported outline vendor {self.vendor_hint!r}')
         operations=decode_contours(data)
         return Glyph(character,r['em'],'outline',tuple(bounds),operations,
                      {'font_sha256':self.sha256,'group_offset':group['offset'],'record_offset':r['offset'],

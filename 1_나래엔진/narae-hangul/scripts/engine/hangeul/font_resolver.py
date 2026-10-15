@@ -1,6 +1,6 @@
 """Installed SFNT faces and verified HFT outlines for the independent view.
 
-Original installed TTF/OTF files and two normal Hanyang Hangul/Latin HFT pairs
+Original installed TTF/OTF files, normal Hanyang script fonts and Human Latin HFTs
 are resolved. Inputs stay read-only; generated HFT OpenType CFF files live in
 the user's Qt cache directory. Registration is process-local. Source fonts and
 CFF caches are not distribution assets. The HFT charset is document-independent.
@@ -22,9 +22,27 @@ from .hft import HftFont, HftError
 from .hft_cff import convert_outline_fonts
 
 
-CHARACTERS = tuple(chr(c) for c in range(32,127)) + tuple(chr(c) for c in range(0xac00,0xd7a4))
+def _standard_characters():
+    values=set(range(32,127)) | set(range(0xac00,0xd7a4)) | set(range(0x2000,0x2070))
+    for lead in range(0xa1,0xfe):
+        for trail in range(0xa1,0xff):
+            try:character=bytes((lead,trail)).decode('euc_kr')
+            except UnicodeError:continue
+            if len(character)==1:values.add(ord(character))
+    return tuple(chr(value) for value in sorted(values))
+
+
+CHARACTERS = _standard_characters()
 CHARSET = frozenset(map(ord,CHARACTERS))
 FONT_PAIRS = {"한양중고딕": ("HGJGT.HFT","ENJGT.HFT"), "한양신명조": ("HGSMJ.HFT","ENSMJ.HFT")}
+FONT_PAIRS.update({'HCI Poppy':('HMEPO.HFT',),'HCI Hollyhock':('HMEHL.HFT',)})
+FONT_PAIRS.update({'명조':('HGMJ.HFT','ENMJ.HFT'),'고딕':('HGGT.HFT','ENGT.HFT')})
+BITMAP_FAMILIES=frozenset(('명조','고딕'))
+LATIN_ONLY = frozenset(('HCI Poppy','HCI Hollyhock'))
+SCRIPT_FONTS = {'한양신명조':{'Hanja':'HJSMJ.HFT','Japanese':'JPSMJ.HFT','Other':'FLSMJ.HFT','Symbol':'SPSMJ.HFT'},
+                '한양중고딕':{'Hanja':'HJJGT.HFT','Japanese':'JPJGT.HFT','Symbol':'SPJGT.HFT'}}
+SCRIPT_FONTS.update({'명조':{'Hanja':'HJMJ.HFT','Japanese':'JPMJ.HFT','Other':'FLMJ.HFT','Symbol':'SPMJ.HFT'},
+                     '고딕':{'Japanese':'JPGT.HFT'}})
 ALIASES = {"신명조":"한양신명조"}
 MAX_MAP_BYTES = 2 * 1024 * 1024
 MAX_CACHE_BYTES = 16 * 1024 * 1024
@@ -59,7 +77,7 @@ def _font_map(path):
             continue
         if line.startswith("[") and line.endswith("]"):
             section=line[1:-1].strip()
-        elif section in ("Font Definition - Hangul","Font Definition - Latin") and "=" in line:
+        elif section.startswith('Font Definition - ') and "=" in line:
             name,value=line.split("=",1)
             name=name.strip()
             if name in FONT_PAIRS:
@@ -87,6 +105,30 @@ def _installed_sfnt_directories():
         shared=directory.parent
         directories.extend((shared/'TTF'/'All',shared/'TTF'/'Hwp'))
     return list(dict.fromkeys(directories))
+
+
+def installed_default_fonts():
+    """Read the installed Korean Hancom fallback order, when available."""
+    for directory in _installed_directories():
+        base=directory.parent.parent
+        binary=base if base.name.lower()=='bin' else base/'Bin'
+        config=binary/'FontDB'/'fontinfo.dat'
+        try:
+            data=_read_bounded(config,MAX_MAP_BYTES)
+            if not data.startswith(b'\xff\xfe'):continue
+            section='';families=()
+            for line in data[2:].decode('utf-16le').splitlines():
+                line=line.strip()
+                if line.startswith('['):section=line
+                elif section=='[Default Fonts KOR]' and line.startswith('Hangul='):
+                    values=line.split('=',1)[1].split(',')
+                    families=tuple(values[i].strip() for i in range(0,len(values)-1,2)
+                                   if values[i+1].strip()=='T' and values[i].strip())
+                    break
+            if families:return families,{'path':str(config),'sha256':hashlib.sha256(data).hexdigest(),
+                                         'section':'Default Fonts KOR','script':'Hangul'}
+        except (OSError,ValueError,UnicodeError):continue
+    return (),None
 
 
 def _sfnt_names(source):
@@ -201,7 +243,7 @@ def _compiler_digest():
 COMPILER_DIGEST = _compiler_digest()
 
 
-def _validate_cff(data, family, supported):
+def _validate_cff(data, family, supported, *, required=(32,65,0xac00,0xd55c), space_advance=500):
     """Bound the sfnt directory before allowing fontTools or Qt to read it."""
     from fontTools.ttLib import TTFont
     if len(data)<12 or len(data)>MAX_CACHE_BYTES or data[:4]!=b"OTTO":
@@ -226,11 +268,18 @@ def _validate_cff(data, family, supported):
             if font["name"].getDebugName(1)!=family:
                 raise ValueError("캐시 글꼴 이름이 일치하지 않습니다.")
             cmap=font.getBestCmap() or {}
-            if set(cmap)!=set(supported) or not set(cmap)<=CHARSET or not {32,65,0xac00,0xd55c}<=set(cmap):
+            if set(cmap)!=set(supported) or not set(cmap)<=CHARSET or not set(required)<=set(cmap):
                 raise ValueError("캐시 글꼴 문자 범위가 일치하지 않습니다.")
             metrics=font["hmtx"].metrics
-            if any(not 0<metrics[glyph][0]<=2000 for glyph in cmap.values()) or metrics[cmap[32]][0]!=500:
+            if any(not 0<=metrics[glyph][0]<=2000 for glyph in cmap.values()) or metrics[cmap[32]][0]!=space_advance:
                 raise ValueError("캐시 글꼴 글자 폭이 검증 조건과 다릅니다.")
+            from fontTools.pens.boundsPen import BoundsPen
+            for glyph in set(cmap.values()):
+                if metrics[glyph][0]==0:
+                    pen=BoundsPen(None)
+                    font.getGlyphSet()[glyph].draw(pen)
+                    if pen.bounds is not None:
+                        raise ValueError('폭이 0인 캐시 글리프에 외곽선이 있습니다.')
     except (TTLibError, AssertionError, IndexError, KeyError, struct.error) as error:
         raise ValueError("캐시 글꼴 테이블을 해석할 수 없습니다.") from error
     return frozenset(cmap)
@@ -256,6 +305,8 @@ class InstalledHftResolver:
         self._resolved={}
         self._supported={}
         self._failed=set()
+        self._bitmap_sources={}
+        self._bitmap_glyphs={}
 
     def _warn(self,message):
         if message not in self.warnings:
@@ -286,7 +337,8 @@ class InstalledHftResolver:
                     if not _inside(config,allowed):
                         raise ValueError("FontDB 경로가 허용된 설치 폴더 밖입니다.")
                     mapping=_font_map(config)
-                    mapped=tuple(mapping.get(section,{}).get(family,"") for section in ("Font Definition - Hangul","Font Definition - Latin"))
+                    scripts=('Latin',) if family in LATIN_ONLY else ('Hangul','Latin')
+                    mapped=tuple(mapping.get('Font Definition - '+script,{}).get(family,"") for script in scripts)
                     if tuple(n.upper() for n in mapped)!=names:
                         raise ValueError("설치 설정의 글꼴 조합이 검증된 기본 조합과 다릅니다.")
                     config_info={"path":str(config),"sha256":hashlib.sha256(_read_bounded(config,MAX_MAP_BYTES)).hexdigest()}
@@ -296,9 +348,16 @@ class InstalledHftResolver:
                     if not _inside(path,directory):
                         raise ValueError("글꼴 경로가 허용된 폴더 밖입니다.")
                     font=HftFont(path)
-                    if not font.outline_count:
+                    if not font.outline_count and family not in BITMAP_FAMILIES:
                         raise HftError("지원하는 외곽선이 없는 HFT입니다.")
                     fonts.append(font)
+                for script,name in SCRIPT_FONTS.get(family,{}).items():
+                    if selected is not None and mapping.get('Font Definition - '+script,{}).get(family)!=name:
+                        continue
+                    path=(directory/name).resolve()
+                    if not _inside(path,directory) or not path.is_file():continue
+                    font=HftFont(path)
+                    if (font.outline_count or family in BITMAP_FAMILIES and font.bitmap_count) and font.unicode_tables:fonts.append(font)
                 return fonts,config_info,directory
             except (OSError,ValueError,UnicodeError) as error:
                 errors.append(str(error))
@@ -306,8 +365,12 @@ class InstalledHftResolver:
 
     def _settings(self,family,fonts):
         return {"version":1,"source_family":family,"compiler_sha256":COMPILER_DIGEST,
+            "bitmap_metrics":family in BITMAP_FAMILIES,
             "source_fonts":[{"path":str(f.path.resolve()),"sha256":f.sha256} for f in fonts],
-            "charset":"modern-hangul-11172+ascii-32-126","quantization":"native-pdf","space_advance_em":.5,
+            "unicode_mappings":list({m['path']:m for f in fonts for m in f.mapping_sources}.values()),
+            "charset":"modern-hangul-11172+ksx1001+general-punctuation","quantization":"native-pdf",
+            "space_advance_em":fonts[0].advance(' ',1) if family in LATIN_ONLY else .5,
+            "required_codepoints":[32,65] if family in LATIN_ONLY else [32,65,0xac00,0xd55c],
             "max_total_operations":MAX_TOTAL_OPERATIONS}
 
     def _cache(self,settings,paths):
@@ -331,7 +394,8 @@ class InstalledHftResolver:
             data=_read_bounded(cache,MAX_CACHE_BYTES)
             if hashlib.sha256(data).hexdigest()!=metadata.get("cache_sha256"):
                 raise ValueError("캐시 글꼴 SHA256이 일치하지 않습니다.")
-            supported=_validate_cff(data,qt_family,metadata.get("supported_codepoints",[]))
+            supported=_validate_cff(data,qt_family,metadata.get("supported_codepoints",[]),
+                required=settings['required_codepoints'],space_advance=round(settings['space_advance_em']*1000))
             return cache,metadata,supported,True,data
         except (OSError,ValueError,KeyError,TypeError,AttributeError,ImportError,struct.error) as error:
             if cache.exists() or manifest.exists():
@@ -339,15 +403,21 @@ class InstalledHftResolver:
         with tempfile.TemporaryDirectory(prefix="building-",dir=root) as directory:
             temporary=Path(directory)/"font.otf"
             generated=convert_outline_fonts(paths,temporary,characters=CHARACTERS,family=qt_family,
-                quantization="native-pdf",space_advance_em=.5,max_total_operations=MAX_TOTAL_OPERATIONS)
+                quantization="native-pdf",space_advance_em=settings['space_advance_em'],max_total_operations=MAX_TOTAL_OPERATIONS,
+                bitmap_metrics=settings['bitmap_metrics'])
             original=[(str(p),hashlib.sha256(_read_bounded(p,hft.MAX_FONT_BYTES)).hexdigest()) for p in paths]
             expected=[(f["path"],f["sha256"]) for f in settings["source_fonts"]]
             produced=[(str(Path(f["path"]).resolve()),f["sha256"]) for f in generated["source_fonts"]]
             if original!=expected or produced!=expected:
                 raise ValueError("변환 도중 설치 글꼴이 변경됐습니다.")
+            if generated['unicode_mappings']!=settings['unicode_mappings'] or any(
+                    hashlib.sha256(_read_bounded(Path(m['path']),128*1024)).hexdigest()!=m['sha256']
+                    for m in settings['unicode_mappings']):
+                raise ValueError('변환 도중 설치 문자표가 변경됐습니다.')
             data=_read_bounded(temporary,MAX_CACHE_BYTES)
             supported=sorted(CHARSET-set(generated["unavailable_codepoints"]))
-            _validate_cff(data,qt_family,supported)
+            _validate_cff(data,qt_family,supported,required=settings['required_codepoints'],
+                          space_advance=round(settings['space_advance_em']*1000))
             checksum=hashlib.sha256(data).hexdigest()
             if checksum!=generated["cache_sha256"]:
                 raise ValueError("변환한 글꼴의 SHA256이 일치하지 않습니다.")
@@ -379,6 +449,7 @@ class InstalledHftResolver:
             return None
         try:
             fonts,config,directory=self._sources(family)
+            if family in BITMAP_FAMILIES:self._bitmap_sources[family]=fonts
             settings=self._settings(family,fonts)
             cache,metadata,supported,reused,data=self._cache(settings,[f.path for f in fonts])
             registered_key=(str(cache),metadata["cache_sha256"])
@@ -401,17 +472,56 @@ class InstalledHftResolver:
             self._supported[family]=supported
             self.fonts[family]={"source_family":family,"qt_family":qt_family,
                 "source_fonts":settings["source_fonts"],"config":config,"cache_path":str(cache),
+                "unicode_mappings":settings['unicode_mappings'],
                 "cache_sha256":metadata["cache_sha256"],"cache_format_version":1,
                 "registration":"process-local-memory","glyph_count":len(supported),
-                "unavailable_standard_codepoints":len(CHARSET-supported),"space_advance_em":.5,
-                "normal_outline_only":True,"native_hinting":False,"vertical_metrics_exact":False}
-            self._warn(family+" HFT의 검증된 보통 외곽선을 사용합니다. 비KS 한글·한자·특수문자·굵게·기울임·힌팅은 원래 모양과 다를 수 있습니다.")
+                "unavailable_standard_codepoints":len(CHARSET-supported),"space_advance_em":settings['space_advance_em'],
+                "normal_outline_only":family not in BITMAP_FAMILIES,"normal_bitmap_only":family in BITMAP_FAMILIES,
+                "native_hinting":False,"vertical_metrics_exact":False,
+                "bitmap_renderer":"size-selected strike; 600dpi integer cell expansion / OR reduction" if family in BITMAP_FAMILIES else None}
+            self._warn(family+" HFT의 설치된 문자표와 글리프를 사용합니다. 미지원 문자·굵게·기울임·힌팅·프린터 좌표는 원래 모양과 다를 수 있습니다.")
             return qt_family
         except (OSError,ValueError,KeyError,TypeError,AttributeError,ImportError,struct.error) as error:
             self._failed.add(family)
             self._warn(family+" HFT를 사용할 수 없어 대체 글꼴을 사용합니다: "+str(error))
             self.fonts[family]={"source_family":family,"status":"fallback","reason":str(error)}
             return None
+
+    def bitmap_glyph(self,family,character,em_pixels=None):
+        """Lazy installed bitmap decoding; never read a reference PDF."""
+        family=ALIASES.get(family,family)
+        if family not in BITMAP_FAMILIES:return None
+        key=(family,character,em_pixels)
+        if key in self._bitmap_glyphs:return self._bitmap_glyphs[key]
+        self.resolve(family)
+        glyph=None
+        for font in self._bitmap_sources.get(family,()):
+            strikes=sorted({g['strike'] for g in font.groups if g['kind']==0})
+            if em_pixels is not None and strikes:
+                preferred=next((s for s in strikes if s>=em_pixels),strikes[-1])
+                strikes=[preferred]+[s for s in reversed(strikes) if s!=preferred]
+            else:strikes=[None]
+            candidate=None
+            for strike in strikes:
+                try:candidate=font.glyph(character,strike=strike)
+                except (HftError,UnicodeError):continue
+                break
+            if candidate is None:continue
+            if candidate.kind.startswith('bitmap'):glyph=candidate
+            break
+        if len(self._bitmap_glyphs)>=4096:self._bitmap_glyphs.pop(next(iter(self._bitmap_glyphs)))
+        self._bitmap_glyphs[key]=glyph
+        return glyph
+
+    def bitmap_advance(self,family,character,size_hwp):
+        """Use the selected installed script font's width, before device rounding."""
+        family=ALIASES.get(family,family)
+        glyph=self.bitmap_glyph(family,character)
+        if glyph is None:return None
+        source=glyph.provenance.get('font_sha256')
+        for font in self._bitmap_sources.get(family,()):
+            if font.sha256==source:return font.advance(character,size_hwp)
+        return None
 
     def supports(self,family,character):
         if not isinstance(character,str) or len(character)!=1 or not isinstance(family,str):

@@ -197,6 +197,52 @@ class ViewerTests(unittest.TestCase):
         self.assertTrue(lines[id(blank)])
         self.assertGreater(lines[id(b)][0]["y_pt"], lines[id(blank)][0]["y_pt"])
 
+    def test_none_fill_is_transparent_in_tables_and_rectangles(self):
+        from copy import deepcopy
+        from hangeul.formats import Table,Cell,Drawing,Paragraph,Run,save_hwpx,load_document
+        from hangeul.geometry import DocumentModel
+        from hangeul.source_layout import SourceLayout
+        table=Table(1,1,[Cell(0,0,blocks=[Paragraph([Run('visible')])],width=100,
+            background='none',height=30)],width=100,height=30,background='none')
+        model=DocumentModel([table,Drawing(width=100,height=30,background='none')])
+        clear=deepcopy(model)
+        clear.blocks[0].background=clear.blocks[0].cells[0].background=clear.blocks[1].background=''
+        self.assertEqual(SourceLayout(clear).render_page(0),SourceLayout(model).render_page(0))
+        path=self.root/'no-fill.hwpx';save_hwpx(model,path)
+        loaded=load_document(path).model
+        loaded_table=next(b for b in loaded.blocks if isinstance(b,Table))
+        self.assertEqual('',loaded_table.background)
+        self.assertEqual('',loaded_table.cells[0].background)
+        self.assertEqual('',next(b for b in loaded.blocks if isinstance(b,Drawing)).background)
+        black=deepcopy(clear);black.blocks[0].cells[0].background='#000000'
+        self.assertNotEqual(SourceLayout(clear).render_page(0),SourceLayout(black).render_page(0))
+
+    @unittest.skipUnless(os.environ.get('NARAE_RUN_HANCOM_TESTS')=='1','requires installed Hancom/fonts')
+    def test_uncached_declared_line_sizes_match_native_baseline_grid(self):
+        import math
+        from pypdf import PdfReader
+        from pypdf.generic import ContentStream
+        from hangeul.formats import Paragraph,ParaStyle,Run,TextStyle,save_hwp,save_hwpx,load_document
+        from hangeul.geometry import DocumentModel
+        from hangeul.source_layout import SourceLayout,TEXT_UNIT_PT
+        cases=[(font,size) for font in ('함초롬바탕','맑은 고딕','Arial','한양신명조') for size in (13,20)]
+        model=DocumentModel([Paragraph([Run('A가\nA가',TextStyle(font=font,size=size))],
+            style=ParaStyle(page_break=i>0,line=150)) for i,(font,size) in enumerate(cases)])
+        for ext,save in (('hwp',save_hwp),('hwpx',save_hwpx)):
+            source=self.root/('line-height.'+ext);save(model,source)
+            layout=SourceLayout(load_document(source).model)
+            with Document(source,'hancom') as native:
+                self.assertEqual(len(cases),native.count)
+                reference=PdfReader(native.pdf_path)
+                for page,case in enumerate(cases):
+                    expected=sorted(set(float(vals[5]) for vals,op in ContentStream(reference.pages[page].get_contents(),reference).operations if op==b'Tm'))
+                    # Hancom rounds the line origin and baseline offset
+                    # separately in the printer grid. This checks line metrics,
+                    # not our PDF's still-fractional painting coordinates.
+                    actual=[math.floor(c.rect[1]/TEXT_UNIT_PT+.5)+math.floor(c.extra['line']['baseline_pt']/TEXT_UNIT_PT+.5)
+                            for c in layout.pages[page] if c.kind=='text']
+                    self.assertEqual(expected,actual,(ext,case))
+
     def test_serialized_affine_precision_keeps_drawing_pixels_identical(self):
         from hangeul.formats import Drawing
         from hangeul.geometry import DocumentModel
@@ -228,6 +274,23 @@ class ViewerTests(unittest.TestCase):
         first = SourceLayout(DocumentModel([paragraph]))
         second = SourceLayout(DocumentModel([padded]))
         self.assertEqual(first.render_page(0), second.render_page(0))
+
+    def test_leading_and_internal_control_slots_have_no_tracking_advance(self):
+        from hangeul.formats import Paragraph,ParaStyle,Run,TextStyle
+        from hangeul.geometry import DocumentModel
+        from hangeul.source_layout import SourceLayout
+        for spacing in (-16,16):
+            style=TextStyle(size=12,letter_spacing=spacing)
+            line={'text_start':0,'y_pt':0,'height_pt':12,'text_height_pt':12,
+                  'baseline_pt':10.2,'spacing_pt':3.6,'x_pt':0,'width_pt':240,'flags':0}
+            plain=Paragraph([Run('연구대상 학교급',style,source_start=0)],
+                style=ParaStyle(align='CENTER'),default_style=style,line_segments=[line])
+            padded=Paragraph([Run('연구대상',style,source_start=24),Run(' 학교급',style,source_start=36)],
+                style=ParaStyle(align='CENTER'),default_style=style,line_segments=[line],
+                cache_text='\u200b'*24+'연구대상'+'\u200b'*8+' 학교급')
+            first=SourceLayout(DocumentModel([plain]));second=SourceLayout(DocumentModel([padded]))
+            self.assertEqual(first.render_page(0),second.render_page(0),spacing)
+            self.assertEqual(padded.cache_text,second.pages[0][0].extra['text'])
 
     def cropped_picture(self, horizontal=False, vertical=False):
         from io import BytesIO
@@ -263,7 +326,7 @@ class ViewerTests(unittest.TestCase):
                     self.assertEqual(["#00ff00", "#ff0000", "#ff0000"] if horizontal
                                      else ["#ff0000", "#ff0000", "#00ff00"], colors)
 
-    def test_read_report_identifies_unapplied_image_appearance(self):
+    def test_read_report_identifies_remaining_pdf_transparency_difference(self):
         from hangeul.formats import save_hwpx
         model = self.cropped_picture()
         picture = model.blocks[0].runs[0].picture
@@ -274,7 +337,7 @@ class ViewerTests(unittest.TestCase):
             report = document.report()
         limitations = report["layout"]["image_limitations"]
         self.assertEqual(1, len(limitations))
-        self.assertEqual({"alpha", "brightness", "contrast"}, set(limitations[0]["unsupported"]))
+        self.assertEqual({'alpha:printer-coordinate-rounding','alpha:native-process-brush-phase'},set(limitations[0]['unsupported']))
         self.assertTrue(any("layout.image_limitations" in warning for warning in report["warnings"]))
         self.assertFalse(report["independent_parity_verified"])
 

@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-15T21:11:40+09:00",
+  "date_kst": "2026-10-16T07:11:25+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "c040de1398a601d82ac695d1e4f920df0a68ea27",
+  "base_commit": "bd6f3ef0c45f7362ceda865d2b16861607496c33",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -20,8 +20,8 @@
       "independent_pages": 24,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.017447029189509557,
-      "changed_fraction_max": 0.49160144937297107,
+      "changed_fraction_min": 0.012109538113390536,
+      "changed_fraction_max": 0.2357846504757158,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -35,8 +35,8 @@
       "independent_pages": 24,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.017447029189509557,
-      "changed_fraction_max": 0.49160144937297107,
+      "changed_fraction_min": 0.012109538113390536,
+      "changed_fraction_max": 0.2357846504757158,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -50,8 +50,8 @@
       "independent_pages": 2,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.021801209606810437,
-      "changed_fraction_max": 0.11204578007067265,
+      "changed_fraction_min": 0.019472020546253768,
+      "changed_fraction_max": 0.0584620841695964,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -65,8 +65,8 @@
       "independent_pages": 7,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.05828585155152054,
-      "changed_fraction_max": 0.1669405568501731,
+      "changed_fraction_min": 0.054034941203410604,
+      "changed_fraction_max": 0.15504541638042899,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -81,7 +81,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.23455438965144107,
+      "changed_fraction_max": 0.23325790128279386,
       "errors": [],
       "independent_identical_pages": 2
     },
@@ -95,8 +95,8 @@
       "independent_pages": 9,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.032982439598234534,
-      "changed_fraction_max": 0.35207572839073803,
+      "changed_fraction_min": 0.00798659285101721,
+      "changed_fraction_max": 0.2500033675022562,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -110,8 +110,8 @@
       "independent_pages": 4,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.013126523794770943,
-      "changed_fraction_max": 0.12272076222291069,
+      "changed_fraction_min": 0.012246483205143748,
+      "changed_fraction_max": 0.12270953721538994,
       "errors": [],
       "independent_identical_pages": 0
     }
@@ -152,7 +152,8 @@
       "run": 48,
       "failures": 0,
       "errors": 0,
-      "skipped": 0
+      "skipped": 0,
+      "historical_commit": "4a8af206035d8a4a7821cc7e66d0195ef8edbe54"
     },
     "legacy_layout": {
       "run": 19,
@@ -166,6 +167,70 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0
+    },
+    "appearance_native": {
+      "run": 53,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "53 distinct final passing tests: bitmap-font 3, related initial run 49 passes, one corrected italic representation assertion rerun passed",
+      "log_sha256": "6ad965b6e98ebd6137d9f9bc4dc2bdae00779663ec8dee9fe7d1d716c2313cd2",
+      "component_log_sha256": [
+        "11f7af71553f125c6bee12cc3763d3ad3676ffc433393a0eec13a2db390783e7",
+        "e1b8e40e78e44a18f9b2f628b76b64dff72b96e0571ba5d5bedcfc2f6c401e0d",
+        "febf2eb8ddc44000c57c857f373d2df661e7a03e0174ad2d5a0a46fae90c28dc"
+      ],
+      "initial_obsolete_representation_assertion_failures": 1,
+      "corrected_assertion_rerun_passed": true
+    },
+    "full_native_rerun": {
+      "complete": false,
+      "reason": "An earlier full-suite attempt encountered COM server launch errors and was interrupted; do not count it as passed."
+    },
+    "repository_portable": {
+      "run": 74,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 31,
+      "log_sha256": "5d75f0c47d574bbdb182c361ceb23b8e712560a2d0ad94c483af7e8a81cfd2ff"
+    },
+    "cold_bitmap_cache": {
+      "concurrent_workers": 4,
+      "all_native_raster_hashes_equal": true,
+      "log_sha256": "307aa0811992e4cc871522afe66e646ad021c324e5e42b725f9589279e940ce8"
+    },
+    "pdf_bitmap_whole_pages": {
+      "run": 44,
+      "passed": 44,
+      "dpi": 96,
+      "rgb_tolerance": 0,
+      "alignment": false,
+      "resizing": false
+    },
+    "bitmap_text_environment_rerun": {
+      "complete": false,
+      "reason": "A second 50-test grouped attempt stopped during Windows commit-memory exhaustion; no missing tests are counted from that attempt.",
+      "log_sha256": "acb27ac1b63d9a63bac0dc89684140efef870e6b71433988517469427c21faae"
+    },
+    "bitmap_font_whole_pages": {
+      "run": 332,
+      "passed": 332,
+      "single_glyph": 208,
+      "word_pages": 124,
+      "formats": [
+        "hwp",
+        "hwpx"
+      ],
+      "dpi": 96,
+      "rgb_tolerance": 0,
+      "alignment": false,
+      "resizing": false
+    },
+    "installed_skill_current": {
+      "pair_whole_pages": 24,
+      "pair_match": true,
+      "read_document_pages": 29,
+      "log_sha256": "63a3673564e64beea127d3609c6ef6f44b58c3676c29a1b88299ea5dee1fc4f2"
     }
   },
   "rea": {
@@ -189,8 +254,18 @@
         "unchanged": true
       },
       {
+        "name": "HncFoundation.dll",
+        "sha256": "f9b024395144cf31e827f074df023d754e1e2b7242112a72e66faa8fe613ad6e",
+        "unchanged": true
+      },
+      {
         "name": "HncBaseDraw.dll",
         "sha256": "52734f0b0fc92cf890fc7085708fb72de62f67c0b5e0aa5bf668db7646199fb1",
+        "unchanged": true
+      },
+      {
+        "name": "HNCE2PTP.dll",
+        "sha256": "42b1eaf97af05ff3662ffa23272b9c19ea5948345c8363969b28b601b741c458",
         "unchanged": true
       }
     ],
@@ -275,6 +350,348 @@
         "parameters": {
           "procedure": "0x1006ad20"
         }
+      },
+      {
+        "query": "effects-native-channel",
+        "evidence_id": "ev_497edefb976541c35465cdd25654a9ee2aa47771661c14aca2a5f25dee952fe1",
+        "record_sha256": "01716b3570b2b45f40a72efcb7b7badf0d7c5d99f96a4cf226750ad2203c27e0",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1000b070"
+        }
+      },
+      {
+        "query": "effects-transform-rgba",
+        "evidence_id": "ev_f932f1077a3c1f643b76ea0e11f5cea299899ca3f20d967b3ca79c01026f48bb",
+        "record_sha256": "198939e56d724cf7b5441b8df0e836a7ccd173694db9fd7330b8d6cd8849ba48",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10065ce0"
+        }
+      },
+      {
+        "query": "font-hchar-width-inner",
+        "evidence_id": "ev_1b65c01e3ded34183c5a157bcb659e8d0fee03e593f52f0320ba076a15a38cea",
+        "record_sha256": "d95879a24965ac1ed4a5ab5b68a55b00f5fe44516a1d2140c106118cdf1a7c07",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10074ee0"
+        }
+      },
+      {
+        "query": "font-native-substitute",
+        "evidence_id": "ev_2860288216f15d9911a15646025253d9e92720728db97c2287f49c593548baf3",
+        "record_sha256": "5b21dd340322ec4388d987acb22e056954388efcb436e76b21b35d52ffa334c5",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10073290"
+        }
+      },
+      {
+        "query": "font-char-base",
+        "evidence_id": "ev_5a67478ff34b7299de16d23e091d6f09f0b422e8957fdcbffbf8c21e1953c749",
+        "record_sha256": "869dc6eae1e041dd1fb3c4371872fa281b8c4cdf0e334c0f22caa8e1f31df190",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10061d30"
+        }
+      },
+      {
+        "query": "font-char-load-table",
+        "evidence_id": "ev_5b10a355cad88af1406f612955d19a318679314db98d71f71bf9647b0c802246",
+        "record_sha256": "daf967271e484262ad913332a3ec904ec1728fe836f8dc8e9ce9a6d5c8b2030a",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1005db70"
+        }
+      },
+      {
+        "query": "font-char-table-path",
+        "evidence_id": "ev_d20d6e753751b0f3af193b815b158a6c90cdee90c1ddca6518e413d3ec186440",
+        "record_sha256": "b1b87f910888963736564eb088103204d8b477b53685d8031a1c4564f9b416be",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1005c280"
+        }
+      },
+      {
+        "query": "font-char-hanja",
+        "evidence_id": "ev_42af966329263e98f196dbbc23569e03e3b36d4913342e4d9e576f4f18668472",
+        "record_sha256": "107aa29ef47951bd8464f66a339c8edafbee8382fac931effd5f2c3a841d155d",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10061750"
+        }
+      },
+      {
+        "query": "font-human-loader",
+        "evidence_id": "ev_26c034df2453ea9c0d22dd028c480e68c89d012e098477b19b74a619b8d9c037",
+        "record_sha256": "4bc53cd02bd3a6b0a38c2dab6f70352af73ac0ad99b38f92e54577b67241e51e",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100ab220"
+        }
+      },
+      {
+        "query": "font-human-glyph",
+        "evidence_id": "ev_c8ef03335f39bedbbd4fa496875b7a0e173e138eae9e43c317a04537010a8e93",
+        "record_sha256": "5da2c11f48c44d4f4c8bb77cc509b746f10b07e2be35dd75340586513df97e5c",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100abc00"
+        }
+      },
+      {
+        "query": "bitmap-native-decode",
+        "evidence_id": "ev_4944c54d94e79d9dcf516f0fe42bef2733fda65200d684a6fd0e9f8123db3a36",
+        "record_sha256": "85c0c405340e5d2e3cfb1fe17f321abde2a8c24db599f684f2ffa091709a0e77",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100ac080"
+        }
+      },
+      {
+        "query": "bitmap-native-glyph",
+        "evidence_id": "ev_2ed84f09837c189f66a8f4752fabc647307ccb2f1601db7773f583ff4b80904d",
+        "record_sha256": "5a34a1e0325d3fa8de12b6daa85f99147415e29968a5bcc3f868aef65dcad306",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100ac550"
+        }
+      },
+      {
+        "query": "bitmap-draw-buffer",
+        "evidence_id": "ev_9d9f9cdf9d0d069b69d0e29e19596d115f1be9ecca5e94dad1e6af4e5ebc65c2",
+        "record_sha256": "9f0bf28c450d0ef987064f3337cb487d48371a2333d31c01bb18932b63948813",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10062690"
+        }
+      },
+      {
+        "query": "bitmap-pdf-line-buffer",
+        "evidence_id": "ev_2dabab608432cc8b5a333b14d06021825a1774e6534062989fae045a21eb6274",
+        "record_sha256": "f243b497795a17cae39a5ab0f0c5dea2af7b45eb98bf176d4e55220eb00c3de4",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10062740"
+        }
+      },
+      {
+        "query": "pdf-emf-record-handler",
+        "evidence_id": "ev_616533955b95dae8650a39fea175c5ec7c270ec7e4343401beb885a1bd6dc734",
+        "record_sha256": "e6c0056160a1e77dac855476fae295fbf1fdd1f2e13a2bd63ef9d8474062a4f1",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10006b50"
+        }
+      },
+      {
+        "query": "pdf-alpha-implementation",
+        "evidence_id": "ev_50943d9a068c6a90f5d2796c5ad9d774bb3dab43895021f92475baae61247e80",
+        "record_sha256": "12640ecffc58c35dab6535daf386b14716c7c8246aebf9c8db60fb60826bae2f",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1001b570"
+        }
+      },
+      {
+        "query": "pdf-emf-page-frame",
+        "evidence_id": "ev_d861aec056a3c11c9d94740710c9033e72ddc556b0c53074c6cbf2ad7473c27e",
+        "record_sha256": "714988b57c84ec59d52fb986e364497cc3cea7871d9fe2379afa9c04a7182ec9",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100a3de0"
+        }
+      },
+      {
+        "query": "pdf-bitmap-emit",
+        "evidence_id": "ev_4aea6b5bd3a4ac219764199f8213f6cdec0463d2be2a5f9f5dffb9d9898e7862",
+        "record_sha256": "e6a2366977e7a7b98452e7a304e57d1988ea0bf9e18d1c0593261e8bd9e49e7a",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10025380"
+        }
+      },
+      {
+        "query": "pdf-jpeg-bitmap-classification",
+        "evidence_id": "ev_6ff0cbd79bc186f120fc5f70ae48b59871454924383a33356fb0f0f99a3aa8cc",
+        "record_sha256": "99bfbd15bf08510e177bc2dfb3de23d4ab1877750f229d56d92670dad69877de",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10025190"
+        }
+      },
+      {
+        "query": "pdf-bitmap-readback",
+        "evidence_id": "ev_5b4c58180f64da43a75f46fd298f81d3c03e6cbb0b41eaf2aad150de181e8ccf",
+        "record_sha256": "919dd6b5a722d411435c7fa2a6a5ab7e375aa10fec3fc33f2be0a2540c3606d1",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1002dd00"
+        }
+      },
+      {
+        "query": "pdf-native-text-glyph-output",
+        "evidence_id": "ev_98697a6347b33d53ae3b6583d985a63166ed1cd7426c4b42d86d58c1d50b793c",
+        "record_sha256": "5f0fb9544b4ecdf482bfd0f686ec126a8b6a3beaf6c42e56f1e7dc9699903bd3",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10019420"
+        }
+      },
+      {
+        "query": "pdf-native-font-emulation-flags",
+        "evidence_id": "ev_0cab8e699e7ce67fc252698e909145e0b43d8a1fdd8a4dcf055c7001c1e09c84",
+        "record_sha256": "8a820fd6f562c924a877dac2ac6f2bd9f6840326275c9db63e6fbec6a4a2b358",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100189f0"
+        }
+      },
+      {
+        "query": "pdf-native-text-transform",
+        "evidence_id": "ev_6e2ad39d439bfb5edb0a77e2a32d6411010d872acb0cee976b8d21205d1ae150",
+        "record_sha256": "3ef651a4957483d1c8d3bf64dacd664e7948556f6b95e8b877232b1ee4ee8ab3",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1001ca00"
+        }
+      },
+      {
+        "query": "pdf-color-frida-observed",
+        "evidence_id": "ev_0f48804842eb722e905e5fc23f6ddf195933089460072d93dc7f5b25b26d63dd",
+        "record_sha256": "c003a931211246b236dd857f789e474d607503ee95851f62063995479bc5c06c",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "d4423e0f-9917-4d93-9e38-4ba857f00e34"
+        }
+      },
+      {
+        "query": "sampler-live-resize-path",
+        "evidence_id": "ev_5a285638384a149a0931fee700483a30852d31f615368df63b3990f62904ea51",
+        "record_sha256": "44c49f1ec8b00a9ff3a55706f3498a26b82f3432c699b9e211c6b638310ec903",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10006c82"
+        }
+      },
+      {
+        "query": "sampler-live-draw-cache-path",
+        "evidence_id": "ev_2a37b124e33f62d8ccab18b97512d4f7b233833c16476096e045db421ab4ed9f",
+        "record_sha256": "c489a141cbce5903bf9ee5cc6dd3ef82ae0a1537bd98cafde8c8bb925fefe551",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10006963"
+        }
+      },
+      {
+        "query": "sampler-frida-observed",
+        "evidence_id": "ev_bf4842d1e94073209e9dc461106f2f35ca5be676cd4eaaab362760a9ce73dee3",
+        "record_sha256": "c673c523215dee5575010f4f117c353d52d7288a40ab9752f237ae21575bccde",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "36bb3ef4-24d8-43ad-ab00-2f5f4276ba5d"
+        }
+      },
+      {
+        "query": "sampler-state-observed",
+        "evidence_id": "ev_d709c1b6083863b7a12496873bf08b557129fc075f5ca00f2c67ebc868300ba1",
+        "record_sha256": "c87d3992761d5dc8d1ec123869d076a12428b88853db1160e31dda33104c584d",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "031bca84-f5a5-4263-9158-4467a761d56d"
+        }
+      },
+      {
+        "query": "sampler-synthetic-observed",
+        "evidence_id": "ev_a0fa0cc5776fe452cd81d32f7f32a4010b57d2b6f42f05f6478739fbceeb6b18",
+        "record_sha256": "b31b5fc88bafd85b8077c9dc96262437b5789abf289ba0b9dbd9ec0bd5926e82",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "e7a2e51d-dc94-4efd-a840-4597398a781a"
+        }
+      },
+      {
+        "query": "bitmap-spacing-input-core",
+        "evidence_id": "ev_0eaa2a85670fd352680c78d4013b5895fac599e617ba99e91301b21a4bb856aa",
+        "record_sha256": "92589a1b629c51e15023425798e30cdf96af80027d88e61e35d65b56b3dc3328",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1004fe90"
+        }
+      },
+      {
+        "query": "bitmap-spacing-device-transform",
+        "evidence_id": "ev_60e031175d5e7cbd4ff3054c470e2b22092ad15a58a76207982b316b817a7230",
+        "record_sha256": "f52062f22b491f7a800100ce6c9bb16957760d2f63286b09ee5c56108d6c7411",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1004ef00"
+        }
+      },
+      {
+        "query": "bitmap-small-glyph-cache",
+        "evidence_id": "ev_bdeb32cb90518de9e68bc933b864ce4a83ed0aca2f77380e67a3b08d8158218c",
+        "record_sha256": "bf59a970f8f3137d877e10d88ae6a2322b31d9a6b991ea9e3fd273aa626d5ff5",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10020d00"
+        }
+      },
+      {
+        "query": "bitmap-small-strike-raster",
+        "evidence_id": "ev_e81e50a9e33c1ef4f507fb68e5463ed6e79d2391e2380f70aeff73b1c23b8ff4",
+        "record_sha256": "aa8de352e5582e75c67a2e71174bd551844e04eec44c47d9d53243b05042c348",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100204c0"
+        }
+      },
+      {
+        "query": "bitmap-small-scale-kernel",
+        "evidence_id": "ev_7105a9abba072ff5c765c3d4b9c838c99d3750a358ca4ca373caedc9876c4727",
+        "record_sha256": "5418f27ebad48fca90bdb607e464c21b104511254d3b47320954bc23d276a101",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1001fc90"
+        }
+      },
+      {
+        "query": "bitmap-expanded-frida-observed",
+        "evidence_id": "ev_6849cb38dfeed86ec7ff576e8b14c20bf3abae771d245e03af12a8f65e0cf497",
+        "record_sha256": "9587a4db3a6f42f1a5b78d55d276c66be76e3997cdaf44db9938a7e84a5b6405",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "20413e44-4867-47c8-b126-afa8862c718e"
+        }
+      },
+      {
+        "query": "bitmap-logical-frida-observed",
+        "evidence_id": "ev_c03a16c6f0aef17bd94ea79b3f8010c8d854b6f46adf0102fe4e9a5550e14b30",
+        "record_sha256": "e49446fdbebfc4a3486b7a033cdbad32652e17da5cdb70e2a04d9ee41b621ad0",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "d9e437d1-ff23-439b-81c2-4449c677d7f5"
+        }
+      },
+      {
+        "query": "bitmap-grid-frida-observed",
+        "evidence_id": "ev_84b2c12b6a31953697d9c92ce39577af1c81fcdb46d25bc1c75882eea1d41c51",
+        "record_sha256": "4ba1f4b91ecf11eae423f30eac289ef9e9f4c0def8d3e33a6ef3d3ec1541abbd",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "0e1277df-0147-4742-81f7-2e9383882c34"
+        }
+      },
+      {
+        "query": "bitmap-advances-frida-observed",
+        "evidence_id": "ev_e84cd888a76186473f33cb47a91120a7a86bd03ac36565882dd1ea0322732749",
+        "record_sha256": "4b2817cb4b8bb07c2ebf2eca730a2c17b494a8b978e3f4464246648e96dc16ce",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "2c7c405c-eafa-4c95-a204-0af62bf4cbd4"
+        }
       }
     ],
     "sessions_closed": true,
@@ -290,19 +707,87 @@
       "set_options": "0x10065280",
       "gdiplus_alpha_matrix": "0x1003f2f0",
       "pixel_buffer_path": "0x1006ad20",
-      "scope": "Static option and drawing-path investigation; tone formula established by native output samples.",
-      "complete_brightness_contrast_transparency_formula_recovered": false
+      "scope": "Recovered channel/alpha calculation, verified internal PNG samples; PDF printer dither and resampling remain distinct.",
+      "complete_brightness_contrast_transparency_formula_recovered": true,
+      "channel_transform": "0x1000b070",
+      "rgba_transform": "0x10065ce0"
+    },
+    "pdf_bitmap_analysis": {
+      "static_scope": "bitmap glyph mapping, OR composition, packed-to-word-aligned rows; drawing line buffer; EMF AlphaBlend dispatch",
+      "empirical_scope": "ordered PDF stencil ranks/phase and bitmap cell scaling derived from native PDF object payloads",
+      "sessions_closed": true,
+      "raw_decompilation_distributed": false
+    },
+    "picture_sampler_analysis": {
+      "sampling_entry": "HncBaseDraw::_SaveBitmapPlus at0x100069d0",
+      "dynamic_scope": "OS GDI+ image allocation/drawing state and source hashes; synthetic pre-JPEG bitmap; native bitmap classification",
+      "frida_observation_exports_completed": true,
+      "sessions_closed": true,
+      "raw_pixels_and_decompilation_distributed": false
+    },
+    "bitmap_format_analysis": {
+      "evidence": [
+        {
+          "evidence_id": "ev_1b5dd071f7971e07092547b9fb84bedb9587318fc2e1c1723b84a936fc574f6a",
+          "operation": "frida_session_status",
+          "record_sha256": "93bc8e81b1e857ca3c03c4e8231f964f981e417cc64a2c84b0d14f5140cf4f54"
+        },
+        {
+          "evidence_id": "ev_55a9c1c6270834fbff949b4f9211a8d305c5db981d096eb90934b815684d30d5",
+          "operation": "frida_session_status",
+          "record_sha256": "200b90da1f17eaf287c03e6a3e5c9851540b5c3bc5914ffc49159b36bec9b15e"
+        },
+        {
+          "evidence_id": "ev_d98b9598ea0bbe2a201a38110714bdcf39a1e08dec146d7227f61b65bf84a595",
+          "operation": "frida_session_status",
+          "record_sha256": "290b3b2fb259b5f01fadaba9231bd338ad79c5a936eae9f7de83a3dbee899477"
+        }
+      ],
+      "bundle_sha256": "2fbb6f4b53053b37b529e38170c97b32ae609d20888fcfbb3f8679f8616458d7",
+      "observations": "Original/target GDI+ pixels; JPEG/GIF/BMP intermediate encoded files; pre-PDF-encoding RGB and quality. Generated fixtures only.",
+      "sessions_closed": true,
+      "worker_documents_closed": true,
+      "source_binaries_unchanged": true,
+      "raw_data_distributed": false
+    },
+    "bitmap_text_analysis": {
+      "static_procedures": [
+        "0x10058790",
+        "0x100572e0",
+        "0x100574e0",
+        "0x10006b50",
+        "0x1004fe90",
+        "0x1004ef00",
+        "0x10020d00",
+        "0x100204c0",
+        "0x1001fc90"
+      ],
+      "static_scope": "text buffer allocation/BitBlt splitting and PDF EMF replay; logical-to-device advances; bitmap strike selection and OR reduction",
+      "observed_scope": "generated multi-character fixtures: actual integer logical widths, cumulative device widths and positions; independent unobserved native PDFs for full-page comparison",
+      "frida_sessions_closed": true,
+      "static_snapshot_saved": true,
+      "raw_decompilation_distributed": false,
+      "captured_buffers_distributed": false
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "272410fea07045de08316864a11886c2e0ec2f137b1036e2a6327bce3eb5c8c3",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "64fc38600286f4767142098f0b75564888cac584682b0390f483e91b6d3ed39d",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "aaae813c439dd364b316c7a82af2706065764a23620930c46792c95236aa0182",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ce85282e3baef73c3c4668410ea8d6e6ed9ff963df212fd97c8907be817bc7b6",
-    "tests/test_viewer.py": "7001bb3e4d46d8763be6b2d4d96e1656f07f4b2393d8fb81d2dcc29ff2a78567",
-    "2_나래스킬/narae-viewer/SKILL.md": "671fbe6e49f8cd2745870d8205463b11cd3cd8b9c42d1dba374b63e253afc7c6",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "f46987c958f1bedf7077d04b59070f6d32c6eb968cdf7a50771a5364078c421c",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "12f680aeb6f6631aa31ec158138e8e47f926823db468a879419e3139f4d03e5e",
-    "tests/test_picture_effects.py": "3f8bc5051c2c7cf0113ca89323badd4e368a4908874d01b0dd57fffcffd6f060"
+    "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
+    "2_나래스킬/narae-viewer/SKILL.md": "74a90da08fee6d06f1e491125ca5fe51829e1d6bf33f38b0e230e7e3de049137",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "9ddea78197436c54cf2fdbfca98a3910e56868b64908461d894308f496f2b4ef",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
+    "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "9d9b1a59cc209dc9299f4aed6bb4a5750349bfb27f76e5c9bd5711bec3373203",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft_cff.py": "9e2df4fb3baadc44f4a5402077f21a0d38f91bec828610e4a1115fd5edd161cc",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "7d1e2ffce04580344fb6210bc3a2c77b9a6b95aeaf19a623fdbc56984a7795ee",
+    "tests/test_font_appearance.py": "db8d636a0d1cf2f973bce8eb85fc205ebc0b3a5c2ec3bf6397252732bdccc600",
+    "tests/test_bitmap_fonts.py": "8bccdb4a0d86a4cab327275d16380b0b01f99b32881bdc50adb3753b9a8c0faa",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap.py": "826f68d3246fa10c9eb0ca6b854feca847b7a90d4dd9a176289c59b0f48d20fd",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "5e2216bbf741981dd31bfa44663664a57a8ce539d8d39f502b5215de924e6e8f",
+    "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "24929db32de1b04976a3c9bfce1543dca725138ca767a187697cfc262ae3e66f"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -319,10 +804,11 @@
   "image_appearance_diagnostics": {
     "field": "layout.image_limitations",
     "unsupported_properties": [
-      "brightness",
-      "contrast",
-      "alpha",
-      "effect"
+      "alpha:native-process-brush-phase",
+      "alpha:printer-coordinate-rounding",
+      "alpha:source-bitmap-alpha",
+      "alpha:rotated-printer-pattern",
+      "effect:<unsupported>"
     ],
     "installed_skill_cli_verified": true,
     "supported_tones": [
@@ -352,8 +838,386 @@
     "brightness_byte_offset": 69,
     "native_created_property_cases": 5,
     "native_pdf_pair_match": true,
-    "independent_adjustments_supported": false,
+    "independent_adjustments_supported": true,
     "specification_order_differs_from_native_export": true,
     "specification_url": "https://cdn.hancom.com/link/docs/한글문서파일형식_5.0_revision1.3.pdf"
+  },
+  "picture_adjustments": {
+    "properties": [
+      "brightness",
+      "contrast",
+      "alpha"
+    ],
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "combinations_per_format": 29,
+    "native_reference": "Hancom PrintToImage, PNG, 24-bit RGB, 96 dpi",
+    "patches_per_combination": 256,
+    "total_exact_internal_pixel_samples": 14848,
+    "all_internal_samples_match": true,
+    "tone_order": "gray -> integer brightness/contrast -> black/white threshold >128",
+    "alpha_rule": "max(0, bitmap_alpha - picture_alpha_byte)",
+    "contrast_minus_100_native_value": 1,
+    "pdf_lossless_images": true,
+    "whole_page_pixel_parity_verified": false,
+    "native_pdf_transparency_dither_reproduced": true,
+    "local_report_sha256": "ea1898f10fcba2840ddcb0df2c4f5cccdadf99ee9e79554f76d35c6ea277c9d2",
+    "png_samples_path": "SourceLayout raster path; native PNG oracle is distinct from PDF stencil rendering"
+  },
+  "installed_font_appearance": {
+    "families": [
+      "한양신명조",
+      "한양중고딕",
+      "HCI Poppy",
+      "HCI Hollyhock"
+    ],
+    "hanyang_script_sources": [
+      "Hangul",
+      "Latin",
+      "Hanja",
+      "Japanese",
+      "Other (Sinmyeongjo)",
+      "Symbol"
+    ],
+    "human_font_script": "Latin",
+    "native_type3_outline_samples": 108,
+    "all_sample_paths_equal": true,
+    "all_sample_truncated_advances_equal": true,
+    "cff_advances_checked": true,
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "fallback": "Installed FontDB Default Fonts KOR / Hangul order; generic fallback if unavailable",
+    "whole_font_equivalence_verified": false,
+    "whole_document_equivalence_verified": false,
+    "remaining": [
+      "bitmap glyph placement/styles and other bitmap families",
+      "missing glyphs",
+      "bold/italic variants",
+      "hinting",
+      "vertical metrics",
+      "script classification"
+    ],
+    "local_report_sha256": "b3b7f685b36c89be03cf6658b5912597fa805cc9ebf7d2f0f57fc4c44643538a"
+  },
+  "pdf_alpha_stencil": {
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "alpha_values_per_format": 256,
+    "repeated_values_per_format": 12,
+    "native_mask_samples": 520,
+    "all_sample_mask_bytes_equal": true,
+    "independent_pdf_mask_payload_checked": true,
+    "source_scope": "opaque RGB and opaque RGBA; fractional source alpha remains diagnosed",
+    "mask_size": [
+      8,
+      8
+    ],
+    "mask_dpi": 300,
+    "opaque_values": [
+      0,
+      3
+    ],
+    "omitted_values": [
+      252,
+      255
+    ],
+    "partial_values": [
+      4,
+      251
+    ],
+    "native_initial_phase": "inferred from first mask in each native export; survives prior exports in reused process",
+    "independent_initial_phase": 0,
+    "whole_page_pixel_parity_verified": false,
+    "remaining": [
+      "native process brush initial phase",
+      "printer coordinate quantization",
+      "source bitmap alpha",
+      "rotated patterns"
+    ]
+  },
+  "bitmap_font_appearance": {
+    "families": [
+      "명조",
+      "고딕"
+    ],
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "sizes_pt": [
+      5,
+      8,
+      10,
+      12,
+      18,
+      24,
+      36,
+      50
+    ],
+    "native_bitmap_mask_samples": 208,
+    "all_native_mask_pixels_equal": true,
+    "independent_pdf_mask_payloads_equal": true,
+    "comparison_scope": "208 normal glyph full embedded RGB buffers, including white guard pixels; 332 full rendered pages including 124 multi-character pages; no comparison alignment or resizing",
+    "renderer": "smallest installed strike at least requested integer em, otherwise largest; integer cell expansion and OR reduction at 600dpi",
+    "font_assets_distributed": false,
+    "whole_font_equivalence_verified": false,
+    "whole_document_equivalence_verified": false,
+    "remaining": [
+      "bold/italic and horizontal stretch",
+      "justified continuation lines and character backgrounds",
+      "mixed outline/fallback runs and unavailable script faces",
+      "other bitmap families and unverified alignment/encoding/geometry cases",
+      "full real-document parity"
+    ],
+    "single_glyph_whole_pages": 208,
+    "word_whole_pages": 124,
+    "all_synthetic_whole_pages_equal": true,
+    "word_cases_per_format": 62,
+    "word_sizes_pt": [
+      2,
+      3,
+      4,
+      4.5,
+      5,
+      5.5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      17,
+      18,
+      24,
+      36,
+      100
+    ],
+    "word_tracking_percent": [
+      -16,
+      -7,
+      7,
+      16
+    ],
+    "word_scope": [
+      "Hangul, Latin and supported Hanja script boundaries",
+      "word and trailing spaces",
+      "LEFT/CENTER/RIGHT",
+      "three nonblack colors",
+      "default half-em and explicit font space",
+      "long lines and horizontal/vertical bitmap chunks"
+    ],
+    "logical_advances": "font width rounded to 4 HWPUNIT before tracking, rounded again after tracking; default half-em spaces truncate independently; paragraph-terminal glyph has no tracking",
+    "device_advances": "round cumulative absolute logical positions using 7200-to-600 integer transform; preserve phase across word/script buffers",
+    "buffers": "85% ascent, 1.5 ascent height, half-height width padding, 16-bit aligned rows, 2047-pixel / 63488-byte chunks and retained guard rows"
+  },
+  "text_style_and_flow": {
+    "source_control_slots": "UTF16 positions preserved; U+200B tracking suppressed; inline width preserved",
+    "tracking": "percentage of individual glyph advance and half-em spaces; native integer accumulation remains unresolved",
+    "synthetic_italic_shear": 0.333333,
+    "real_italic_face_preserved": true,
+    "native_italic_fixture_pages": 20,
+    "italic_comparison_scope": "native text matrices, independent encoded paths and bitmap transform/payload; excludes full-page pixel parity and per-glyph fallback styles",
+    "declared_line_height": "declared maximum character size and 0.85 baseline unless fontLineHeight is set; preserve paragraph end style size",
+    "native_line_metric_families": [
+      "함초롬바탕",
+      "맑은 고딕",
+      "Arial",
+      "한양신명조"
+    ],
+    "native_line_metric_sizes_pt": [
+      13,
+      20
+    ],
+    "native_baseline_grid_samples": 32,
+    "all_sample_baseline_metrics_equal": true,
+    "baseline_grid_scope": "line origin and offset independently rounded to 600dpi; independent PDF painting coordinates remain fractional",
+    "transparent_fill": "HWPX winBrush faceColor none maps to no fill; renderer ignores invalid fill colors",
+    "whole_page_pixel_parity_verified": false,
+    "native_style_local_report_sha256": "326be8e458b1243fc156aaf54352db06634bc35d2dc55a61b2f1e476a4cb38b8",
+    "native_line_height_local_report_sha256": "7026e302ff9e500d91f2616763bdcf1ba17d75ccd25397cc6783541b809cfc5b"
+  },
+  "page_frame_and_compression_analysis": {
+    "native_pdf_driver": "HNCE2PTP.dll",
+    "static_observations": [
+      "EMF frame-to-device and whole-point paper truncation",
+      "lfWidth / upright tmAveCharWidth text horizontal scaling",
+      "synthetic italic shear 0.333333; real italic face bypass",
+      "bitmap color classification and automatic JPEG quality branches"
+    ],
+    "empirical_observations": [
+      "filled path output correlates with persistent 3-decimal text transform formatting",
+      "native JPEG quantization matches standard quality tables in inspected images"
+    ],
+    "remaining": [
+      "primitive-specific coordinate rounding and PDF number formatting",
+      "native raster sampling/downsample grid and color-count-dependent compression",
+      "source alpha PDF path and native initial brush phase"
+    ],
+    "sessions_closed": true,
+    "raw_decompilation_distributed": false
+  },
+  "native_rgb555_picture_observation": {
+    "scope": "two opaque BMP pictures from report-hwp; observed before native JPEG encoding",
+    "native_pre_jpeg_channel_format": "RGB555: all channel values belong to the 5-bit expansion table",
+    "samples": [
+      {
+        "width": 304,
+        "height": 190,
+        "bytes": 173280,
+        "colors": 1135,
+        "quality_before": 74,
+        "quality_after": 51,
+        "lossless": false
+      },
+      {
+        "width": 304,
+        "height": 190,
+        "bytes": 173280,
+        "colors": 903,
+        "quality_before": 74,
+        "quality_after": 74,
+        "lossless": false
+      }
+    ],
+    "native_jpeg_decoded_pixel_matches": 2,
+    "matched_raw_rgb_sha256": [
+      "b12a9a852d0d02c775e6cdc1459f62b9d510179ca1c193ba9882f084a91d5395",
+      "16c3d2cf0fcc24982457ace36d65f0d9a2abadd6f8eaf6c3b916c341ae95be44"
+    ],
+    "jpeg_codestream_bytes_equal": false,
+    "resampler_reproduced": true,
+    "independent_pipeline_implemented": true,
+    "whole_page_pixel_parity_verified": false,
+    "instrumented_export_completed": false,
+    "instrumented_export_failure": "PrintToPDFEx COM server exception; partial PDF excluded from all parity references",
+    "uninstrumented_control_pages": 24,
+    "source_unchanged": true,
+    "frida_session_closed": true,
+    "raw_documents_and_bitmap_payloads_distributed": false,
+    "codec_report_sha256": "9a601d7cc15f40c73ecf16bb4fc241c6c8a911203b0528fd29c9fabdec1dd67c",
+    "implementation_scope": "opaque RGB/fully opaque RGBA BMP/PNG without picture effects, crop, rotation/reflection or picture alpha; other paths remain diagnosed"
+  },
+  "pdf_bitmap_sampling": {
+    "backend": "own source-only C# adapter, locally compiled for Windows .NET Framework x86; OS GDI+ only",
+    "uses_hancom_runtime": false,
+    "native_sampling": "32-bit GDI+ bilinear; x64 differs on a high-frequency synthetic fixture",
+    "bitmap_dpi": {
+      "JPEG": 500,
+      "other_supported_formats": 96
+    },
+    "upscale": false,
+    "color_quantization": "RGB555 with ordered 4x4 ranks, bottom-up bitmap rows",
+    "ranks_topological": [
+      [
+        0,
+        4,
+        1,
+        5
+      ],
+      [
+        6,
+        2,
+        7,
+        3
+      ],
+      [
+        1,
+        5,
+        0,
+        4
+      ],
+      [
+        7,
+        3,
+        6,
+        2
+      ]
+    ],
+    "jpeg": "auto quality from device image width/bitmap width, clipped 35..75; >1024 colors and quality>70 multiplies by0.7; <4000 bytes or <32 colors is lossless",
+    "qt_storage": "JPEG-decoded RGB stored without further lossy encoding",
+    "printer_frame": "600dpi grid in half-HWPUNIT integer coordinates, float32 paper factors, 3-decimal image matrix and independently rounded clip edges",
+    "native_synthetic_whole_pages": 44,
+    "all_synthetic_whole_pages_equal": true,
+    "synthetic_formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "synthetic_bitmap_sources": [
+      "RGB BMP/PNG/JPEG",
+      "opaque RGBA PNG",
+      "palette GIF/PNG/BMP",
+      "8-bit grayscale PNG/JPEG"
+    ],
+    "synthetic_target_sizes": [
+      [
+        40,
+        30
+      ],
+      [
+        63,
+        48
+      ],
+      [
+        64,
+        48
+      ],
+      [
+        65,
+        48
+      ],
+      [
+        67,
+        48
+      ],
+      [
+        96,
+        72
+      ],
+      [
+        129,
+        48
+      ],
+      [
+        257,
+        48
+      ],
+      [
+        257,
+        193
+      ]
+    ],
+    "native_real_document_image_payloads": 8,
+    "all_real_sample_decoded_pixels_equal": true,
+    "native_image_matrices": 8,
+    "all_sample_image_matrices_equal": true,
+    "payload_report_sha256": "f70c3ace0c32d6452234cebbc2c95e5a7dda07127f3ea3fb15e23d3992cf04e9",
+    "frame_report_sha256": "65a35beaf4bb40de268e25133398f2b5155362ea5c85af9704493f2a3e6befba",
+    "source_sampling_oracle_sha256": "aeee05ef07a36fac9c3ed1c19e9c347759b02a74704258d8a741ce6b5861c0e7",
+    "rgb555_oracle_sha256": "6005448007302ae3e8ec7545ab06d21ae4cdf3cd31b9f9cb07b13eea19fdce93",
+    "diagnostics": "layout.pdf_bitmaps: prepared means processed, source-path includes remaining reasons; not a parity claim",
+    "compiled_adapter_distributed": false,
+    "source_images_or_documents_distributed": false,
+    "whole_document_equivalence_verified": false,
+    "remaining": [
+      "source alpha and picture alpha/effects",
+      "crop, rotation and reflection",
+      "other image formats and unverified encoding/ratio edge cases",
+      "alpha brush phase, other printer geometry, fonts, tables and page boundaries"
+    ],
+    "format_intermediate_encoding": "JPEG through GDI+ default JPEG; resized GIF through GDI+ GIF; unscaled GIF retains original palette",
+    "final_odd_rgb555_column": "Widths 4n+1 use third rank column for final pixel; other odd widths already end in that column",
+    "grayscale": "8-bit grayscale sources bypass RGB555",
+    "compression_cache": "Per-PDF decoded RGB/size identity preserves first JPEG quality, including lossless choice",
+    "native_captured_pre_pdf_bitmap_samples": 8,
+    "all_captured_format_samples_equal": true,
+    "format_probe_report_sha256": "17b57d1b5b059da2b38fdcae90831d87086643466d878f909dfe0c3a9ad6d2ae"
   }
 }
