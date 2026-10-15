@@ -177,6 +177,7 @@ class SourceLayout:
         self._script_ambiguities={}
         self._script_offsets={}
         self._drawing_limitations={}
+        self._image_limitations=[]
         self._metrics_device=QImage(1,1,QImage.Format.Format_RGB32)
         self._metrics_device.setDotsPerMeterX(round(TEXT_DPI/0.0254))
         self._metrics_device.setDotsPerMeterY(round(TEXT_DPI/0.0254))
@@ -201,6 +202,13 @@ class SourceLayout:
                     self._source_paragraphs.setdefault(block.source_index,[]).append(block)
                     if block.source_index>=0:anchors[block.source_index]=block
                     for run in block.runs:
+                        if run.image:
+                            picture=run.picture
+                            unsupported=[name for name in ('brightness','contrast','alpha') if getattr(picture,name,0)]
+                            if picture.effect not in ('','REAL_PIC'):unsupported.append('effect:'+picture.effect)
+                            if unsupported:
+                                self._image_limitations.append({'source_index':block.source_index,
+                                    'source_start':run.source_start,'unsupported':unsupported})
                         if run.image and run.picture.position.inline:
                             self._inline_objects.setdefault(key,[]).append((run.source_start or 0,run.width*.75,run.picture.position,run.style))
                         styles={self._style_for_character(run.style,c) for c in run.text} or {
@@ -236,6 +244,8 @@ class SourceLayout:
                         for cell in block.cells:collect(cell.blocks)
         collect(model.blocks)
         for part in model.header_footers:collect(part.blocks)
+        if self._image_limitations:
+            self.warnings.append('그림의 밝기·대비·투명도·색상 효과 중 미지원 속성이 있습니다. layout.image_limitations를 확인하세요.')
         for name,characters in self._missing_glyphs.items():
             fallback=self._fallback_font_family(name)
             self.glyph_substitutions[name]={'font':fallback,'distinct_characters':len(characters)}
@@ -1056,11 +1066,16 @@ class SourceLayout:
         source=QRectF(0,0,image.width(),image.height())
         if iw>0 and ih>0 and right>left and bottom>top:
             source=QRectF(left/iw*image.width(),top/ih*image.height(),(right-left)/iw*image.width(),(bottom-top)/ih*image.height())
-        if picture.flip_h or picture.flip_v:image=image.mirrored(picture.flip_h,picture.flip_v)
         target=QRectF(*(v/.75 for v in command.rect))
         painter.save()
-        if picture.rotation:
-            center=target.center();painter.translate(center);painter.rotate(picture.rotation);painter.translate(-center)
+        if picture.rotation or picture.flip_h or picture.flip_v:
+            # Reflection belongs to the displayed, cropped rectangle. Mirroring
+            # the complete bitmap first changes which source pixels imgClip
+            # selects (e.g. a top-half crop becomes the bottom half on flip_v).
+            center=target.center();painter.translate(center)
+            painter.rotate(picture.rotation)
+            painter.scale(-1 if picture.flip_h else 1,-1 if picture.flip_v else 1)
+            painter.translate(-center)
         painter.drawImage(target,image,source);painter.restore()
 
     def paint_page(self,painter,index):
@@ -1147,6 +1162,7 @@ class SourceLayout:
                 'script_baseline_offsets':[{'source_font':name,'language':language,'offset':offset}
                                             for (name,language),offset in self._script_offsets.items()],
                 'drawing_limitations':list(dict.fromkeys(self._drawing_limitations.values())),
+                'image_limitations':self._image_limitations,
                 'installed_sfnt_fonts':self._sfnt_resolver.fonts}
 
 

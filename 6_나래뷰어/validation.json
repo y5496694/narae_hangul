@@ -1,5 +1,5 @@
 {
-  "date_kst": "2026-10-15T20:10:28+09:00",
+  "date_kst": "2026-10-15T20:30:18+09:00",
   "viewer_version": "0.1.0",
   "base_commit": "c040de1398a601d82ac695d1e4f920df0a68ea27",
   "dpi": 96,
@@ -149,7 +149,7 @@
   },
   "tests": {
     "repository_native": {
-      "run": 39,
+      "run": 42,
       "failures": 0,
       "errors": 0,
       "skipped": 0
@@ -160,7 +160,13 @@
       "baseline_and_branch_same_failure": "old absolute cursor-width assertion; unchanged 275.578125 value"
     },
     "skill_validation": true,
-    "installed_skill_cli_smoke": true
+    "installed_skill_cli_smoke": true,
+    "strengthened_crop_regressions": {
+      "run": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
   },
   "rea": {
     "repository": "https://github.com/morluto/rea",
@@ -175,6 +181,11 @@
       {
         "name": "HwpApp.dll",
         "sha256": "0aa051839026fe803f5ec24965ac112a8e54aecf0da0132f91e20483078429d1",
+        "unchanged": true
+      },
+      {
+        "name": "HncPdfSdk.dll",
+        "sha256": "44d161c27557748d0ee7d2aa39a04fcdd71bba91b6f45d066f684b2d3a953f3b",
         "unchanged": true
       }
     ],
@@ -214,16 +225,63 @@
         "parameters": {
           "procedure": "0x1005778d"
         }
+      },
+      {
+        "query": "picture-clip-dispatch",
+        "evidence_id": "ev_bb07d7d4c74359736088ad5140dee0aeaac85955d22f1d8c729ab43f0e90f6fd",
+        "record_sha256": "60800da086421d607948998be9750d43620958bd585396f089cdcd573fcd7cde",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10634829"
+        }
+      },
+      {
+        "query": "picture-appearance-parser",
+        "evidence_id": "ev_11cdfa168b431a85482938d1811d18f5c62d7bc1dfecc78bac314f2c1a6a7848",
+        "record_sha256": "30af76384603c5efd91cba5ebf354bc178fad35143c7b310ccc63273cd90b3ff",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10623765"
+        }
       }
     ],
     "sessions_closed": true,
-    "full_reverse_engineering_complete": false
+    "full_reverse_engineering_complete": false,
+    "image_analysis": {
+      "dispatch": "0x10634330",
+      "appearance_reader": "0x10623720",
+      "observation": "Separate imgClip/flip/rotationInfo elements; bright/contrast parsed as integers and alpha as float.",
+      "scope": "XML ingestion only. Cropped reflection behavior established by native-generated fixtures.",
+      "pdf_image_compression_formula_recovered": false
+    }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "781a1cc70162c42bf6e3ab8c3f8349e3d8cc527620b9d1b85efd698f408fb8c6",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "ed866b25e9016f3eb169318533458f1258c58ec5b00954a10ecfa951bcb3d614",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "aaae813c439dd364b316c7a82af2706065764a23620930c46792c95236aa0182",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ce85282e3baef73c3c4668410ea8d6e6ed9ff963df212fd97c8907be817bc7b6",
-    "tests/test_viewer.py": "95f0182edd9ef52b0d18094f7a65b9569e6264615a30126317ba690f929cb6bb",
-    "2_나래스킬/narae-viewer/SKILL.md": "c2e16942af42b3f24de156c2b4eae9ef47b1f6c3beadec57b1c765b298897ebf"
+    "tests/test_viewer.py": "25d26abcef2442a148a727acc3580eb17252ad4e4e2a8f2b1a05173d91883606",
+    "2_나래스킬/narae-viewer/SKILL.md": "25470374b8ac8c40102650d069b9e86ab063e6dcd833075967b6a6739408e243"
+  },
+  "cropped_picture_flip": {
+    "fixture": "generated four-color PNG cropped asymmetrically on both axes",
+    "native_fixture_creation": "Hancom ShapeObjHorzFlip/ShapeObjVertFlip and SaveAs HWP/HWPX",
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "variants_per_format": 4,
+    "selected_content_matches_native": true,
+    "exact_pixel_parity_verified": false,
+    "limitation": "Solid interior color regions tested; JPEG compression and edge-grid differences remain."
+  },
+  "image_appearance_diagnostics": {
+    "field": "layout.image_limitations",
+    "unsupported_properties": [
+      "brightness",
+      "contrast",
+      "alpha",
+      "effect"
+    ],
+    "installed_skill_cli_verified": true
   }
 }

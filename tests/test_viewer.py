@@ -229,6 +229,100 @@ class ViewerTests(unittest.TestCase):
         second = SourceLayout(DocumentModel([padded]))
         self.assertEqual(first.render_page(0), second.render_page(0))
 
+    def cropped_picture(self, horizontal=False, vertical=False):
+        from io import BytesIO
+        from PIL import Image, ImageDraw
+        from hangeul.formats import Paragraph, Run
+        from hangeul.geometry import DocumentModel, PictureGeometry
+        image = Image.new("RGB", (400, 200))
+        draw = ImageDraw.Draw(image)
+        for box, color in (((0, 0, 199, 99), "red"), ((200, 0, 399, 99), "lime"),
+                           ((0, 100, 199, 199), "blue"), ((200, 100, 399, 199), "yellow")):
+            draw.rectangle(box, fill=color)
+        stream = BytesIO()
+        image.save(stream, format="PNG")
+        picture = PictureGeometry(original_width_pt=300, original_height_pt=150,
+            image_width_pt=300, image_height_pt=150, crop=(0, 0, 225, 75),
+            flip_h=horizontal, flip_v=vertical)
+        return DocumentModel([Paragraph([Run(image=stream.getvalue(), width=200, height=100, picture=picture)])])
+
+    def test_cropped_picture_reflection_keeps_selected_source_region_in_both_formats(self):
+        from hangeul.formats import save_hwp, save_hwpx, load_document
+        from hangeul.source_layout import SourceLayout
+        for suffix, save in (("hwp", save_hwp), ("hwpx", save_hwpx)):
+            for horizontal, vertical in ((False, False), (True, False), (False, True), (True, True)):
+                with self.subTest(format=suffix, horizontal=horizontal, vertical=vertical):
+                    source = self.root / ("crop." + suffix)
+                    save(self.cropped_picture(horizontal, vertical), source)
+                    layout = SourceLayout(load_document(source).model)
+                    command = next(c for c in layout.pages[0] if c.kind == "image")
+                    x, y, width, height = (value / .75 for value in command.rect)
+                    image = layout.render_page(0)
+                    colors = [image.pixelColor(round(x + width * fraction), round(y + height / 2)).name()
+                              for fraction in (.25, .5, .75)]
+                    self.assertEqual(["#00ff00", "#ff0000", "#ff0000"] if horizontal
+                                     else ["#ff0000", "#ff0000", "#00ff00"], colors)
+
+    def test_read_report_identifies_unapplied_image_appearance(self):
+        from hangeul.formats import save_hwpx
+        model = self.cropped_picture()
+        picture = model.blocks[0].runs[0].picture
+        picture.alpha, picture.brightness, picture.contrast, picture.effect = 128, 20, -10, "GRAY_SCALE"
+        source = self.root / "appearance.hwpx"
+        save_hwpx(model, source)
+        with Document(source) as document:
+            report = document.report()
+        limitations = report["layout"]["image_limitations"]
+        self.assertEqual(1, len(limitations))
+        self.assertEqual({"alpha", "brightness", "contrast", "effect:GRAY_SCALE"}, set(limitations[0]["unsupported"]))
+        self.assertTrue(any("layout.image_limitations" in warning for warning in report["warnings"]))
+        self.assertFalse(report["independent_parity_verified"])
+
+    @unittest.skipUnless(os.environ.get("NARAE_RUN_HANCOM_TESTS") == "1", "requires installed Hancom")
+    def test_native_cropped_picture_flips_select_the_same_image_content(self):
+        from copy import deepcopy
+        from hangeul.formats import ParaStyle, save_hwpx
+        from hangeul.hwp_automation_bridge import HancomBridge
+        model = self.cropped_picture()
+        for _ in range(3):
+            paragraph = deepcopy(model.blocks[0])
+            paragraph.style = ParaStyle(page_break=True)
+            model.blocks.append(paragraph)
+        initial = self.root / "initial.hwpx"
+        save_hwpx(model, initial)
+        # Let Hancom serialize its own flip flags and affine matrices. Manually
+        # toggled flags with identity matrices are not a native-generated case.
+        with HancomBridge() as bridge:
+            bridge.open_doc(initial)
+            controls = bridge.controls("gso")
+            self.assertEqual(4, len(controls))
+            for control, actions in zip(controls, ((), ("ShapeObjHorzFlip",), ("ShapeObjVertFlip",),
+                                       ("ShapeObjHorzFlip", "ShapeObjVertFlip"))):
+                if not actions:
+                    continue
+                bridge.hwp.SetPosBySet(control.GetAnchorPos(0))
+                bridge.run("SelectCtrlReverse")
+                for action in actions:
+                    bridge.run(action)
+                bridge.run("Cancel")
+            for suffix in ("hwp", "hwpx"):
+                bridge.save_doc(self.root / ("native." + suffix))
+        for suffix in ("hwp", "hwpx"):
+            with self.subTest(format=suffix), Document(self.root / ("native." + suffix)) as independent, \
+                    Document(self.root / ("native." + suffix), "hancom") as native:
+                self.assertEqual(4, independent.count)
+                self.assertEqual(4, native.count)
+                self.assertTrue(independent.report()["source_unchanged"])
+                for page in range(4):
+                    actual, reference = independent.render(page, 144), native.render(page, 144)
+                    # Content identity inside solid patches is independent of
+                    # the exporters' different JPEG compression and edge grids.
+                    for x in (180, 263, 340):
+                        a, b = actual.pixelColor(x, 170), reference.pixelColor(x, 170)
+                        self.assertEqual(a.green() > a.red(), b.green() > b.red())
+                        self.assertLess(a.blue(), 20)
+                        self.assertLess(b.blue(), 20)
+
     @unittest.skipUnless(os.environ.get("NARAE_RUN_HANCOM_TESTS") == "1", "requires installed Hancom")
     def test_native_export_two_pages_and_repeated_pixels(self):
         with Document(self.fixture(), "hancom") as first, Document(self.fixture("second.hwpx"), "hancom") as second:
