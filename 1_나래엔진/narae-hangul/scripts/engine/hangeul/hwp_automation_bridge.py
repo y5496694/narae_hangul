@@ -22,6 +22,38 @@ class HancomError(ValueError):
     pass
 
 
+class _AutomationMutex:
+    """Serialize cooperating CLI processes around Hancom's active document.
+
+    DispatchEx can share one application. Owning a tab does not make its
+    application-wide active-document switch safe across concurrent clients.
+    Windows mutex ownership is recursive for nested bridges on one thread.
+    """
+    def __init__(self):
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.CreateMutexW.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_wchar_p]
+        kernel.CreateMutexW.restype = ctypes.c_void_p
+        kernel.WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
+        kernel.WaitForSingleObject.restype = ctypes.c_ulong
+        kernel.ReleaseMutex.argtypes = [ctypes.c_void_p]
+        kernel.CloseHandle.argtypes = [ctypes.c_void_p]
+        self.kernel = kernel
+        self.handle = kernel.CreateMutexW(None, False, r"Local\NaraeHangulAutomation")
+        if not self.handle:
+            raise HancomError("Could not create Hancom automation lock")
+        state = kernel.WaitForSingleObject(self.handle, 60000)
+        if state not in (0, 0x80):
+            kernel.CloseHandle(self.handle)
+            self.handle = None
+            raise HancomError("Another Narae Hancom job is busy; retry after it finishes")
+
+    def close(self):
+        if self.handle:
+            self.kernel.ReleaseMutex(self.handle)
+            self.kernel.CloseHandle(self.handle)
+            self.handle = None
+
+
 def integer(value, label):
     if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value <= 100000:
         raise HancomError(f"{label} must be a nonnegative integer")
@@ -78,6 +110,14 @@ def verification_snapshot(xml):
 
 class HancomBridge:
     def __init__(self, visible=False):
+        self._automation_mutex = _AutomationMutex()
+        try:
+            self._connect(visible)
+        except BaseException:
+            self._automation_mutex.close()
+            raise
+
+    def _connect(self, visible):
         import pythoncom
         import win32com.client
         import win32process
@@ -115,14 +155,15 @@ class HancomBridge:
             self._owns_process = process_id not in prior_processes
             documents = self._hwp.XHwpDocuments
             current = documents.Active_XHwpDocument
-            if self._owns_process and documents.Count == 1 and self._hwp.IsEmpty and not current.Path:
+            if self._owns_process and documents.Count == 1 and current is not None and self._hwp.IsEmpty and not current.Path:
                 self._document = current
             else:
                 # Hancom can return the SAME application even for DispatchEx.
                 # Own a separate tab, never the current user document. Keep
                 # the root automation object bound to its original window.
-                self._previous_document = current
-                self._previous_document_id = current.DocumentID
+                if current is not None:
+                    self._previous_document = current
+                    self._previous_document_id = current.DocumentID
                 prior_ids = {documents.Item(i).DocumentID for i in range(documents.Count)}
                 created = documents.Add(True)
                 if created is None or created.DocumentID in prior_ids:
@@ -175,6 +216,9 @@ class HancomBridge:
             if self._com is not None:
                 self._uninitialize()
                 self._com = None
+            mutex = getattr(self, "_automation_mutex", None)
+            if mutex:
+                mutex.close()
 
     def __enter__(self): return self
     def __exit__(self, *args): self.close()
@@ -184,7 +228,12 @@ class HancomBridge:
         return self._hwp
 
     def activate_document(self):
-        if self._document_id is not None and self._hwp.XHwpDocuments.Active_XHwpDocument.DocumentID != self._document_id:
+        active = self._hwp.XHwpDocuments.Active_XHwpDocument
+        # Another controller can leave this window inactive, returning None
+        # even though FindItem still owns the requested document. In particular
+        # close() must reactivate it instead of swallowing an AttributeError
+        # and leaving the source file locked.
+        if self._document_id is not None and (active is None or active.DocumentID != self._document_id):
             selected = self._hwp.XHwpDocuments.FindItem(self._document_id)
             if selected is None: raise HancomError("The job's document was closed")
             selected.SetActive_XHwpDocument()

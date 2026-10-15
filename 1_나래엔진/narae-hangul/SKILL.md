@@ -30,6 +30,8 @@ python <skill-dir>/scripts/narae.py run <job.json> --result <result.json>
 
 ## 문서 작업 순서
 
+읽기·화면 확인·PDF/PNG 출력·시각 검증만 필요하면 `scripts/narae.py read/open/export/verify`를 사용한다. 상세 명령과 검증 결과 해석은 [viewer.md](references/viewer.md)를 따른다. 문서를 고친 후 `verify <결과 파일> --hancom` 또는 승인된 기준 PDF와 비교하여 전체 쪽을 검사한다. 비교 완료(`success`)와 일치(`comparison.match`)를 구분한다.
+
 1. 원본과 요구사항을 확인한다. 기존 문서는 `inspect`로 문단·표 인덱스를 얻고, 필요하면 입력 SHA-256을 잠근다.
 2. 보존 가능한 단순 텍스트·서식은 `edit`를 사용한다. 고급 HWP 표 연산은 한컴 COM이 필요하다.
 3. 기존 연산 밖의 한컴 기능은 `hancom_capabilities`로 설치된 메서드·속성·액션과 파라미터를 먼저 조회한다. 추측한 파라미터 이름을 보내지 않는다. `CreateAction` 가능 여부와 현재 캐럿에서 실행 가능 여부를 구분한다.

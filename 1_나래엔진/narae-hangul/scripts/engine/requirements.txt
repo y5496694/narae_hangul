@@ -3,4 +3,5 @@ olefile>=0.47,<1
 fonttools==4.66.1
 pycryptodome==3.23.0
 pypdf==6.13.0
+Pillow>=11,<13
 pywin32>=312; sys_platform == "win32"

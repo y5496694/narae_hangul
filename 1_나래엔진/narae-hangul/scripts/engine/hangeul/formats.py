@@ -1203,8 +1203,12 @@ def _load_hwp(path):
         corners = struct.unpack_from("<8i", d, 12)
         pg = PictureGeometry(position=_position_hwp(ctrl.data), rect=tuple((corners[2 * i] / 100, corners[2 * i + 1] / 100) for i in range(4)),
             crop=tuple(v / 100 for v in struct.unpack_from("<4i", d, 44)), in_margin=tuple(v / 100 for v in struct.unpack_from("<4h", d, 60)),
-            brightness=struct.unpack_from("<b", d, 68)[0], contrast=struct.unpack_from("<b", d, 69)[0],
-            effect=("REAL_PIC", "GRAY_SCALE", "BLACK_WHITE")[min(d[70], 2)], alpha=d[90] if len(d) > 90 else 0)
+            # Hancom's HWP export stores contrast then brightness here. The
+            # published table labels the opposite order; native HWP/HWPX pairs
+            # with independently varied settings establish the stored order.
+            contrast=struct.unpack_from("<b", d, 68)[0], brightness=struct.unpack_from("<b", d, 69)[0],
+            effect={0:"REAL_PIC",1:"GRAY_SCALE",2:"BLACK_WHITE",4:"PATTERN8x8"}.get(d[70],f"UNSUPPORTED_{d[70]}"),
+            alpha=d[90] if len(d) > 90 else 0)
         pg.border_opacity = d[73] if len(d) > 73 else 0
         if len(d) >= 90:
             pg.image_width_pt, pg.image_height_pt = (v / 100 for v in struct.unpack_from("<2I", d, 82))
@@ -2416,7 +2420,7 @@ def save_hwp(document_or_html, path) -> list[str]:
         crop = pg.crop if pg.crop[2] and pg.crop[3] else (0, 0, iw / 100, ih / 100)
         data = struct.pack("<IiI", 0, 0, 0) + struct.pack("<8i", *(round(v * 100) for point in points for v in point))
         data += struct.pack("<4i4hbbBHBI", *(round(v * 100) for v in crop), *(round(v * 100) for v in pg.in_margin),
-            pg.brightness, pg.contrast, {"REAL_PIC": 0, "GRAY_SCALE": 1, "BLACK_WHITE": 2}.get(pg.effect, 0),
+            pg.contrast, pg.brightness, {"REAL_PIC": 0, "GRAY_SCALE": 1, "BLACK_WHITE": 2, "PATTERN8x8": 4}.get(pg.effect, 0),
             image_ids[id(r)], pg.border_opacity, instance[0])
         data += struct.pack("<IIIB", 0, iw, ih, pg.alpha)
         instance[0] += 1

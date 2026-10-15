@@ -15,7 +15,7 @@ import venv
 SKILL = Path(__file__).resolve().parents[1]
 ENGINE = SKILL / "scripts" / "engine"
 VERSION = "0.6.0"
-MODULES = ("PySide6", "olefile", "fontTools", "Crypto", "pypdf")
+MODULES = ("PySide6", "olefile", "fontTools", "Crypto", "pypdf", "PIL")
 
 
 def cache_python() -> Path:
@@ -28,7 +28,7 @@ def source_command(python: Path) -> tuple[list[str], dict[str, str], str]:
     if not python.is_file():
         raise ValueError(f"Python 실행 파일이 없습니다: {python}")
     probe = subprocess.run(
-        [str(python), "-c", "import PySide6,olefile,fontTools,Crypto,pypdf"],
+        [str(python), "-c", "import PySide6,olefile,fontTools,Crypto,pypdf,PIL"],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
     )
     if probe.returncode:
@@ -161,7 +161,29 @@ def run(args) -> tuple[int, dict]:
         return (0 if process.returncode == 0 and response.get("success") else 1), response
 
 
+def run_viewer(argv) -> int:
+    """Use source viewer code with current dependencies or the setup runtime."""
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(ENGINE) + os.pathsep + env.get("PYTHONPATH", "")
+    env["PYTHONUTF8"] = "1"
+    if all(importlib.util.find_spec(name) is not None for name in MODULES):
+        sys.path.insert(0, str(ENGINE))
+        os.environ["PYTHONPATH"] = env["PYTHONPATH"]
+        from hangeul.viewer import main as viewer_main
+        return viewer_main(argv)
+    python = cache_python()
+    if python.is_file() and python.resolve() != Path(sys.executable).resolve():
+        return subprocess.run([str(python), "-m", "hangeul.viewer", *argv], env=env).returncode
+    print(json.dumps({"success": False,
+        "error": "뷰어 의존성이 없습니다. narae.py setup을 실행하거나 engine/requirements.txt를 설치하세요."}, ensure_ascii=False))
+    return 1
+
+
 def main() -> int:
+    # Viewer commands always use the bundled read-only module, even when an
+    # older editor executable is configured for document editing jobs.
+    if len(sys.argv) > 1 and sys.argv[1] in ("read", "open", "export", "verify"):
+        return run_viewer(sys.argv[1:])
     parser = argparse.ArgumentParser(description="나래 한글: AI용 HWP 작업 실행")
     parser.add_argument("action", choices=("run", "doctor", "setup"))
     parser.add_argument("job", nargs="?")

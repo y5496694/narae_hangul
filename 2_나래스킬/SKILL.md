@@ -7,6 +7,8 @@ description: "나래팩(NaraePack): HWP/HWPX 자동화 엔진, 설치된 한컴 
 
 나래팩은 **HWP/HWPX 조판 엔진, 한컴 실행 경로, AI 에이전트 스킬, 형식/문구 템플릿 및 조판 유틸리티**를 묶은 패키지입니다. 독립 엔진의 전체 기능 일치·쪽 나눔·픽셀 일치는 보장하지 않습니다. 설치된 한컴의 기능은 [전체 COM 인터페이스](../1_나래엔진/narae-hangul/references/hancom.md)로 조회·실행하고, `verify`로 의도한 결과를 확인하세요.
 
+문서 내용 읽기·화면 보기·PDF/PNG 출력·편집 결과의 쪽별 비교에는 [나래한글 뷰어 스킬](narae-viewer/SKILL.md)을 사용합니다. 읽기 전용 작업에는 문서 편집·저장 작업을 만들지 않습니다. `narae.py read/open/export/verify` 또는 `6_나래뷰어/narae_viewer.py`를 실제 실행하고 비교 결과와 렌더링 백엔드를 확인합니다.
+
 ---
 
 ## 🚨 [MANDATORY] HWP/HWPX 작업은 포함된 CLI로만 실행

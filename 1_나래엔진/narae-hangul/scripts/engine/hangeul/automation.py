@@ -451,7 +451,8 @@ def _edit(model, operations):
 
 def _qt():
     global _APP
-    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    if os.name != "nt" and not os.environ.get("DISPLAY"):
+        os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     from PySide6.QtWidgets import QApplication
     _APP = QApplication.instance() or QApplication([])
     return _APP

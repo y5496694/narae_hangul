@@ -1,0 +1,359 @@
+{
+  "date_kst": "2026-10-15T21:11:40+09:00",
+  "viewer_version": "0.1.0",
+  "base_commit": "c040de1398a601d82ac695d1e4f920df0a68ea27",
+  "dpi": 96,
+  "pixel_tolerance": 0,
+  "files": 7,
+  "rendered_pages": 124,
+  "native_repeat_all_match": true,
+  "independent_all_page_counts_match": true,
+  "independent_zero_difference_complete": false,
+  "cases": [
+    {
+      "id": "report-hwp",
+      "format": "hwp",
+      "input_sha256": "35347b9490f27cdf4a4fb4a2cf174ed99453adc2d948d879726e132506ee8975",
+      "source_unchanged": true,
+      "hancom_pages": 24,
+      "native_repeat_match": true,
+      "independent_pages": 24,
+      "independent_match": false,
+      "page_count_match": true,
+      "changed_fraction_min": 0.017447029189509557,
+      "changed_fraction_max": 0.49160144937297107,
+      "errors": [],
+      "independent_identical_pages": 0
+    },
+    {
+      "id": "report-hwpx",
+      "format": "hwpx",
+      "input_sha256": "7b93494e6f564e606bb2be628fee1bccd3d3442bbbec43c5543e04bb59696598",
+      "source_unchanged": true,
+      "hancom_pages": 24,
+      "native_repeat_match": true,
+      "independent_pages": 24,
+      "independent_match": false,
+      "page_count_match": true,
+      "changed_fraction_min": 0.017447029189509557,
+      "changed_fraction_max": 0.49160144937297107,
+      "errors": [],
+      "independent_identical_pages": 0
+    },
+    {
+      "id": "trip-hwpx",
+      "format": "hwpx",
+      "input_sha256": "c45b8be1db3e255f40116c2b2e4e6129d4e43f64cbd0d34545e4dc479fbb4759",
+      "source_unchanged": true,
+      "hancom_pages": 2,
+      "native_repeat_match": true,
+      "independent_pages": 2,
+      "independent_match": false,
+      "page_count_match": true,
+      "changed_fraction_min": 0.021801209606810437,
+      "changed_fraction_max": 0.11204578007067265,
+      "errors": [],
+      "independent_identical_pages": 0
+    },
+    {
+      "id": "form-hwp",
+      "format": "hwp",
+      "input_sha256": "3a6b6019a96d432f4704a52c49f966af8a6b1321383da9bb697f3bda53085d73",
+      "source_unchanged": true,
+      "hancom_pages": 7,
+      "native_repeat_match": true,
+      "independent_pages": 7,
+      "independent_match": false,
+      "page_count_match": true,
+      "changed_fraction_min": 0.05828585155152054,
+      "changed_fraction_max": 0.1669405568501731,
+      "errors": [],
+      "independent_identical_pages": 0
+    },
+    {
+      "id": "guide-hwp",
+      "format": "hwp",
+      "input_sha256": "817d68fecfef12b2cbf1f9c368e4318e3fe2b61181ab48556761a03852064d09",
+      "source_unchanged": true,
+      "hancom_pages": 54,
+      "native_repeat_match": true,
+      "independent_pages": 54,
+      "independent_match": false,
+      "page_count_match": true,
+      "changed_fraction_min": 0.0,
+      "changed_fraction_max": 0.23455438965144107,
+      "errors": [],
+      "independent_identical_pages": 2
+    },
+    {
+      "id": "lesson-hwp",
+      "format": "hwp",
+      "input_sha256": "66c8dcd50b43d5d96edbd762bee0e407e163e30067655b2e6907bb57dd458023",
+      "source_unchanged": true,
+      "hancom_pages": 9,
+      "native_repeat_match": true,
+      "independent_pages": 9,
+      "independent_match": false,
+      "page_count_match": true,
+      "changed_fraction_min": 0.032982439598234534,
+      "changed_fraction_max": 0.35207572839073803,
+      "errors": [],
+      "independent_identical_pages": 0
+    },
+    {
+      "id": "minutes-hwpx",
+      "format": "hwpx",
+      "input_sha256": "debb6bc63e26f3dca41d62ac965d727864f4bc1709603a89504354c01a8eae23",
+      "source_unchanged": true,
+      "hancom_pages": 4,
+      "native_repeat_match": true,
+      "independent_pages": 4,
+      "independent_match": false,
+      "page_count_match": true,
+      "changed_fraction_min": 0.013126523794770943,
+      "changed_fraction_max": 0.12272076222291069,
+      "errors": [],
+      "independent_identical_pages": 0
+    }
+  ],
+  "paired_report": {
+    "pages": 24,
+    "page_count_match": true,
+    "match": true,
+    "changed_pixels": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "tests": {
+    "repository_native": {
+      "run": 48,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "legacy_layout": {
+      "run": 19,
+      "passed": 18,
+      "baseline_and_branch_same_failure": "old absolute cursor-width assertion; unchanged 275.578125 value"
+    },
+    "skill_validation": true,
+    "installed_skill_cli_smoke": true,
+    "strengthened_crop_regressions": {
+      "run": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "rea": {
+    "repository": "https://github.com/morluto/rea",
+    "version": "6.5.0",
+    "provider": "Ghidra 12.1.4",
+    "binaries": [
+      {
+        "name": "HwpAutomation.dll",
+        "sha256": "20b6e320542bfc517963b3351a8a5f250ecd5411b3aeb969cf083805e6daa05d",
+        "unchanged": true
+      },
+      {
+        "name": "HwpApp.dll",
+        "sha256": "0aa051839026fe803f5ec24965ac112a8e54aecf0da0132f91e20483078429d1",
+        "unchanged": true
+      },
+      {
+        "name": "HncPdfSdk.dll",
+        "sha256": "44d161c27557748d0ee7d2aa39a04fcdd71bba91b6f45d066f684b2d3a953f3b",
+        "unchanged": true
+      },
+      {
+        "name": "HncBaseDraw.dll",
+        "sha256": "52734f0b0fc92cf890fc7085708fb72de62f67c0b5e0aa5bf668db7646199fb1",
+        "unchanged": true
+      }
+    ],
+    "evidence": [
+      {
+        "query": "print-method-parser",
+        "evidence_id": "ev_f5eb54284f33f29d6fabf80d38571e46f4830f059afbef1cf9a11843b5361f1e",
+        "record_sha256": "350780003b6d0a09c080e4cc7283b4130a00dbe2320d966759bff9f83bb7ed12",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10477f1b"
+        }
+      },
+      {
+        "query": "line-position-parser",
+        "evidence_id": "ev_8e4a67c939d40705e0c1c2fda24f9106547d39945cabf5327496e0fbdaec5f76",
+        "record_sha256": "e6d2e9a3ccd41318cadf4fb240a49b9fbbc09f543fb4ef4b9f2be8209710f763",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1063cd87"
+        }
+      },
+      {
+        "query": "line-cache-dispatch",
+        "evidence_id": "ev_afcad86e6177aad0d754008d9be569ff04fff3eb9b1648939592717eee9f862b",
+        "record_sha256": "d6795b66d9070c5e17b1e59e1b0eb2d9bcd3b8064cf5a8c1301c1df9bedc240f",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1063ca19"
+        }
+      },
+      {
+        "query": "save-image-code",
+        "evidence_id": "ev_242dd00a28f9d5144bcbc4a79d45640ca83e77e0c93fca80549c1792812abd29",
+        "record_sha256": "1aab1fb2cd9f560cab44ba0d8535d1599939904239f2de884be7b7235a4ca41f",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1005778d"
+        }
+      },
+      {
+        "query": "picture-clip-dispatch",
+        "evidence_id": "ev_bb07d7d4c74359736088ad5140dee0aeaac85955d22f1d8c729ab43f0e90f6fd",
+        "record_sha256": "60800da086421d607948998be9750d43620958bd585396f089cdcd573fcd7cde",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10634829"
+        }
+      },
+      {
+        "query": "picture-appearance-parser",
+        "evidence_id": "ev_11cdfa168b431a85482938d1811d18f5c62d7bc1dfecc78bac314f2c1a6a7848",
+        "record_sha256": "30af76384603c5efd91cba5ebf354bc178fad35143c7b310ccc63273cd90b3ff",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10623765"
+        }
+      },
+      {
+        "query": "effects-set-options",
+        "evidence_id": "ev_438c03d9319db8f83f76e9592c7af869496dd1041b56eb14938bdedfd336a3da",
+        "record_sha256": "5bab99061f955b3a0a3949e67c68c83673076a109134859b095ee2223f13fc94",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10065280"
+        }
+      },
+      {
+        "query": "effects-matrix-builder",
+        "evidence_id": "ev_8a9891e0e9dcab61acd618ad06fb55412b5decd9f2411244fc7682e7a9c92566",
+        "record_sha256": "29251eead79f7c71b101a06b06d968edc9460524955817a33e7ff7130663d047",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1003f3b7"
+        }
+      },
+      {
+        "query": "effects-process-buffer",
+        "evidence_id": "ev_743bc85c5de7a173e1b29dc8a393bfd6433514f6b2e7e53093bde128a5978c39",
+        "record_sha256": "aa1f95ce2f4feef9d7b0673c321928b1bc07c854eaee2984fbf8e67283090e43",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1006ad20"
+        }
+      }
+    ],
+    "sessions_closed": true,
+    "full_reverse_engineering_complete": false,
+    "image_analysis": {
+      "dispatch": "0x10634330",
+      "appearance_reader": "0x10623720",
+      "observation": "Separate imgClip/flip/rotationInfo elements; bright/contrast parsed as integers and alpha as float.",
+      "scope": "XML ingestion only. Cropped reflection behavior established by native-generated fixtures.",
+      "pdf_image_compression_formula_recovered": false
+    },
+    "tone_analysis": {
+      "set_options": "0x10065280",
+      "gdiplus_alpha_matrix": "0x1003f2f0",
+      "pixel_buffer_path": "0x1006ad20",
+      "scope": "Static option and drawing-path investigation; tone formula established by native output samples.",
+      "complete_brightness_contrast_transparency_formula_recovered": false
+    }
+  },
+  "source_sha256": {
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "272410fea07045de08316864a11886c2e0ec2f137b1036e2a6327bce3eb5c8c3",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "aaae813c439dd364b316c7a82af2706065764a23620930c46792c95236aa0182",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ce85282e3baef73c3c4668410ea8d6e6ed9ff963df212fd97c8907be817bc7b6",
+    "tests/test_viewer.py": "7001bb3e4d46d8763be6b2d4d96e1656f07f4b2393d8fb81d2dcc29ff2a78567",
+    "2_나래스킬/narae-viewer/SKILL.md": "671fbe6e49f8cd2745870d8205463b11cd3cd8b9c42d1dba374b63e253afc7c6",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "f46987c958f1bedf7077d04b59070f6d32c6eb968cdf7a50771a5364078c421c",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "12f680aeb6f6631aa31ec158138e8e47f926823db468a879419e3139f4d03e5e",
+    "tests/test_picture_effects.py": "3f8bc5051c2c7cf0113ca89323badd4e368a4908874d01b0dd57fffcffd6f060"
+  },
+  "cropped_picture_flip": {
+    "fixture": "generated four-color PNG cropped asymmetrically on both axes",
+    "native_fixture_creation": "Hancom ShapeObjHorzFlip/ShapeObjVertFlip and SaveAs HWP/HWPX",
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "variants_per_format": 4,
+    "selected_content_matches_native": true,
+    "exact_pixel_parity_verified": false,
+    "limitation": "Solid interior color regions tested; JPEG compression and edge-grid differences remain."
+  },
+  "image_appearance_diagnostics": {
+    "field": "layout.image_limitations",
+    "unsupported_properties": [
+      "brightness",
+      "contrast",
+      "alpha",
+      "effect"
+    ],
+    "installed_skill_cli_verified": true,
+    "supported_tones": [
+      "GRAY_SCALE",
+      "BLACK_WHITE"
+    ]
+  },
+  "tone_effects": {
+    "supported": [
+      "GRAY_SCALE",
+      "BLACK_WHITE"
+    ],
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "patches_per_mode_per_format": 256,
+    "total_native_sample_pixels": 1024,
+    "exact_sample_pixels_match": true,
+    "whole_page_pixel_parity_verified": false,
+    "pdf_lossless_tone_images": true,
+    "source_bitmap_alpha_preserved": true,
+    "unsupported_pattern_preserved": true
+  },
+  "brightness_contrast_hwp": {
+    "contrast_byte_offset": 68,
+    "brightness_byte_offset": 69,
+    "native_created_property_cases": 5,
+    "native_pdf_pair_match": true,
+    "independent_adjustments_supported": false,
+    "specification_order_differs_from_native_export": true,
+    "specification_url": "https://cdn.hancom.com/link/docs/한글문서파일형식_5.0_revision1.3.pdf"
+  }
+}
