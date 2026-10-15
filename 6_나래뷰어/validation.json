@@ -1,5 +1,5 @@
 {
-  "date_kst": "2026-10-15T20:30:18+09:00",
+  "date_kst": "2026-10-15T21:11:40+09:00",
   "viewer_version": "0.1.0",
   "base_commit": "c040de1398a601d82ac695d1e4f920df0a68ea27",
   "dpi": 96,
@@ -149,7 +149,7 @@
   },
   "tests": {
     "repository_native": {
-      "run": 42,
+      "run": 48,
       "failures": 0,
       "errors": 0,
       "skipped": 0
@@ -186,6 +186,11 @@
       {
         "name": "HncPdfSdk.dll",
         "sha256": "44d161c27557748d0ee7d2aa39a04fcdd71bba91b6f45d066f684b2d3a953f3b",
+        "unchanged": true
+      },
+      {
+        "name": "HncBaseDraw.dll",
+        "sha256": "52734f0b0fc92cf890fc7085708fb72de62f67c0b5e0aa5bf668db7646199fb1",
         "unchanged": true
       }
     ],
@@ -243,6 +248,33 @@
         "parameters": {
           "procedure": "0x10623765"
         }
+      },
+      {
+        "query": "effects-set-options",
+        "evidence_id": "ev_438c03d9319db8f83f76e9592c7af869496dd1041b56eb14938bdedfd336a3da",
+        "record_sha256": "5bab99061f955b3a0a3949e67c68c83673076a109134859b095ee2223f13fc94",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10065280"
+        }
+      },
+      {
+        "query": "effects-matrix-builder",
+        "evidence_id": "ev_8a9891e0e9dcab61acd618ad06fb55412b5decd9f2411244fc7682e7a9c92566",
+        "record_sha256": "29251eead79f7c71b101a06b06d968edc9460524955817a33e7ff7130663d047",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1003f3b7"
+        }
+      },
+      {
+        "query": "effects-process-buffer",
+        "evidence_id": "ev_743bc85c5de7a173e1b29dc8a393bfd6433514f6b2e7e53093bde128a5978c39",
+        "record_sha256": "aa1f95ce2f4feef9d7b0673c321928b1bc07c854eaee2984fbf8e67283090e43",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1006ad20"
+        }
       }
     ],
     "sessions_closed": true,
@@ -253,14 +285,24 @@
       "observation": "Separate imgClip/flip/rotationInfo elements; bright/contrast parsed as integers and alpha as float.",
       "scope": "XML ingestion only. Cropped reflection behavior established by native-generated fixtures.",
       "pdf_image_compression_formula_recovered": false
+    },
+    "tone_analysis": {
+      "set_options": "0x10065280",
+      "gdiplus_alpha_matrix": "0x1003f2f0",
+      "pixel_buffer_path": "0x1006ad20",
+      "scope": "Static option and drawing-path investigation; tone formula established by native output samples.",
+      "complete_brightness_contrast_transparency_formula_recovered": false
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "ed866b25e9016f3eb169318533458f1258c58ec5b00954a10ecfa951bcb3d614",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "272410fea07045de08316864a11886c2e0ec2f137b1036e2a6327bce3eb5c8c3",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "aaae813c439dd364b316c7a82af2706065764a23620930c46792c95236aa0182",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ce85282e3baef73c3c4668410ea8d6e6ed9ff963df212fd97c8907be817bc7b6",
-    "tests/test_viewer.py": "25d26abcef2442a148a727acc3580eb17252ad4e4e2a8f2b1a05173d91883606",
-    "2_나래스킬/narae-viewer/SKILL.md": "25470374b8ac8c40102650d069b9e86ab063e6dcd833075967b6a6739408e243"
+    "tests/test_viewer.py": "7001bb3e4d46d8763be6b2d4d96e1656f07f4b2393d8fb81d2dcc29ff2a78567",
+    "2_나래스킬/narae-viewer/SKILL.md": "671fbe6e49f8cd2745870d8205463b11cd3cd8b9c42d1dba374b63e253afc7c6",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "f46987c958f1bedf7077d04b59070f6d32c6eb968cdf7a50771a5364078c421c",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "12f680aeb6f6631aa31ec158138e8e47f926823db468a879419e3139f4d03e5e",
+    "tests/test_picture_effects.py": "3f8bc5051c2c7cf0113ca89323badd4e368a4908874d01b0dd57fffcffd6f060"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -282,6 +324,36 @@
       "alpha",
       "effect"
     ],
-    "installed_skill_cli_verified": true
+    "installed_skill_cli_verified": true,
+    "supported_tones": [
+      "GRAY_SCALE",
+      "BLACK_WHITE"
+    ]
+  },
+  "tone_effects": {
+    "supported": [
+      "GRAY_SCALE",
+      "BLACK_WHITE"
+    ],
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "patches_per_mode_per_format": 256,
+    "total_native_sample_pixels": 1024,
+    "exact_sample_pixels_match": true,
+    "whole_page_pixel_parity_verified": false,
+    "pdf_lossless_tone_images": true,
+    "source_bitmap_alpha_preserved": true,
+    "unsupported_pattern_preserved": true
+  },
+  "brightness_contrast_hwp": {
+    "contrast_byte_offset": 68,
+    "brightness_byte_offset": 69,
+    "native_created_property_cases": 5,
+    "native_pdf_pair_match": true,
+    "independent_adjustments_supported": false,
+    "specification_order_differs_from_native_export": true,
+    "specification_url": "https://cdn.hancom.com/link/docs/한글문서파일형식_5.0_revision1.3.pdf"
   }
 }

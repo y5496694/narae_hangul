@@ -16,6 +16,7 @@ from PySide6.QtGui import QPainterPath
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem
 from .formats import Paragraph, Table, Drawing, _table_grid
 from .font_resolver import InstalledHftResolver,InstalledSfntResolver
+from .picture_effects import apply_tone
 
 SYNTHETIC_BOLD_PROPERTY=0x108001
 SCRIPT_OFFSET_PROPERTY=0x108002
@@ -205,7 +206,7 @@ class SourceLayout:
                         if run.image:
                             picture=run.picture
                             unsupported=[name for name in ('brightness','contrast','alpha') if getattr(picture,name,0)]
-                            if picture.effect not in ('','REAL_PIC'):unsupported.append('effect:'+picture.effect)
+                            if picture.effect not in ('','REAL_PIC','GRAY_SCALE','BLACK_WHITE'):unsupported.append('effect:'+picture.effect)
                             if unsupported:
                                 self._image_limitations.append({'source_index':block.source_index,
                                     'source_start':run.source_start,'unsupported':unsupported})
@@ -1060,6 +1061,7 @@ class SourceLayout:
         run=command.source;picture=run.picture
         image=QImage.fromData(run.image)
         if image.isNull():return
+        image=apply_tone(image,picture.effect)
         iw=getattr(picture,'image_width_pt',0) or picture.original_width_pt
         ih=getattr(picture,'image_height_pt',0) or picture.original_height_pt
         left,top,right,bottom=picture.crop
@@ -1068,6 +1070,9 @@ class SourceLayout:
             source=QRectF(left/iw*image.width(),top/ih*image.height(),(right-left)/iw*image.width(),(bottom-top)/ih*image.height())
         target=QRectF(*(v/.75 for v in command.rect))
         painter.save()
+        if picture.effect in ('GRAY_SCALE','BLACK_WHITE'):
+            # PDF output must not add JPEG artifacts to the computed tone map.
+            painter.setRenderHint(QPainter.RenderHint.LosslessImageRendering,True)
         if picture.rotation or picture.flip_h or picture.flip_v:
             # Reflection belongs to the displayed, cropped rectangle. Mirroring
             # the complete bitmap first changes which source pixels imgClip

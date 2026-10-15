@@ -274,7 +274,7 @@ class ViewerTests(unittest.TestCase):
             report = document.report()
         limitations = report["layout"]["image_limitations"]
         self.assertEqual(1, len(limitations))
-        self.assertEqual({"alpha", "brightness", "contrast", "effect:GRAY_SCALE"}, set(limitations[0]["unsupported"]))
+        self.assertEqual({"alpha", "brightness", "contrast"}, set(limitations[0]["unsupported"]))
         self.assertTrue(any("layout.image_limitations" in warning for warning in report["warnings"]))
         self.assertFalse(report["independent_parity_verified"])
 
