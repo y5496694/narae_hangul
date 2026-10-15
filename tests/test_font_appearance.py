@@ -110,11 +110,25 @@ class FontAppearanceTests(unittest.TestCase):
                             continue
                         self.assertAlmostEqual(1/3,float(matrix[2]),places=3)
                         if family=='명조':
-                            # The bitmap payload is unchanged; its baseline
-                            # transform carries the same synthetic shear.
+                            # Normal text uses a full white native buffer;
+                            # styled legacy text retains a tight alpha image.
+                            # Compare ink, independent of buffer representation.
                             self.assertTrue(any(op==b'cm' and float(vals[2])==-.333333 for vals,op in italic))
-                            self.assertEqual(list(actual.pages[i*2].images)[0].image.tobytes(),
-                                             list(actual.pages[i*2+1].images)[0].image.tobytes())
+                            from PIL import Image,ImageChops
+                            def ink(page):
+                                obj=next(ref.get_object() for ref in page['/Resources']['/XObject'].values()
+                                         if ref.get_object().get('/Subtype')=='/Image')
+                                image=list(page.images)[0].image
+                                stencil=obj.get('/Mask')
+                                if stencil:
+                                    stencil=stencil.get_object();size=(int(stencil['/Width']),int(stencil['/Height']))
+                                    mask=Image.frombytes('1',size,stencil.get_data(),'raw','1',(size[0]+7)//8,1).convert('L')
+                                    if list(stencil.get('/Decode',[0,1]))==[0,1]:mask=ImageChops.invert(mask)
+                                else:mask=ImageChops.invert(image.convert('L'))
+                                return mask.crop(mask.getbbox())
+                            before,after=ink(actual.pages[i*2]),ink(actual.pages[i*2+1])
+                            self.assertEqual(before.size,after.size)
+                            self.assertEqual(before.tobytes(),after.tobytes())
                             continue
                         command=next(c for c in layout.pages[i*2] if c.kind=='text')
                         run=layout._text_layout(command).glyphRuns()[0]

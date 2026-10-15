@@ -22,6 +22,8 @@ SYNTHETIC_BOLD_PROPERTY=0x108001
 SCRIPT_OFFSET_PROPERTY=0x108002
 BITMAP_FONT_PROPERTY=0x108003
 SYNTHETIC_ITALIC_PROPERTY=0x108004
+BITMAP_TRACKING_PROPERTY=0x108005
+BITMAP_SPACE_PROPERTY=0x108006
 TEXT_DPI=600
 TEXT_UNIT_PT=72/TEXT_DPI
 TEXT_TO_VIEW=96/TEXT_DPI
@@ -191,6 +193,8 @@ class SourceLayout:
         self._pdf_bitmap_qualities={}
         self._pdf_bitmap_bytes=0
         self._pdf_bitmaps=[]
+        self._pdf_bitmap_text={'processed_lines':0,'legacy_lines':0,'image_chunks':0,
+                               'legacy_reasons':{},'remaining':{},'whole_document_parity_verified':False}
         self._bitmap_images={}
         self._bitmap_image_bytes=0
         self._metrics_device=QImage(1,1,QImage.Format.Format_RGB32)
@@ -730,6 +734,7 @@ class SourceLayout:
         fmt=QTextCharFormat();fmt.setFont(self._font(style,fallback));fmt.setForeground(QColor(style.color))
         if not fallback and style.font in BITMAP_FAMILIES and style.font in self._source_fonts:
             fmt.setProperty(BITMAP_FONT_PROPERTY,style.font)
+            fmt.setProperty(BITMAP_TRACKING_PROPERTY,style.letter_spacing)
         if self._synthetic_bold(style,fallback):fmt.setProperty(SYNTHETIC_BOLD_PROPERTY,style.size*.02/TEXT_UNIT_PT)
         if self._synthetic_italic(style,fallback):fmt.setProperty(SYNTHETIC_ITALIC_PROPERTY,.333333)
         return fmt
@@ -895,6 +900,7 @@ class SourceLayout:
                     target=effective.size/TEXT_UNIT_PT*effective.stretch/200*(1+effective.letter_spacing/100)
                     space_font=self._font_with_advance(space_font,' ',target)
                     fmt.setFont(space_font)
+                    fmt.setProperty(BITMAP_SPACE_PROPERTY,target)
                 background=QColor(run.style.background)
                 if background.isValid():fmt.setBackground(background)
                 if run.style.superscript:fmt.setVerticalAlignment(QTextCharFormat.VerticalAlignment.AlignSuperScript)
@@ -949,7 +955,7 @@ class SourceLayout:
         em=max(1,math.floor(size/TEXT_UNIT_PT+.5))
         key=(family,character,em,color.rgba())
         if key in self._bitmap_images:return self._bitmap_images[key]
-        glyph=self._hft_resolver.bitmap_glyph(family,character)
+        glyph=self._hft_resolver.bitmap_glyph(family,character,em)
         if glyph is None:return None
         mask,(left,top)=glyph.bitmap_mask(em)
         alpha=QImage(mask.tobytes(),mask.width,mask.height,mask.width,QImage.Format.Format_Alpha8).copy()
@@ -969,6 +975,19 @@ class SourceLayout:
             left,right,top,bottom=paragraph.style.border_offsets
             painter.fillRect(QRectF((x-left)/.75,(y-top)/.75,(width+left+right)/.75,(height+top+bottom)/.75),QColor(paragraph.style.background))
         layout=self._text_layout(command)
+        if self._pdf_picture_alpha:
+            from .pdf_bitmap_text import draw_line
+            bitmap_text=draw_line(self,painter,command,layout)
+            if bitmap_text is not None:
+                key='processed_lines' if bitmap_text['handled'] else 'legacy_lines'
+                self._pdf_bitmap_text[key]+=1
+                self._pdf_bitmap_text['image_chunks']+=bitmap_text.get('image_chunks',0)
+                if not bitmap_text['handled']:
+                    reason=bitmap_text['reason'];reasons=self._pdf_bitmap_text['legacy_reasons']
+                    reasons[reason]=reasons.get(reason,0)+1
+                for reason in bitmap_text.get('remaining',[]):
+                    reasons=self._pdf_bitmap_text['remaining'];reasons[reason]=reasons.get(reason,0)+1
+                if bitmap_text['handled']:return
         # Paint font outlines with grayscale antialiasing. Native screen font
         # rasterizers otherwise add RGB ClearType fringes to image/PDF output.
         painter.save();painter.translate(command.rect[0]/.75,command.rect[1]/.75)
@@ -1323,6 +1342,7 @@ class SourceLayout:
         self._pdf_alpha_sequence=0
         self._pdf_bitmap_cache.clear();self._pdf_bitmap_bytes=0
         self._pdf_bitmap_qualities.clear();self._pdf_bitmaps.clear()
+        self._pdf_bitmap_text.update(processed_lines=0,legacy_lines=0,image_chunks=0,legacy_reasons={},remaining={})
         try:
             for index in range(len(self.pages)):
                 if index:
@@ -1362,6 +1382,7 @@ class SourceLayout:
                 'drawing_limitations':list(dict.fromkeys(self._drawing_limitations.values())),
                 'image_limitations':self._image_limitations,
                 'pdf_bitmaps':self._pdf_bitmaps,
+                'pdf_bitmap_text':self._pdf_bitmap_text,
                 'pdf_picture_alpha':'ordered-8x8-white-stencil-300dpi; document brush sequence',
                 'pdf_alpha_native_initial_phase_known':False,
                 'installed_sfnt_fonts':self._sfnt_resolver.fonts}

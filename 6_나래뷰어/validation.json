@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T01:43:37+09:00",
+  "date_kst": "2026-10-16T07:11:25+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "26a07e910571933b56a831d705c82a794f629179",
+  "base_commit": "bd6f3ef0c45f7362ceda865d2b16861607496c33",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -20,8 +20,8 @@
       "independent_pages": 24,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.01669719868712312,
-      "changed_fraction_max": 0.23590139055393167,
+      "changed_fraction_min": 0.012109538113390536,
+      "changed_fraction_max": 0.2357846504757158,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -35,8 +35,8 @@
       "independent_pages": 24,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.01669719868712312,
-      "changed_fraction_max": 0.23590139055393167,
+      "changed_fraction_min": 0.012109538113390536,
+      "changed_fraction_max": 0.2357846504757158,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -169,23 +169,30 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 52,
+      "run": 53,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "viewer, picture effects, fonts and PDF bitmap tests; five sequential modules, bitmap module rerun with JPEG downscale case",
-      "log_sha256": "346ee2b9a166dc815cb344e10387e2d5aaaa50171d0f3d6864722d9349dc537d"
+      "scope": "53 distinct final passing tests: bitmap-font 3, related initial run 49 passes, one corrected italic representation assertion rerun passed",
+      "log_sha256": "6ad965b6e98ebd6137d9f9bc4dc2bdae00779663ec8dee9fe7d1d716c2313cd2",
+      "component_log_sha256": [
+        "11f7af71553f125c6bee12cc3763d3ad3676ffc433393a0eec13a2db390783e7",
+        "e1b8e40e78e44a18f9b2f628b76b64dff72b96e0571ba5d5bedcfc2f6c401e0d",
+        "febf2eb8ddc44000c57c857f373d2df661e7a03e0174ad2d5a0a46fae90c28dc"
+      ],
+      "initial_obsolete_representation_assertion_failures": 1,
+      "corrected_assertion_rerun_passed": true
     },
     "full_native_rerun": {
       "complete": false,
       "reason": "An earlier full-suite attempt encountered COM server launch errors and was interrupted; do not count it as passed."
     },
     "repository_portable": {
-      "run": 73,
+      "run": 74,
       "failures": 0,
       "errors": 0,
-      "skipped": 30,
-      "log_sha256": "88e88d2b084c303e361b53331ee65788e9ac69dc77a46cf5c56243d9277e3b1c"
+      "skipped": 31,
+      "log_sha256": "5d75f0c47d574bbdb182c361ceb23b8e712560a2d0ad94c483af7e8a81cfd2ff"
     },
     "cold_bitmap_cache": {
       "concurrent_workers": 4,
@@ -199,6 +206,31 @@
       "rgb_tolerance": 0,
       "alignment": false,
       "resizing": false
+    },
+    "bitmap_text_environment_rerun": {
+      "complete": false,
+      "reason": "A second 50-test grouped attempt stopped during Windows commit-memory exhaustion; no missing tests are counted from that attempt.",
+      "log_sha256": "acb27ac1b63d9a63bac0dc89684140efef870e6b71433988517469427c21faae"
+    },
+    "bitmap_font_whole_pages": {
+      "run": 332,
+      "passed": 332,
+      "single_glyph": 208,
+      "word_pages": 124,
+      "formats": [
+        "hwp",
+        "hwpx"
+      ],
+      "dpi": 96,
+      "rgb_tolerance": 0,
+      "alignment": false,
+      "resizing": false
+    },
+    "installed_skill_current": {
+      "pair_whole_pages": 24,
+      "pair_match": true,
+      "read_document_pages": 29,
+      "log_sha256": "63a3673564e64beea127d3609c6ef6f44b58c3676c29a1b88299ea5dee1fc4f2"
     }
   },
   "rea": {
@@ -579,6 +611,87 @@
         "parameters": {
           "session_id": "e7a2e51d-dc94-4efd-a840-4597398a781a"
         }
+      },
+      {
+        "query": "bitmap-spacing-input-core",
+        "evidence_id": "ev_0eaa2a85670fd352680c78d4013b5895fac599e617ba99e91301b21a4bb856aa",
+        "record_sha256": "92589a1b629c51e15023425798e30cdf96af80027d88e61e35d65b56b3dc3328",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1004fe90"
+        }
+      },
+      {
+        "query": "bitmap-spacing-device-transform",
+        "evidence_id": "ev_60e031175d5e7cbd4ff3054c470e2b22092ad15a58a76207982b316b817a7230",
+        "record_sha256": "f52062f22b491f7a800100ce6c9bb16957760d2f63286b09ee5c56108d6c7411",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1004ef00"
+        }
+      },
+      {
+        "query": "bitmap-small-glyph-cache",
+        "evidence_id": "ev_bdeb32cb90518de9e68bc933b864ce4a83ed0aca2f77380e67a3b08d8158218c",
+        "record_sha256": "bf59a970f8f3137d877e10d88ae6a2322b31d9a6b991ea9e3fd273aa626d5ff5",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10020d00"
+        }
+      },
+      {
+        "query": "bitmap-small-strike-raster",
+        "evidence_id": "ev_e81e50a9e33c1ef4f507fb68e5463ed6e79d2391e2380f70aeff73b1c23b8ff4",
+        "record_sha256": "aa8de352e5582e75c67a2e71174bd551844e04eec44c47d9d53243b05042c348",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100204c0"
+        }
+      },
+      {
+        "query": "bitmap-small-scale-kernel",
+        "evidence_id": "ev_7105a9abba072ff5c765c3d4b9c838c99d3750a358ca4ca373caedc9876c4727",
+        "record_sha256": "5418f27ebad48fca90bdb607e464c21b104511254d3b47320954bc23d276a101",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1001fc90"
+        }
+      },
+      {
+        "query": "bitmap-expanded-frida-observed",
+        "evidence_id": "ev_6849cb38dfeed86ec7ff576e8b14c20bf3abae771d245e03af12a8f65e0cf497",
+        "record_sha256": "9587a4db3a6f42f1a5b78d55d276c66be76e3997cdaf44db9938a7e84a5b6405",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "20413e44-4867-47c8-b126-afa8862c718e"
+        }
+      },
+      {
+        "query": "bitmap-logical-frida-observed",
+        "evidence_id": "ev_c03a16c6f0aef17bd94ea79b3f8010c8d854b6f46adf0102fe4e9a5550e14b30",
+        "record_sha256": "e49446fdbebfc4a3486b7a033cdbad32652e17da5cdb70e2a04d9ee41b621ad0",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "d9e437d1-ff23-439b-81c2-4449c677d7f5"
+        }
+      },
+      {
+        "query": "bitmap-grid-frida-observed",
+        "evidence_id": "ev_84b2c12b6a31953697d9c92ce39577af1c81fcdb46d25bc1c75882eea1d41c51",
+        "record_sha256": "4ba1f4b91ecf11eae423f30eac289ef9e9f4c0def8d3e33a6ef3d3ec1541abbd",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "0e1277df-0147-4742-81f7-2e9383882c34"
+        }
+      },
+      {
+        "query": "bitmap-advances-frida-observed",
+        "evidence_id": "ev_e84cd888a76186473f33cb47a91120a7a86bd03ac36565882dd1ea0322732749",
+        "record_sha256": "4b2817cb4b8bb07c2ebf2eca730a2c17b494a8b978e3f4464246648e96dc16ce",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "2c7c405c-eafa-4c95-a204-0af62bf4cbd4"
+        }
       }
     ],
     "sessions_closed": true,
@@ -636,25 +749,45 @@
       "worker_documents_closed": true,
       "source_binaries_unchanged": true,
       "raw_data_distributed": false
+    },
+    "bitmap_text_analysis": {
+      "static_procedures": [
+        "0x10058790",
+        "0x100572e0",
+        "0x100574e0",
+        "0x10006b50",
+        "0x1004fe90",
+        "0x1004ef00",
+        "0x10020d00",
+        "0x100204c0",
+        "0x1001fc90"
+      ],
+      "static_scope": "text buffer allocation/BitBlt splitting and PDF EMF replay; logical-to-device advances; bitmap strike selection and OR reduction",
+      "observed_scope": "generated multi-character fixtures: actual integer logical widths, cumulative device widths and positions; independent unobserved native PDFs for full-page comparison",
+      "frida_sessions_closed": true,
+      "static_snapshot_saved": true,
+      "raw_decompilation_distributed": false,
+      "captured_buffers_distributed": false
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "54be5b2510360ed93be182349a19c87bb723f0df93366b117722427da61a6b13",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "64fc38600286f4767142098f0b75564888cac584682b0390f483e91b6d3ed39d",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "aaae813c439dd364b316c7a82af2706065764a23620930c46792c95236aa0182",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ce85282e3baef73c3c4668410ea8d6e6ed9ff963df212fd97c8907be817bc7b6",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "589ccf77a907da17fe98ecebabe1e30db049d0862d88481e0d3dc80c2b165137",
+    "2_나래스킬/narae-viewer/SKILL.md": "74a90da08fee6d06f1e491125ca5fe51829e1d6bf33f38b0e230e7e3de049137",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "9ddea78197436c54cf2fdbfca98a3910e56868b64908461d894308f496f2b4ef",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "2e68c193c865883a87c7857751013ed14ca21c2075fe71585c82cdd4c632053d",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "9d9b1a59cc209dc9299f4aed6bb4a5750349bfb27f76e5c9bd5711bec3373203",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft_cff.py": "9e2df4fb3baadc44f4a5402077f21a0d38f91bec828610e4a1115fd5edd161cc",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "287d84f8aedb878d393bb660204ddf7058e6e94f0bfc5212f57189a50e5bdb1a",
-    "tests/test_font_appearance.py": "0fa1a3f4fd1f0689ea81858dcccb4d955263093ec1b0e05eaffaa0b4129e925d",
-    "tests/test_bitmap_fonts.py": "7c38c0e9174e775c9e1dc0e94d65251c10801cf54fb729e46347ae8aa93cd2bc",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "7d1e2ffce04580344fb6210bc3a2c77b9a6b95aeaf19a623fdbc56984a7795ee",
+    "tests/test_font_appearance.py": "db8d636a0d1cf2f973bce8eb85fc205ebc0b3a5c2ec3bf6397252732bdccc600",
+    "tests/test_bitmap_fonts.py": "8bccdb4a0d86a4cab327275d16380b0b01f99b32881bdc50adb3753b9a8c0faa",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap.py": "826f68d3246fa10c9eb0ca6b854feca847b7a90d4dd9a176289c59b0f48d20fd",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "5e2216bbf741981dd31bfa44663664a57a8ce539d8d39f502b5215de924e6e8f",
-    "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1"
+    "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "24929db32de1b04976a3c9bfce1543dca725138ca767a187697cfc262ae3e66f"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -830,18 +963,60 @@
     "native_bitmap_mask_samples": 208,
     "all_native_mask_pixels_equal": true,
     "independent_pdf_mask_payloads_equal": true,
-    "comparison_scope": "tight ink masks from embedded native RGB glyph images and independent PDF masks, without resizing; placement and native buffer padding excluded",
-    "renderer": "largest installed strike; em rounded to nearest 600dpi integer; cell boundaries truncated in full em coordinates",
+    "comparison_scope": "208 normal glyph full embedded RGB buffers, including white guard pixels; 332 full rendered pages including 124 multi-character pages; no comparison alignment or resizing",
+    "renderer": "smallest installed strike at least requested integer em, otherwise largest; integer cell expansion and OR reduction at 600dpi",
     "font_assets_distributed": false,
     "whole_font_equivalence_verified": false,
     "whole_document_equivalence_verified": false,
     "remaining": [
-      "printer glyph placement and native buffer padding/scaling",
       "bold/italic and horizontal stretch",
-      "other bitmap families",
-      "missing script faces and fallback",
-      "hinting and vertical metrics"
-    ]
+      "justified continuation lines and character backgrounds",
+      "mixed outline/fallback runs and unavailable script faces",
+      "other bitmap families and unverified alignment/encoding/geometry cases",
+      "full real-document parity"
+    ],
+    "single_glyph_whole_pages": 208,
+    "word_whole_pages": 124,
+    "all_synthetic_whole_pages_equal": true,
+    "word_cases_per_format": 62,
+    "word_sizes_pt": [
+      2,
+      3,
+      4,
+      4.5,
+      5,
+      5.5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      17,
+      18,
+      24,
+      36,
+      100
+    ],
+    "word_tracking_percent": [
+      -16,
+      -7,
+      7,
+      16
+    ],
+    "word_scope": [
+      "Hangul, Latin and supported Hanja script boundaries",
+      "word and trailing spaces",
+      "LEFT/CENTER/RIGHT",
+      "three nonblack colors",
+      "default half-em and explicit font space",
+      "long lines and horizontal/vertical bitmap chunks"
+    ],
+    "logical_advances": "font width rounded to 4 HWPUNIT before tracking, rounded again after tracking; default half-em spaces truncate independently; paragraph-terminal glyph has no tracking",
+    "device_advances": "round cumulative absolute logical positions using 7200-to-600 integer transform; preserve phase across word/script buffers",
+    "buffers": "85% ascent, 1.5 ascent height, half-height width padding, 16-bit aligned rows, 2047-pixel / 63488-byte chunks and retained guard rows"
   },
   "text_style_and_flow": {
     "source_control_slots": "UTF16 positions preserved; U+200B tracking suppressed; inline width preserved",

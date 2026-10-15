@@ -28,10 +28,10 @@ class Glyph:
     def bitmap_mask(self, em_pixels):
         """Independent monochrome raster, with its origin relative to the em.
 
-        Native bitmap scaling expands pixel cell boundaries using integer
-        truncation, rather than resampling a cropped ink box. At printer
-        resolution the requested em is rounded to the nearest integer. OR composition is
-        retained. Returns a Pillow L mask and (left, top) in full-em pixels.
+        Enlargement expands integer pixel cell boundaries; reduction splats
+        every set source bit with OR composition. The requested printer em
+        is rounded to the nearest integer. Returns a Pillow L mask and
+        (left, top) in full-em pixels.
         """
         import math
         from PIL import Image,ImageDraw
@@ -44,6 +44,11 @@ class Glyph:
             left=math.floor(x*scale+1e-9);right=math.floor((x+w)*scale+1e-9)
             top=math.floor((self.units_per_em-y-h)*scale+1e-9)
             bottom=math.floor((self.units_per_em-y)*scale+1e-9)
+            if em<self.units_per_em:
+                # Reduction splats every set source bit and ORs collisions.
+                # Preserve strokes whose scaled cell boundaries collapse.
+                right=math.floor((x+w-1)*scale+1e-9)+1
+                bottom=math.floor((self.units_per_em-y-1)*scale+1e-9)+1
             if right>left and bottom>top:rectangles.append((left,top,right,bottom))
         if not rectangles:return Image.new('L',(1,1)),(0,0)
         left=min(r[0] for r in rectangles);top=min(r[1] for r in rectangles)

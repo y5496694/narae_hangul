@@ -478,7 +478,7 @@ class InstalledHftResolver:
                 "unavailable_standard_codepoints":len(CHARSET-supported),"space_advance_em":settings['space_advance_em'],
                 "normal_outline_only":family not in BITMAP_FAMILIES,"normal_bitmap_only":family in BITMAP_FAMILIES,
                 "native_hinting":False,"vertical_metrics_exact":False,
-                "bitmap_renderer":"largest-strike; 600dpi integer cell boundaries" if family in BITMAP_FAMILIES else None}
+                "bitmap_renderer":"size-selected strike; 600dpi integer cell expansion / OR reduction" if family in BITMAP_FAMILIES else None}
             self._warn(family+" HFT의 설치된 문자표와 글리프를 사용합니다. 미지원 문자·굵게·기울임·힌팅·프린터 좌표는 원래 모양과 다를 수 있습니다.")
             return qt_family
         except (OSError,ValueError,KeyError,TypeError,AttributeError,ImportError,struct.error) as error:
@@ -487,22 +487,41 @@ class InstalledHftResolver:
             self.fonts[family]={"source_family":family,"status":"fallback","reason":str(error)}
             return None
 
-    def bitmap_glyph(self,family,character):
+    def bitmap_glyph(self,family,character,em_pixels=None):
         """Lazy installed bitmap decoding; never read a reference PDF."""
         family=ALIASES.get(family,family)
         if family not in BITMAP_FAMILIES:return None
-        key=(family,character)
+        key=(family,character,em_pixels)
         if key in self._bitmap_glyphs:return self._bitmap_glyphs[key]
         self.resolve(family)
         glyph=None
         for font in self._bitmap_sources.get(family,()):
-            try:candidate=font.glyph(character)
-            except (HftError,UnicodeError):continue
+            strikes=sorted({g['strike'] for g in font.groups if g['kind']==0})
+            if em_pixels is not None and strikes:
+                preferred=next((s for s in strikes if s>=em_pixels),strikes[-1])
+                strikes=[preferred]+[s for s in reversed(strikes) if s!=preferred]
+            else:strikes=[None]
+            candidate=None
+            for strike in strikes:
+                try:candidate=font.glyph(character,strike=strike)
+                except (HftError,UnicodeError):continue
+                break
+            if candidate is None:continue
             if candidate.kind.startswith('bitmap'):glyph=candidate
             break
         if len(self._bitmap_glyphs)>=4096:self._bitmap_glyphs.pop(next(iter(self._bitmap_glyphs)))
         self._bitmap_glyphs[key]=glyph
         return glyph
+
+    def bitmap_advance(self,family,character,size_hwp):
+        """Use the selected installed script font's width, before device rounding."""
+        family=ALIASES.get(family,family)
+        glyph=self.bitmap_glyph(family,character)
+        if glyph is None:return None
+        source=glyph.provenance.get('font_sha256')
+        for font in self._bitmap_sources.get(family,()):
+            if font.sha256==source:return font.advance(character,size_hwp)
+        return None
 
     def supports(self,family,character):
         if not isinstance(character,str) or len(character)!=1 or not isinstance(family,str):
