@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T01:20:33+09:00",
+  "date_kst": "2026-10-16T01:43:37+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "bb409b18ea582c588c5c9944077af6c6cbfc1105",
+  "base_commit": "26a07e910571933b56a831d705c82a794f629179",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -51,7 +51,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.019472020546253768,
-      "changed_fraction_max": 0.06516790366249546,
+      "changed_fraction_max": 0.0584620841695964,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -169,28 +169,36 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 51,
+      "run": 52,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "viewer, picture effects, outline and bitmap HFT, PDF bitmap sampling; sequential native run",
-      "log_sha256": "251d56ecf41e367e5ebbe94cd85980cc41553b0a3d509199d4ae9aa44009865d"
+      "scope": "viewer, picture effects, fonts and PDF bitmap tests; five sequential modules, bitmap module rerun with JPEG downscale case",
+      "log_sha256": "346ee2b9a166dc815cb344e10387e2d5aaaa50171d0f3d6864722d9349dc537d"
     },
     "full_native_rerun": {
       "complete": false,
       "reason": "An earlier full-suite attempt encountered COM server launch errors and was interrupted; do not count it as passed."
     },
     "repository_portable": {
-      "run": 72,
+      "run": 73,
       "failures": 0,
       "errors": 0,
-      "skipped": 29,
-      "log_sha256": "22466ae4c4db3e8c875a13d35753b598216c940a0b1397689fbbdc9350834e30"
+      "skipped": 30,
+      "log_sha256": "88e88d2b084c303e361b53331ee65788e9ac69dc77a46cf5c56243d9277e3b1c"
     },
     "cold_bitmap_cache": {
       "concurrent_workers": 4,
       "all_native_raster_hashes_equal": true,
-      "log_sha256": "e2e3e2c0779b7237b02dff377998abce3ef588a4089d5263d31331a52ec1e90e"
+      "log_sha256": "307aa0811992e4cc871522afe66e646ad021c324e5e42b725f9589279e940ce8"
+    },
+    "pdf_bitmap_whole_pages": {
+      "run": 44,
+      "passed": 44,
+      "dpi": 96,
+      "rgb_tolerance": 0,
+      "alignment": false,
+      "resizing": false
     }
   },
   "rea": {
@@ -603,14 +611,39 @@
       "frida_observation_exports_completed": true,
       "sessions_closed": true,
       "raw_pixels_and_decompilation_distributed": false
+    },
+    "bitmap_format_analysis": {
+      "evidence": [
+        {
+          "evidence_id": "ev_1b5dd071f7971e07092547b9fb84bedb9587318fc2e1c1723b84a936fc574f6a",
+          "operation": "frida_session_status",
+          "record_sha256": "93bc8e81b1e857ca3c03c4e8231f964f981e417cc64a2c84b0d14f5140cf4f54"
+        },
+        {
+          "evidence_id": "ev_55a9c1c6270834fbff949b4f9211a8d305c5db981d096eb90934b815684d30d5",
+          "operation": "frida_session_status",
+          "record_sha256": "200b90da1f17eaf287c03e6a3e5c9851540b5c3bc5914ffc49159b36bec9b15e"
+        },
+        {
+          "evidence_id": "ev_d98b9598ea0bbe2a201a38110714bdcf39a1e08dec146d7227f61b65bf84a595",
+          "operation": "frida_session_status",
+          "record_sha256": "290b3b2fb259b5f01fadaba9231bd338ad79c5a936eae9f7de83a3dbee899477"
+        }
+      ],
+      "bundle_sha256": "2fbb6f4b53053b37b529e38170c97b32ae609d20888fcfbb3f8679f8616458d7",
+      "observations": "Original/target GDI+ pixels; JPEG/GIF/BMP intermediate encoded files; pre-PDF-encoding RGB and quality. Generated fixtures only.",
+      "sessions_closed": true,
+      "worker_documents_closed": true,
+      "source_binaries_unchanged": true,
+      "raw_data_distributed": false
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "3022cf287d133bc64fd312d001ed2cb3aee9f6d44a35064a45e3b824a2ad90ba",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "54be5b2510360ed93be182349a19c87bb723f0df93366b117722427da61a6b13",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "aaae813c439dd364b316c7a82af2706065764a23620930c46792c95236aa0182",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ce85282e3baef73c3c4668410ea8d6e6ed9ff963df212fd97c8907be817bc7b6",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "b73e47d3bdd24075fda9825ea5eb8fef245ca6b538370e45fe4a88de32cc7267",
+    "2_나래스킬/narae-viewer/SKILL.md": "589ccf77a907da17fe98ecebabe1e30db049d0862d88481e0d3dc80c2b165137",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "9ddea78197436c54cf2fdbfca98a3910e56868b64908461d894308f496f2b4ef",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
@@ -619,9 +652,9 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "287d84f8aedb878d393bb660204ddf7058e6e94f0bfc5212f57189a50e5bdb1a",
     "tests/test_font_appearance.py": "0fa1a3f4fd1f0689ea81858dcccb4d955263093ec1b0e05eaffaa0b4129e925d",
     "tests/test_bitmap_fonts.py": "7c38c0e9174e775c9e1dc0e94d65251c10801cf54fb729e46347ae8aa93cd2bc",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap.py": "fc4c35c459d14dc88432b5e965181c74bb48b9270f62cc5f0dbcec4c6326a839",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "a7184955a8c9feeb5ce71c7af69f7741d11b6793ecbe865da150fc49686d3c36",
-    "tests/test_pdf_bitmap.py": "d0c601eba3f244739134c19b27a96338efea28e5bf295b65e8066df8c4367a48"
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap.py": "826f68d3246fa10c9eb0ca6b854feca847b7a90d4dd9a176289c59b0f48d20fd",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "5e2216bbf741981dd31bfa44663664a57a8ce539d8d39f502b5215de924e6e8f",
+    "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -901,7 +934,10 @@
     "backend": "own source-only C# adapter, locally compiled for Windows .NET Framework x86; OS GDI+ only",
     "uses_hancom_runtime": false,
     "native_sampling": "32-bit GDI+ bilinear; x64 differs on a high-frequency synthetic fixture",
-    "bitmap_dpi": 96,
+    "bitmap_dpi": {
+      "JPEG": 500,
+      "other_supported_formats": 96
+    },
     "upscale": false,
     "color_quantization": "RGB555 with ordered 4x4 ranks, bottom-up bitmap rows",
     "ranks_topological": [
@@ -933,25 +969,54 @@
     "jpeg": "auto quality from device image width/bitmap width, clipped 35..75; >1024 colors and quality>70 multiplies by0.7; <4000 bytes or <32 colors is lossless",
     "qt_storage": "JPEG-decoded RGB stored without further lossy encoding",
     "printer_frame": "600dpi grid in half-HWPUNIT integer coordinates, float32 paper factors, 3-decimal image matrix and independently rounded clip edges",
-    "native_synthetic_whole_pages": 12,
+    "native_synthetic_whole_pages": 44,
     "all_synthetic_whole_pages_equal": true,
     "synthetic_formats": [
       "hwp",
       "hwpx"
     ],
     "synthetic_bitmap_sources": [
-      "RGB BMP",
-      "RGB PNG",
-      "fully opaque RGBA PNG"
+      "RGB BMP/PNG/JPEG",
+      "opaque RGBA PNG",
+      "palette GIF/PNG/BMP",
+      "8-bit grayscale PNG/JPEG"
     ],
     "synthetic_target_sizes": [
+      [
+        40,
+        30
+      ],
+      [
+        63,
+        48
+      ],
       [
         64,
         48
       ],
       [
+        65,
+        48
+      ],
+      [
+        67,
+        48
+      ],
+      [
         96,
         72
+      ],
+      [
+        129,
+        48
+      ],
+      [
+        257,
+        48
+      ],
+      [
+        257,
+        193
       ]
     ],
     "native_real_document_image_payloads": 8,
@@ -967,11 +1032,17 @@
     "source_images_or_documents_distributed": false,
     "whole_document_equivalence_verified": false,
     "remaining": [
-      "JPEG and indexed source paths",
       "source alpha and picture alpha/effects",
       "crop, rotation and reflection",
-      "JPEG coefficient edge cases and native repeated-image compression cache",
-      "other printer geometry, fonts, tables and page boundaries"
-    ]
+      "other image formats and unverified encoding/ratio edge cases",
+      "alpha brush phase, other printer geometry, fonts, tables and page boundaries"
+    ],
+    "format_intermediate_encoding": "JPEG through GDI+ default JPEG; resized GIF through GDI+ GIF; unscaled GIF retains original palette",
+    "final_odd_rgb555_column": "Widths 4n+1 use third rank column for final pixel; other odd widths already end in that column",
+    "grayscale": "8-bit grayscale sources bypass RGB555",
+    "compression_cache": "Per-PDF decoded RGB/size identity preserves first JPEG quality, including lossless choice",
+    "native_captured_pre_pdf_bitmap_samples": 8,
+    "all_captured_format_samples_equal": true,
+    "format_probe_report_sha256": "17b57d1b5b059da2b38fdcae90831d87086643466d878f909dfe0c3a9ad6d2ae"
   }
 }

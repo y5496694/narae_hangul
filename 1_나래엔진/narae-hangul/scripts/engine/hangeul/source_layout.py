@@ -188,6 +188,7 @@ class SourceLayout:
         self._pdf_page_width=self.width
         self._pdf_page_height=self.height
         self._pdf_bitmap_cache={}
+        self._pdf_bitmap_qualities={}
         self._pdf_bitmap_bytes=0
         self._pdf_bitmaps=[]
         self._bitmap_images={}
@@ -1210,7 +1211,7 @@ class SourceLayout:
             if not unsupported:
                 try:
                     if key not in self._pdf_bitmap_cache:
-                        pixels,facts=prepare_bitmap(run.image,*command.rect[2:],self._pdf_page_width)
+                        pixels,facts=prepare_bitmap(run.image,*command.rect[2:],self._pdf_page_width,self._pdf_bitmap_qualities)
                         data=pixels.tobytes()
                         bitmap=QImage(data,pixels.width,pixels.height,pixels.width*3,QImage.Format.Format_RGB888).copy()
                         if self._pdf_bitmap_bytes+bitmap.sizeInBytes()>64*1024*1024:
@@ -1320,6 +1321,8 @@ class SourceLayout:
         previous_height=self._pdf_page_height
         self._pdf_picture_alpha=printer.outputFormat()==printer.OutputFormat.PdfFormat
         self._pdf_alpha_sequence=0
+        self._pdf_bitmap_cache.clear();self._pdf_bitmap_bytes=0
+        self._pdf_bitmap_qualities.clear();self._pdf_bitmaps.clear()
         try:
             for index in range(len(self.pages)):
                 if index:

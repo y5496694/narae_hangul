@@ -28,6 +28,8 @@ class PdfBitmapTests(unittest.TestCase):
         for value in (0,255):
             image=Image.new('RGB',(5,3),(value,)*3)
             self.assertEqual(image.tobytes(),rgb555_dither(image).tobytes())
+        odd=rgb555_dither(Image.new('RGB',(5,4),(7,7,7)))
+        self.assertEqual([8,0,8,8],[odd.getpixel((4,y))[0] for y in range(4)])
 
     def test_scale_bounds_are_checked_before_worker_execution(self):
         for data,width,height in ((b'',1,1),(b'x',0,1),(b'x',4001,4001)):
@@ -90,6 +92,51 @@ class PdfBitmapTests(unittest.TestCase):
                         # Read the native DCT stream directly for this oracle.
                         with Image.open(BytesIO(b.get_data())) as image:native_rgb=image.convert('RGB').tobytes()
                         self.assertEqual(native_rgb,a.get_data(),(ext,case))
+                    self.assertTrue(compare(own,native)['match'],ext)
+
+    @unittest.skipUnless(os.environ.get('NARAE_RUN_HANCOM_TESTS')=='1','requires installed Hancom')
+    def test_jpeg_gif_indexed_and_odd_width_whole_pages_equal_native(self):
+        from pypdf import PdfReader
+        from hangeul.formats import Paragraph,ParaStyle,Run,save_hwp,save_hwpx
+        from hangeul.geometry import DocumentModel,PictureGeometry
+        from hangeul.viewer import application,Document,compare
+        application();cases=[];blocks=[]
+        source=pattern()
+        for kind,mode,sizes in (
+            ('JPEG','RGB',((40,30),(64,48),(96,72),(257,193))),
+            ('GIF','P',((64,48),(96,72),(257,193))),
+            ('BMP','RGB',tuple((w,48) for w in (63,65,67,129,257))),
+            ('PNG','P',((64,48),)),('BMP','P',((64,48),)),
+            ('PNG','L',((64,48),)),('JPEG','L',((64,48),)),
+        ):
+            image=source.quantize(colors=128) if mode=='P' else source.convert(mode)
+            stream=BytesIO();image.save(stream,format=kind)
+            for width,height in sizes:
+                picture=PictureGeometry(original_width_pt=192.75,original_height_pt=144.75,
+                    image_width_pt=192.75,image_height_pt=144.75,crop=(0,0,192.75,144.75))
+                run=Run(image=stream.getvalue(),image_ext=kind.lower(),width=width,height=height,picture=picture)
+                blocks.append(Paragraph([run],style=ParaStyle(page_break=bool(blocks))))
+                cases.append((kind,mode,width,height))
+        with tempfile.TemporaryDirectory() as folder:
+            for ext,save in (('hwp',save_hwp),('hwpx',save_hwpx)):
+                path=Path(folder)/('formats.'+ext);save(DocumentModel(blocks),path)
+                with Document(path) as own,Document(path,'hancom') as native:
+                    self.assertEqual(len(cases),native.count);self.assertEqual(native.count,own.count)
+                    records=own.details['pdf_bitmaps']
+                    self.assertEqual(len(cases),sum(p['status']=='prepared' for p in records))
+                    actual,reference=PdfReader(own.pdf_path),PdfReader(native.pdf_path)
+                    for n,case in enumerate(cases):
+                        page=reference.pages[n]
+                        native_image=next(o.get_object() for o in page['/Resources']['/XObject'].values()
+                                          if o.get_object().get('/Subtype')=='/Image')
+                        if native_image.get('/Filter')=='/DCTDecode':
+                            with Image.open(BytesIO(native_image.get_data())) as image:expected=image.convert('RGB')
+                        else:expected=page.images[0].image.convert('RGB')
+                        ours=next(o.get_object() for o in actual.pages[n]['/Resources']['/XObject'].values()
+                                  if o.get_object().get('/Subtype')=='/Image')
+                        self.assertEqual(expected.size,(ours['/Width'],ours['/Height']),(ext,case))
+                        self.assertEqual(hashlib.sha256(expected.tobytes()).hexdigest(),
+                                         hashlib.sha256(ours.get_data()).hexdigest(),(ext,case))
                     self.assertTrue(compare(own,native)['match'],ext)
 
 

@@ -66,6 +66,12 @@ def rgb555_dither(image):
             for channel in range(3):
                 first=x*3+channel
                 row[first::12]=row[first::12].translate(_RGB555_TABLES[bias])
+        if width%4==1:
+            # The native converter's final unpaired RGB555 word uses the
+            # third column, including widths 65/129/193/257. The other odd
+            # widths already end in that column.
+            first=(width-1)*3
+            row[first:first+3]=data[y*stride+first:y*stride+first+3].translate(_RGB555_TABLES[ranks[2]])
         data[y*stride:(y+1)*stride]=row
     return Image.frombytes('RGB',source.size,bytes(data))
 
@@ -106,7 +112,7 @@ def _windows_worker():
 
 
 def scale_rgb(encoded,width,height):
-    """Decode and resample through OS GDI+ x86, using a bounded pipe protocol."""
+    """GDI+ x86 resampling and JPEG/GIF format round trip, in bounded pipes."""
     from PIL import Image
     width,height=int(width),int(height)
     if not 0<len(encoded)<=MAX_ENCODED_BYTES or min(width,height)<1 or width*height>MAX_PIXELS:
@@ -137,39 +143,51 @@ def jpeg_quality(width_pt,bitmap_width,page_width_pt):
     return max(35,min(75,int(f32(f32(points/bitmap_width)*100))))
 
 
-def prepare_bitmap(encoded,width_pt,height_pt,page_width_pt):
-    """Opaque RGB BMP/PNG path; return pixels and explicit processing facts.
+def prepare_bitmap(encoded,width_pt,height_pt,page_width_pt,quality_cache=None):
+    """Opaque picture path; return pixels and explicit processing facts.
 
-    JPEG, indexed images, source alpha and picture effects have additional
-    native paths. The caller retains those paths and reports their limits.
+    Source alpha and picture effects have additional native paths. The caller
+    retains those paths and reports their limits.
     """
     from PIL import Image
     if len(encoded)>MAX_ENCODED_BYTES:raise BitmapBackendError('encoded bitmap bounds')
     with Image.open(BytesIO(encoded)) as original:
         source_format=original.format
-        if source_format not in ('BMP','PNG') or original.mode not in ('RGB','RGBA'):
-            raise BitmapBackendError('unsupported source format or indexed bitmap')
+        source_mode=original.mode
+        if source_format not in ('BMP','PNG','JPEG','GIF') or original.mode not in ('RGB','RGBA','P','L'):
+            raise BitmapBackendError('unsupported source format or bitmap mode')
         if original.width*original.height>MAX_PIXELS:raise BitmapBackendError('source bitmap bounds')
-        if original.mode=='RGBA' and original.getchannel('A').getextrema()!=(255,255):
+        if original.convert('RGBA').getchannel('A').getextrema()!=(255,255):
             raise BitmapBackendError('source bitmap alpha')
         source_size=original.size
-    width=min(source_size[0],max(1,math.floor(abs(width_pt)*96/72+.5)))
-    height=min(source_size[1],max(1,math.floor(abs(height_pt)*96/72+.5)))
-    image=rgb555_dither(scale_rgb(encoded,width,height))
+    dpi=500 if source_format=='JPEG' else 96
+    width=min(source_size[0],max(1,math.floor(abs(width_pt)*dpi/72+.5)))
+    height=min(source_size[1],max(1,math.floor(abs(height_pt)*dpi/72+.5)))
+    image=scale_rgb(encoded,width,height)
+    grayscale=source_mode=='L'
+    if source_format!='GIF' and not grayscale:image=rgb555_dither(image)
+    pixel_key=(width,height,hashlib.sha256(image.tobytes()).digest())
     colors=image.getcolors(1025)
     count=len(colors) if colors is not None else 1026
     quality=None
     if width*height*3>=4000 and count>=32:
         quality=jpeg_quality(width_pt,width,page_width_pt)
         if count>1024 and quality>70:quality=int(quality*.7)
+    reused=quality_cache is not None and pixel_key in quality_cache
+    if reused:quality=quality_cache[pixel_key]
+    elif quality_cache is not None:quality_cache[pixel_key]=quality
+    if quality is not None:
         stream=BytesIO();image.save(stream,format='JPEG',quality=quality,subsampling=2,
                                     optimize=False,progressive=False)
         # Qt must store these decoded pixels losslessly; re-encoding them
         # through QPrinter's own JPEG defaults adds another lossy generation.
         with Image.open(BytesIO(stream.getvalue())) as jpeg:image=jpeg.convert('RGB')
-    return image,{'source_format':source_format,'source_size':list(source_size),
-                  'bitmap_size':[width,height],'sampling':'Windows GDI+ x86 bilinear',
-                  'color_quantization':'RGB555 bottom-up 4x4 ordered dither',
+    return image,{'source_format':source_format,'source_mode':source_mode,'source_size':list(source_size),
+                  'bitmap_size':[width,height],'sampling':'Windows GDI+ x86 bilinear','bitmap_dpi':dpi,
+                  'intermediate_encoding':('original GIF palette' if source_format=='GIF' and (width,height)==source_size
+                                           else 'Windows GDI+ '+source_format if source_format in ('JPEG','GIF') else 'lossless'),
+                  'color_quantization':'8-bit grayscale' if grayscale else 'GDI+ GIF palette' if source_format=='GIF' else 'RGB555 bottom-up 4x4 ordered dither',
                   'color_count':count if colors is not None else '>1025',
-                  'jpeg_quality':quality,'jpeg_decoded_pixels_stored_losslessly':quality is not None,
+                  'jpeg_quality':quality,'jpeg_quality_reused':reused,
+                  'jpeg_decoded_pixels_stored_losslessly':quality is not None,
                   'whole_page_parity_verified':False}
