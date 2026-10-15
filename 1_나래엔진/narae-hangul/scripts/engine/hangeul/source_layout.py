@@ -188,6 +188,7 @@ class SourceLayout:
         self._paragraph_lines={}
         self._inline_objects={}
         self._reflowed_paragraphs=set()
+        self._repositioned_cached_paragraphs=set()
         self._synthetic_text_paragraphs=set()
         self._reflowed_object_paragraphs=set()
         self._field_page=None
@@ -261,6 +262,8 @@ class SourceLayout:
         self._set_page_geometry(model.page)
         if self._reflowed_paragraphs:
             self.warnings.append(f"줄 배치 캐시가 없는 {len(self._reflowed_paragraphs)}개 문단은 Qt로 다시 배치했습니다. 수정 내용은 표시하지만 해당 문단의 줄바꿈과 높이는 한컴과 다를 수 있습니다.")
+        if self._repositioned_cached_paragraphs:
+            self.warnings.append(f"새 배치 뒤에 이어지는 {len(self._repositioned_cached_paragraphs)}개 문단의 저장된 세로 좌표를 새 본문 흐름에 맞춰 이동했습니다. 한컴과의 배치는 별도 비교가 필요합니다.")
         if self._synthetic_text_paragraphs:
             self.warnings.append(f"지원하지 않는 개체의 대체 텍스트가 있는 {len(self._synthetic_text_paragraphs)}개 문단은 원래 개체 대신 대체 텍스트로 표시합니다.")
         if self._reflowed_object_paragraphs:
@@ -297,7 +300,8 @@ class SourceLayout:
         if paragraph.line_segments:return paragraph.line_segments
         text=self._paragraph_text(paragraph)
         if not text and any(run.image for run in paragraph.runs):text='\u200b'
-        if not text:return []
+        # An uncached empty paragraph still consumes its line and spacing.
+        if not text:text='\u200b'
         self._reflowed_paragraphs.add(id(paragraph))
         text=text.replace('\r','\u200b').replace('\n','\u2028').replace('\x0b','\u2028').replace('\ufffc','\u200b')
         available=max(1,width-paragraph.style.left-paragraph.style.right)
@@ -360,11 +364,28 @@ class SourceLayout:
         current=page;last=-1.;origin_x,origin_y=origin
         if content_width is None:content_width=self.body_width
         local_offset=0.;previous_end=0.
+        reflow_tail=False
         if continuation_y is None:continuation_y=self.top
         for block_index,block in enumerate(blocks):
             if isinstance(block,Paragraph):
                 lines=self._segments_for(block,content_width,previous_end-local_offset)
                 if not lines:continue
+                if body and not block.line_segments:
+                    reflow_tail=True
+                if body and reflow_tail and block.line_segments:
+                    self._repositioned_cached_paragraphs.add(id(block))
+                    # Cached absolute y positions after an uncached paragraph
+                    # describe the old text. Reposition subsequent lines from
+                    # the new flow cursor; a backwards stale y is not a page
+                    # break. Retain their measured heights, advances and x.
+                    cursor=(0 if block.style.page_break else previous_end-local_offset)+block.style.before
+                    placed=[]
+                    for line in lines:
+                        if cursor+line['height_pt']>self.body_height+.1 and cursor>0:
+                            cursor=0.
+                        placed.append(dict(line,y_pt=cursor))
+                        cursor+=line['height_pt']+line.get('spacing_pt',0)
+                    lines=placed
                 image_only=any(r.image for r in block.runs) and all(r.image or not r.text.strip() for r in block.runs)
                 if not block.line_segments and image_only:
                     occupied=max((r.height*.75+r.picture.position.out_margin[2]+r.picture.position.out_margin[3]
@@ -444,6 +465,9 @@ class SourceLayout:
                 command_counts=[len(commands) for commands in self.pages]
                 line=block.anchor_segments[0] if block.anchor_segments else {'y_pt':max(0,last),'x_pt':0,'width_pt':self.body_width}
                 anchor=self._object_anchors.get(id(block))
+                if body and reflow_tail and anchor:
+                    anchor_lines=self._paragraph_lines.get(id(anchor),[])
+                    line=next((l for l in reversed(anchor_lines) if l['text_start']<=block.anchor_text_start),line)
                 anchor_page=self._paragraph_pages.get((id(anchor),0),current)
                 uncached_flow=not block.anchor_segments and not (anchor and anchor.line_segments) and _occupies_flow(block.position)
                 if uncached_flow:
@@ -758,6 +782,15 @@ class SourceLayout:
                 item=QTextLayout.FormatRange();item.start=offset;item.length=1
                 item.format=QTextCharFormat();item.format.setFont(spacer_font)
                 spacers.append(item)
+        # Imported HWP paragraph ends retain a zero-width control slot; HWPX
+        # omits it. Qt applies negative letter spacing to that terminal slot,
+        # shifting centered/right-aligned text. Drop trailing control padding
+        # after inline advances have been installed, without shifting offsets
+        # of any visible character or inline object.
+        visible_tail=text.rstrip('\u200b')
+        if visible_tail:
+            text=visible_tail
+            text_units=len(text.encode('utf-16le'))//2
         continued=paragraph.style.align=='JUSTIFY' and command.extra.get('justify_continuation',False)
         # A cached source line is not the paragraph's last line merely because
         # we render it separately. Keep another (unlaid-out) word so Qt applies
@@ -950,12 +983,27 @@ class SourceLayout:
             transform.scale(-1 if shape.flip_h else 1,-1 if shape.flip_v else 1)
             transform.translate(-center.x(),-center.y())
             path=transform.map(path)
+        # Source drawing coordinates have HWPUNIT precision (1/100 pt).
+        # HWPX's six-decimal affine factors otherwise leave e.g. 391.559894
+        # instead of the equivalent HWP 391.56, changing edge antialiasing.
+        # Quantize geometry, never the comparison pixels or reference images.
+        for index in range(path.elementCount()):
+            point=path.elementAt(index)
+            path.setElementPositionAt(index,round(point.x,2),round(point.y,2))
         return path
 
     def _draw_shape(self,painter,command):
         drawing=command.source
         x,y,width,height=command.rect
         path=self._drawing_path(drawing,width,height)
+        if drawing.kind=='rect' and path.elementCount()==5:
+            points={(round(path.elementAt(i).x,2),round(path.elementAt(i).y,2)) for i in range(5)}
+            if points=={(0.,0.),(round(width,2),0.),(round(width,2),round(height,2)),(0.,round(height,2))}:
+                # Axis-aligned boxes retain four independent edges (including
+                # circular dots). Route by actual geometry, not whether HWPX
+                # happened to serialize an explicit transform chain.
+                self._draw_box(painter,command)
+                return
         border=drawing.borders[0]
         color=QColor(border.color)
         color.setAlpha(255-max(0,min(255,drawing.line_options.get('alpha',0))))
@@ -1025,9 +1073,11 @@ class SourceLayout:
         for command in commands:
             if command.kind=='text':self._draw_text(painter,command)
             elif command.kind=='image':self._draw_image(painter,command)
-            elif command.kind=='box' and isinstance(command.source,Drawing) and (command.source.kind!='rect' or command.source.shape.rotation
-                    or command.source.shape.flip_h or command.source.shape.flip_v or any(values!=[1,0,0,0,1,0]
-                        for _,values in command.source.geometry.get('transform_chain',[]))):self._draw_shape(painter,command)
+            # A Drawing uses one path renderer in both formats. Previously a
+            # rectangle imported from HWP took the non-antialiased cell-border
+            # path, while the same HWPX rectangle used the shape path merely
+            # because its affine chain was serialized explicitly.
+            elif command.kind=='box' and isinstance(command.source,Drawing):self._draw_shape(painter,command)
             elif command.kind=='cell' and 'table_group' in command.extra:
                 group=command.extra['table_group']
                 if group in tables:continue
@@ -1085,6 +1135,7 @@ class SourceLayout:
                 'pages_pt':[list(self.page_size(index)) for index in range(len(self.pages))],
                 'uses_hancom_runtime':False,'uses_reference_pdf':False,'mode':'source cached line geometry; retained for compatible text edits',
                 'text_metrics_dpi':TEXT_DPI,'recomputed_paragraphs':len(self._reflowed_paragraphs),
+                'repositioned_cached_paragraphs':len(self._repositioned_cached_paragraphs),
                 'synthetic_text_paragraphs':len(self._synthetic_text_paragraphs),
                 'recomputed_object_paragraphs':len(self._reflowed_object_paragraphs),
                 'objects':[[{'kind':c.kind,'rect_pt':list(c.rect),'source_index':getattr(c.source,'source_index',None)} for c in commands] for commands in self.pages],
