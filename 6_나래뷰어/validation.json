@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T00:11:30+09:00",
+  "date_kst": "2026-10-16T00:22:51+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "0fd9614281c5578563913d820936b2319a870681",
+  "base_commit": "6e408965c06c20da9dc40bd1eb479003d3e429c4",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -512,6 +512,15 @@
         "parameters": {
           "procedure": "0x1001ca00"
         }
+      },
+      {
+        "query": "pdf-color-frida-observed",
+        "evidence_id": "ev_0f48804842eb722e905e5fc23f6ddf195933089460072d93dc7f5b25b26d63dd",
+        "record_sha256": "c003a931211246b236dd857f789e474d607503ee95851f62063995479bc5c06c",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "d4423e0f-9917-4d93-9e38-4ba857f00e34"
+        }
       }
     ],
     "sessions_closed": true,
@@ -786,5 +795,45 @@
     ],
     "sessions_closed": true,
     "raw_decompilation_distributed": false
+  },
+  "native_rgb555_picture_observation": {
+    "scope": "two opaque BMP pictures from report-hwp; observed before native JPEG encoding",
+    "native_pre_jpeg_channel_format": "RGB555: all channel values belong to the 5-bit expansion table",
+    "samples": [
+      {
+        "width": 304,
+        "height": 190,
+        "bytes": 173280,
+        "colors": 1135,
+        "quality_before": 74,
+        "quality_after": 51,
+        "lossless": false
+      },
+      {
+        "width": 304,
+        "height": 190,
+        "bytes": 173280,
+        "colors": 903,
+        "quality_before": 74,
+        "quality_after": 74,
+        "lossless": false
+      }
+    ],
+    "native_jpeg_decoded_pixel_matches": 2,
+    "matched_raw_rgb_sha256": [
+      "b12a9a852d0d02c775e6cdc1459f62b9d510179ca1c193ba9882f084a91d5395",
+      "16c3d2cf0fcc24982457ace36d65f0d9a2abadd6f8eaf6c3b916c341ae95be44"
+    ],
+    "jpeg_codestream_bytes_equal": false,
+    "resampler_reproduced": false,
+    "independent_pipeline_implemented": false,
+    "whole_page_pixel_parity_verified": false,
+    "instrumented_export_completed": false,
+    "instrumented_export_failure": "PrintToPDFEx COM server exception; partial PDF excluded from all parity references",
+    "uninstrumented_control_pages": 24,
+    "source_unchanged": true,
+    "frida_session_closed": true,
+    "raw_documents_and_bitmap_payloads_distributed": false,
+    "codec_report_sha256": "9a601d7cc15f40c73ecf16bb4fc241c6c8a911203b0528fd29c9fabdec1dd67c"
   }
 }
