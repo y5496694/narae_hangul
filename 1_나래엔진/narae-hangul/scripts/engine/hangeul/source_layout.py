@@ -15,11 +15,12 @@ from PySide6.QtGui import (QColor, QFont, QFontDatabase, QFontMetricsF, QImage, 
 from PySide6.QtGui import QPainterPath
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem
 from .formats import Paragraph, Table, Drawing, _table_grid
-from .font_resolver import InstalledHftResolver,InstalledSfntResolver,installed_default_fonts
-from .picture_effects import apply_tone
+from .font_resolver import InstalledHftResolver,InstalledSfntResolver,installed_default_fonts,BITMAP_FAMILIES
+from .picture_effects import apply_tone,pdf_alpha_tile,image_is_opaque
 
 SYNTHETIC_BOLD_PROPERTY=0x108001
 SCRIPT_OFFSET_PROPERTY=0x108002
+BITMAP_FONT_PROPERTY=0x108003
 TEXT_DPI=600
 TEXT_UNIT_PT=72/TEXT_DPI
 TEXT_TO_VIEW=96/TEXT_DPI
@@ -180,6 +181,10 @@ class SourceLayout:
         self._script_offsets={}
         self._drawing_limitations={}
         self._image_limitations=[]
+        self._pdf_picture_alpha=False
+        self._pdf_alpha_sequence=0
+        self._bitmap_images={}
+        self._bitmap_image_bytes=0
         self._metrics_device=QImage(1,1,QImage.Format.Format_RGB32)
         self._metrics_device.setDotsPerMeterX(round(TEXT_DPI/0.0254))
         self._metrics_device.setDotsPerMeterY(round(TEXT_DPI/0.0254))
@@ -207,8 +212,12 @@ class SourceLayout:
                         if run.image:
                             picture=run.picture
                             unsupported=[]
+                            bitmap=QImage.fromData(run.image)
+                            if not image_is_opaque(bitmap):unsupported.append('alpha:source-bitmap-alpha')
                             if picture.alpha:
-                                unsupported.append('alpha:pdf-printer-dither')
+                                if picture.rotation:unsupported.append('alpha:rotated-printer-pattern')
+                                unsupported.append('alpha:native-process-brush-phase')
+                                unsupported.append('alpha:printer-coordinate-rounding')
                             if picture.effect not in ('','REAL_PIC','GRAY_SCALE','BLACK_WHITE'):unsupported.append('effect:'+picture.effect)
                             if unsupported:
                                 self._image_limitations.append({'source_index':block.source_index,
@@ -249,7 +258,7 @@ class SourceLayout:
         collect(model.blocks)
         for part in model.header_footers:collect(part.blocks)
         if self._image_limitations:
-            self.warnings.append('그림의 미지원 색상 효과 또는 한컴 PDF의 투명도 점무늬와 차이가 있습니다. layout.image_limitations를 확인하세요.')
+            self.warnings.append('그림 효과의 남은 차이는 layout.image_limitations를 확인하세요. PDF 투명도 무늬를 지원하지만 프린터 좌표 반올림 등은 다를 수 있습니다.')
         for name,characters in self._missing_glyphs.items():
             fallback=self._fallback_font_family(name)
             self.glyph_substitutions[name]={'font':fallback,'distinct_characters':len(characters)}
@@ -694,6 +703,8 @@ class SourceLayout:
 
     def _char_format(self,style,fallback=False):
         fmt=QTextCharFormat();fmt.setFont(self._font(style,fallback));fmt.setForeground(QColor(style.color))
+        if not fallback and style.font in BITMAP_FAMILIES and style.font in self._source_fonts:
+            fmt.setProperty(BITMAP_FONT_PROPERTY,style.font)
         if self._synthetic_bold(style,fallback):fmt.setProperty(SYNTHETIC_BOLD_PROPERTY,style.size*.02/TEXT_UNIT_PT)
         return fmt
 
@@ -725,7 +736,7 @@ class SourceLayout:
         if resolved:
             self._source_fonts[name]=resolved
             self._families.add(resolved)
-            self.warnings.append(f"'{name}'은 설치된 HFT를 독립 변환해 표시합니다. 검증 범위는 일반 윤곽 글자이며, 힌팅·스타일과 전체 화면의 동일성은 아직 미통과입니다.")
+            self.warnings.append(f"'{name}'은 설치된 HFT를 독립 해석해 표시합니다. 힌팅·스타일·프린터 좌표와 전체 화면의 동일성은 아직 미통과입니다.")
             return resolved
         fallback=self._fallback_font_family(name)
         self.font_substitutions[name]=fallback
@@ -877,6 +888,23 @@ class SourceLayout:
         layout.endLayout()
         return layout
 
+    def _bitmap_image(self,family,character,size,color):
+        em=max(1,math.floor(size/TEXT_UNIT_PT+.5))
+        key=(family,character,em,color.rgba())
+        if key in self._bitmap_images:return self._bitmap_images[key]
+        glyph=self._hft_resolver.bitmap_glyph(family,character)
+        if glyph is None:return None
+        mask,(left,top)=glyph.bitmap_mask(em)
+        alpha=QImage(mask.tobytes(),mask.width,mask.height,mask.width,QImage.Format.Format_Alpha8).copy()
+        image=QImage(mask.width,mask.height,QImage.Format.Format_ARGB32_Premultiplied)
+        image.fill(color);image.setAlphaChannel(alpha)
+        value=(image,left,top,em)
+        if image.sizeInBytes()<=8*1024*1024:
+            if self._bitmap_image_bytes+image.sizeInBytes()>64*1024*1024:
+                self._bitmap_images.clear();self._bitmap_image_bytes=0
+            self._bitmap_images[key]=value;self._bitmap_image_bytes+=image.sizeInBytes()
+        return value
+
     def _draw_text(self,painter,command):
         paragraph=command.source
         if paragraph.style.background and QColor(paragraph.style.background).isValid():
@@ -899,7 +927,24 @@ class SourceLayout:
                 painter.fillRect(QRectF(min(first,last),line.y(),abs(last-first),line.height()),fmt.background())
             stroke=fmt.property(SYNTHETIC_BOLD_PROPERTY) or 0
             painter.setPen(QPen(color,stroke) if stroke else Qt.PenStyle.NoPen);painter.setBrush(color)
-            for run in layout.glyphRuns(item.start,item.length):
+            bitmap_family=fmt.property(BITMAP_FONT_PROPERTY)
+            segments=[]
+            if bitmap_family:
+                cursor=item.start
+                for character in _utf16_slice(layout.text(),item.start,item.start+item.length):
+                    length=len(character.encode('utf-16le'))//2
+                    bitmap=self._bitmap_image(bitmap_family,character,fmt.font().pointSizeF(),color)
+                    if bitmap is not None:
+                        ink,left,top,em=bitmap
+                        x=round(line.cursorToX(cursor)[0])+left
+                        y=round(command.extra['line']['baseline_pt']/TEXT_UNIT_PT)-em+math.floor(.2*em)+top
+                        painter.save();painter.setRenderHint(QPainter.RenderHint.LosslessImageRendering,True)
+                        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform,False)
+                        painter.drawImage(QRectF(x,y,ink.width(),ink.height()),ink);painter.restore()
+                    else:segments.append((cursor,length))
+                    cursor+=length
+            else:segments=[(item.start,item.length)]
+            for run in [run for start,length in segments for run in layout.glyphRuns(start,length)]:
                 raw=run.rawFont();glyphs=run.glyphIndexes();positions=run.positions()
                 paths=[raw.pathForGlyph(index) for index in glyphs]
                 if any(path.isEmpty() and index for path,index in zip(paths,glyphs)):
@@ -1070,8 +1115,13 @@ class SourceLayout:
         run=command.source;picture=run.picture
         image=QImage.fromData(run.image)
         if image.isNull():return
+        # Hancom's PDF printer emits the opaque source plus a white ordered
+        # stencil. Its PNG exporter instead subtracts alpha. Keep those paths
+        # separate, including the printer's surprising endpoint behaviour.
+        pdf_alpha=self._pdf_picture_alpha and bool(picture.alpha) and image_is_opaque(image)
+        if pdf_alpha and picture.alpha>=252:return
         image=apply_tone(image,picture.effect,brightness=picture.brightness,
-                         contrast=picture.contrast,alpha=picture.alpha)
+                         contrast=picture.contrast,alpha=0 if pdf_alpha else picture.alpha)
         iw=getattr(picture,'image_width_pt',0) or picture.original_width_pt
         ih=getattr(picture,'image_height_pt',0) or picture.original_height_pt
         left,top,right,bottom=picture.crop
@@ -1091,7 +1141,17 @@ class SourceLayout:
             painter.rotate(picture.rotation)
             painter.scale(-1 if picture.flip_h else 1,-1 if picture.flip_v else 1)
             painter.translate(-center)
-        painter.drawImage(target,image,source);painter.restore()
+        painter.drawImage(target,image,source)
+        if pdf_alpha and picture.alpha>=4:
+            tile=pdf_alpha_tile(picture.alpha,self._pdf_alpha_sequence)
+            self._pdf_alpha_sequence+=1
+            painter.setClipRect(target,Qt.ClipOperation.IntersectClip)
+            painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform,False)
+            pitch=8*72/300/.75
+            for yy in range(math.ceil(target.height()/pitch)):
+                for xx in range(math.ceil(target.width()/pitch)):
+                    painter.drawImage(QRectF(target.left()+xx*pitch,target.top()+yy*pitch,pitch,pitch),tile)
+        painter.restore()
 
     def paint_page(self,painter,index):
         def order(item):
@@ -1146,6 +1206,9 @@ class SourceLayout:
         printer.setPageSize(printer_page_size(width,height))
         painter=QPainter()
         if not painter.begin(printer):raise OSError('원본 배치 PDF/인쇄를 시작하지 못했습니다.')
+        previous_alpha=self._pdf_picture_alpha
+        self._pdf_picture_alpha=printer.outputFormat()==printer.OutputFormat.PdfFormat
+        self._pdf_alpha_sequence=0
         try:
             for index in range(len(self.pages)):
                 if index:
@@ -1155,6 +1218,7 @@ class SourceLayout:
                 painter.save();painter.scale(printer.resolution()/96,printer.resolution()/96)
                 self.paint_page(painter,index);painter.restore()
         finally:
+            self._pdf_picture_alpha=previous_alpha
             if not painter.end():raise OSError('PDF/인쇄를 완료하지 못했습니다.')
         if printer.outputFormat()==printer.OutputFormat.PdfFormat:
             from .pdf_text import add_source_text
@@ -1179,6 +1243,8 @@ class SourceLayout:
                                             for (name,language),offset in self._script_offsets.items()],
                 'drawing_limitations':list(dict.fromkeys(self._drawing_limitations.values())),
                 'image_limitations':self._image_limitations,
+                'pdf_picture_alpha':'ordered-8x8-white-stencil-300dpi; document brush sequence',
+                'pdf_alpha_native_initial_phase_known':False,
                 'installed_sfnt_fonts':self._sfnt_resolver.fonts}
 
 

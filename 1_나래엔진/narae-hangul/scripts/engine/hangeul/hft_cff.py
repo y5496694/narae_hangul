@@ -36,7 +36,7 @@ def normalized_operations(glyph, quantization="native-pdf"):
 
 def convert_outline_fonts(hft_paths, cache_path, *, characters=None,
                           family=None, quantization="native-pdf", space_advance_em=None,
-                          max_total_operations=2_000_000):
+                          max_total_operations=2_000_000, bitmap_metrics=False):
     """Create local CFF from verified HFT outline mappings.
 
     Default tries all modern Hangul and reports unavailable codepoints. ASCII
@@ -80,7 +80,7 @@ def convert_outline_fonts(hft_paths, cache_path, *, characters=None,
         for font in fonts:
             try:
                 glyph = font.glyph(char)
-                if glyph.kind == "outline":
+                if glyph.kind == "outline" or bitmap_metrics and glyph.kind.startswith('bitmap'):
                     selected = font, glyph
                     break
             except (HftError, UnicodeError):
@@ -89,10 +89,13 @@ def convert_outline_fonts(hft_paths, cache_path, *, characters=None,
             unavailable.append(ord(char))
             continue
         font, glyph = selected
-        total_operations += len(glyph.operations)
+        is_bitmap=glyph.kind.startswith('bitmap')
+        total_operations += 0 if is_bitmap else len(glyph.operations)
         if total_operations>max_total_operations:
             raise HftError("HFT outline conversion operation budget exceeded")
-        ops = normalized_operations(glyph, quantization)
+        # Bitmap fonts use this private CFF only for shaping/advances. The
+        # source bitmap is painted separately at printer resolution.
+        ops = () if is_bitmap else normalized_operations(glyph, quantization)
         width = font.advance(char, 1000)
         advance = math.trunc(width) if quantization == 'native-pdf' else round(width)
         if char==" " and space_advance_em is not None:
@@ -129,7 +132,7 @@ def convert_outline_fonts(hft_paths, cache_path, *, characters=None,
         charstrings[glyph_name] = charstring
         cmap[ord(char)] = glyph_name
         provenance.append({"codepoint": ord(char), "source_sha256": font.sha256,
-                           "glyph_index": glyph.provenance["glyph_index"]})
+                           "glyph_index": glyph.provenance.get("glyph_index"),"bitmap_metrics":is_bitmap})
     if not cmap:
         raise HftError("No supported outline glyphs for requested characters")
     fb = FontBuilder(1000, isTTF=False)

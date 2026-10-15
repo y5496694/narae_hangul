@@ -36,9 +36,13 @@ CHARACTERS = _standard_characters()
 CHARSET = frozenset(map(ord,CHARACTERS))
 FONT_PAIRS = {"한양중고딕": ("HGJGT.HFT","ENJGT.HFT"), "한양신명조": ("HGSMJ.HFT","ENSMJ.HFT")}
 FONT_PAIRS.update({'HCI Poppy':('HMEPO.HFT',),'HCI Hollyhock':('HMEHL.HFT',)})
+FONT_PAIRS.update({'명조':('HGMJ.HFT','ENMJ.HFT'),'고딕':('HGGT.HFT','ENGT.HFT')})
+BITMAP_FAMILIES=frozenset(('명조','고딕'))
 LATIN_ONLY = frozenset(('HCI Poppy','HCI Hollyhock'))
 SCRIPT_FONTS = {'한양신명조':{'Hanja':'HJSMJ.HFT','Japanese':'JPSMJ.HFT','Other':'FLSMJ.HFT','Symbol':'SPSMJ.HFT'},
                 '한양중고딕':{'Hanja':'HJJGT.HFT','Japanese':'JPJGT.HFT','Symbol':'SPJGT.HFT'}}
+SCRIPT_FONTS.update({'명조':{'Hanja':'HJMJ.HFT','Japanese':'JPMJ.HFT','Other':'FLMJ.HFT','Symbol':'SPMJ.HFT'},
+                     '고딕':{'Japanese':'JPGT.HFT'}})
 ALIASES = {"신명조":"한양신명조"}
 MAX_MAP_BYTES = 2 * 1024 * 1024
 MAX_CACHE_BYTES = 16 * 1024 * 1024
@@ -301,6 +305,8 @@ class InstalledHftResolver:
         self._resolved={}
         self._supported={}
         self._failed=set()
+        self._bitmap_sources={}
+        self._bitmap_glyphs={}
 
     def _warn(self,message):
         if message not in self.warnings:
@@ -342,7 +348,7 @@ class InstalledHftResolver:
                     if not _inside(path,directory):
                         raise ValueError("글꼴 경로가 허용된 폴더 밖입니다.")
                     font=HftFont(path)
-                    if not font.outline_count:
+                    if not font.outline_count and family not in BITMAP_FAMILIES:
                         raise HftError("지원하는 외곽선이 없는 HFT입니다.")
                     fonts.append(font)
                 for script,name in SCRIPT_FONTS.get(family,{}).items():
@@ -351,7 +357,7 @@ class InstalledHftResolver:
                     path=(directory/name).resolve()
                     if not _inside(path,directory) or not path.is_file():continue
                     font=HftFont(path)
-                    if font.outline_count and font.unicode_tables:fonts.append(font)
+                    if (font.outline_count or family in BITMAP_FAMILIES and font.bitmap_count) and font.unicode_tables:fonts.append(font)
                 return fonts,config_info,directory
             except (OSError,ValueError,UnicodeError) as error:
                 errors.append(str(error))
@@ -359,6 +365,7 @@ class InstalledHftResolver:
 
     def _settings(self,family,fonts):
         return {"version":1,"source_family":family,"compiler_sha256":COMPILER_DIGEST,
+            "bitmap_metrics":family in BITMAP_FAMILIES,
             "source_fonts":[{"path":str(f.path.resolve()),"sha256":f.sha256} for f in fonts],
             "unicode_mappings":list({m['path']:m for f in fonts for m in f.mapping_sources}.values()),
             "charset":"modern-hangul-11172+ksx1001+general-punctuation","quantization":"native-pdf",
@@ -396,7 +403,8 @@ class InstalledHftResolver:
         with tempfile.TemporaryDirectory(prefix="building-",dir=root) as directory:
             temporary=Path(directory)/"font.otf"
             generated=convert_outline_fonts(paths,temporary,characters=CHARACTERS,family=qt_family,
-                quantization="native-pdf",space_advance_em=settings['space_advance_em'],max_total_operations=MAX_TOTAL_OPERATIONS)
+                quantization="native-pdf",space_advance_em=settings['space_advance_em'],max_total_operations=MAX_TOTAL_OPERATIONS,
+                bitmap_metrics=settings['bitmap_metrics'])
             original=[(str(p),hashlib.sha256(_read_bounded(p,hft.MAX_FONT_BYTES)).hexdigest()) for p in paths]
             expected=[(f["path"],f["sha256"]) for f in settings["source_fonts"]]
             produced=[(str(Path(f["path"]).resolve()),f["sha256"]) for f in generated["source_fonts"]]
@@ -441,6 +449,7 @@ class InstalledHftResolver:
             return None
         try:
             fonts,config,directory=self._sources(family)
+            if family in BITMAP_FAMILIES:self._bitmap_sources[family]=fonts
             settings=self._settings(family,fonts)
             cache,metadata,supported,reused,data=self._cache(settings,[f.path for f in fonts])
             registered_key=(str(cache),metadata["cache_sha256"])
@@ -467,14 +476,33 @@ class InstalledHftResolver:
                 "cache_sha256":metadata["cache_sha256"],"cache_format_version":1,
                 "registration":"process-local-memory","glyph_count":len(supported),
                 "unavailable_standard_codepoints":len(CHARSET-supported),"space_advance_em":settings['space_advance_em'],
-                "normal_outline_only":True,"native_hinting":False,"vertical_metrics_exact":False}
-            self._warn(family+" HFT의 설치된 문자표와 보통 외곽선을 사용합니다. 미지원 문자·굵게·기울임·힌팅은 원래 모양과 다를 수 있습니다.")
+                "normal_outline_only":family not in BITMAP_FAMILIES,"normal_bitmap_only":family in BITMAP_FAMILIES,
+                "native_hinting":False,"vertical_metrics_exact":False,
+                "bitmap_renderer":"largest-strike; 600dpi integer cell boundaries" if family in BITMAP_FAMILIES else None}
+            self._warn(family+" HFT의 설치된 문자표와 글리프를 사용합니다. 미지원 문자·굵게·기울임·힌팅·프린터 좌표는 원래 모양과 다를 수 있습니다.")
             return qt_family
         except (OSError,ValueError,KeyError,TypeError,AttributeError,ImportError,struct.error) as error:
             self._failed.add(family)
             self._warn(family+" HFT를 사용할 수 없어 대체 글꼴을 사용합니다: "+str(error))
             self.fonts[family]={"source_family":family,"status":"fallback","reason":str(error)}
             return None
+
+    def bitmap_glyph(self,family,character):
+        """Lazy installed bitmap decoding; never read a reference PDF."""
+        family=ALIASES.get(family,family)
+        if family not in BITMAP_FAMILIES:return None
+        key=(family,character)
+        if key in self._bitmap_glyphs:return self._bitmap_glyphs[key]
+        self.resolve(family)
+        glyph=None
+        for font in self._bitmap_sources.get(family,()):
+            try:candidate=font.glyph(character)
+            except (HftError,UnicodeError):continue
+            if candidate.kind.startswith('bitmap'):glyph=candidate
+            break
+        if len(self._bitmap_glyphs)>=4096:self._bitmap_glyphs.pop(next(iter(self._bitmap_glyphs)))
+        self._bitmap_glyphs[key]=glyph
+        return glyph
 
     def supports(self,family,character):
         if not isinstance(character,str) or len(character)!=1 or not isinstance(family,str):

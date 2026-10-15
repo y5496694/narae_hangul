@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-15T22:17:13+09:00",
+  "date_kst": "2026-10-15T23:06:03+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "314f6f0d45f59dbd1375284171ecccb8efccc7bc",
+  "base_commit": "4f22fd8c9c21903773448b46803cdec6243d313b",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -20,16 +20,10 @@
       "independent_pages": 24,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.017916234503877117,
-      "changed_fraction_max": 0.49134664170224995,
+      "changed_fraction_min": 0.01669719868712312,
+      "changed_fraction_max": 0.49188656456399826,
       "errors": [],
-      "independent_identical_pages": 0,
-      "environment_retry": {
-        "prior_errors": [
-          "Unable to allocate output buffer."
-        ],
-        "retried_in_isolation": true
-      }
+      "independent_identical_pages": 0
     },
     {
       "id": "report-hwpx",
@@ -41,8 +35,8 @@
       "independent_pages": 24,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.017916234503877117,
-      "changed_fraction_max": 0.49134664170224995,
+      "changed_fraction_min": 0.01669719868712312,
+      "changed_fraction_max": 0.49188656456399826,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -175,22 +169,23 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 35,
+      "run": 40,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "viewer, picture effects, installed fonts; fresh sequential run",
-      "log_sha256": "7a0e3e10311e84f85fed6d270df556a31a5a2eab904d483dc2b4f3ecaf8c6af6"
+      "scope": "viewer, picture effects, outline and bitmap HFT; fresh sequential run",
+      "log_sha256": "7666a08cc374e497e7e90861af5e8a377f962efc054e63342475220d51024c7e"
     },
     "full_native_rerun": {
       "complete": false,
       "reason": "An earlier full-suite attempt encountered COM server launch errors and was interrupted; do not count it as passed."
     },
     "repository_portable": {
-      "run": 56,
+      "run": 61,
       "failures": 0,
       "errors": 0,
-      "skipped": 24
+      "skipped": 26,
+      "log_sha256": "8605ef3258fc5c483e3d5f607b64bef48be10a6a0e21fca39435c52b331baccb"
     }
   },
   "rea": {
@@ -214,13 +209,18 @@
         "unchanged": true
       },
       {
+        "name": "HncFoundation.dll",
+        "sha256": "f9b024395144cf31e827f074df023d754e1e2b7242112a72e66faa8fe613ad6e",
+        "unchanged": true
+      },
+      {
         "name": "HncBaseDraw.dll",
         "sha256": "52734f0b0fc92cf890fc7085708fb72de62f67c0b5e0aa5bf668db7646199fb1",
         "unchanged": true
       },
       {
-        "name": "HncFoundation.dll",
-        "sha256": "f9b024395144cf31e827f074df023d754e1e2b7242112a72e66faa8fe613ad6e",
+        "name": "HNCE2PTP.dll",
+        "sha256": "42b1eaf97af05ff3662ffa23272b9c19ea5948345c8363969b28b601b741c458",
         "unchanged": true
       }
     ],
@@ -395,6 +395,60 @@
         "parameters": {
           "procedure": "0x100abc00"
         }
+      },
+      {
+        "query": "bitmap-native-decode",
+        "evidence_id": "ev_4944c54d94e79d9dcf516f0fe42bef2733fda65200d684a6fd0e9f8123db3a36",
+        "record_sha256": "85c0c405340e5d2e3cfb1fe17f321abde2a8c24db599f684f2ffa091709a0e77",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100ac080"
+        }
+      },
+      {
+        "query": "bitmap-native-glyph",
+        "evidence_id": "ev_2ed84f09837c189f66a8f4752fabc647307ccb2f1601db7773f583ff4b80904d",
+        "record_sha256": "5a34a1e0325d3fa8de12b6daa85f99147415e29968a5bcc3f868aef65dcad306",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100ac550"
+        }
+      },
+      {
+        "query": "bitmap-draw-buffer",
+        "evidence_id": "ev_9d9f9cdf9d0d069b69d0e29e19596d115f1be9ecca5e94dad1e6af4e5ebc65c2",
+        "record_sha256": "9f0bf28c450d0ef987064f3337cb487d48371a2333d31c01bb18932b63948813",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10062690"
+        }
+      },
+      {
+        "query": "bitmap-pdf-line-buffer",
+        "evidence_id": "ev_2dabab608432cc8b5a333b14d06021825a1774e6534062989fae045a21eb6274",
+        "record_sha256": "f243b497795a17cae39a5ab0f0c5dea2af7b45eb98bf176d4e55220eb00c3de4",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10062740"
+        }
+      },
+      {
+        "query": "pdf-emf-record-handler",
+        "evidence_id": "ev_616533955b95dae8650a39fea175c5ec7c270ec7e4343401beb885a1bd6dc734",
+        "record_sha256": "e6c0056160a1e77dac855476fae295fbf1fdd1f2e13a2bd63ef9d8474062a4f1",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10006b50"
+        }
+      },
+      {
+        "query": "pdf-alpha-implementation",
+        "evidence_id": "ev_50943d9a068c6a90f5d2796c5ad9d774bb3dab43895021f92475baae61247e80",
+        "record_sha256": "12640ecffc58c35dab6535daf386b14716c7c8246aebf9c8db60fb60826bae2f",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1001b570"
+        }
       }
     ],
     "sessions_closed": true,
@@ -414,21 +468,28 @@
       "complete_brightness_contrast_transparency_formula_recovered": true,
       "channel_transform": "0x1000b070",
       "rgba_transform": "0x10065ce0"
+    },
+    "pdf_bitmap_analysis": {
+      "static_scope": "bitmap glyph mapping, OR composition, packed-to-word-aligned rows; drawing line buffer; EMF AlphaBlend dispatch",
+      "empirical_scope": "ordered PDF stencil ranks/phase and bitmap cell scaling derived from native PDF object payloads",
+      "sessions_closed": true,
+      "raw_decompilation_distributed": false
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "3d3e049201c45bbb22949b0c73a9febb0c0ef69ae240132b8fd6057648b7a0e8",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "24681ef3fcd1527b6ad6b6e16bcb93ea41cd4794b61546aade010b0eb470af45",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "aaae813c439dd364b316c7a82af2706065764a23620930c46792c95236aa0182",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ce85282e3baef73c3c4668410ea8d6e6ed9ff963df212fd97c8907be817bc7b6",
-    "tests/test_viewer.py": "480e239824a1e3e1bfffdab3e24fd34fd374f81cbbfffd4781d8bf8648c8083d",
-    "2_나래스킬/narae-viewer/SKILL.md": "ba1bd87a9cac1f7acc61e6d1ecbcc59b8ebd8789734ccf2effb074ecac392201",
+    "tests/test_viewer.py": "762e35e946f289665adda8b63478edf85f8d0a06faf8b2d14a2b29bd7495d7c5",
+    "2_나래스킬/narae-viewer/SKILL.md": "faa8d72107dba9f430ab922b8db2d4aa583334c1a4d07a9c72e9781eb6088934",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "f46987c958f1bedf7077d04b59070f6d32c6eb968cdf7a50771a5364078c421c",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "b7d8a6b2ae0cfc762fea291091e97b82b99ec6d1bb25ce2f1e00ebd09aa0976a",
-    "tests/test_picture_effects.py": "90f75cffcb2000f83c4516bc029e119fa340242c0b6bf2ee881723357983ee28",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "f20b83b0941477d824453d529a53a52194b17a6610fc87ca5d3129b6c4bd4b53",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft_cff.py": "e9ad563bb1c73b65e42b8dcd7aa82d003b12876df501064fec961a8c870af9b3",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "990c863e4cd8d3bbfdedd8b5a0f8078c688a8801bb24ecaa4522ea3ac178e7a3",
-    "tests/test_font_appearance.py": "7a7bac20895a975bd645ff0d06a8f5712c791b6fc048f0b9730a9eb153da862b"
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
+    "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "2e68c193c865883a87c7857751013ed14ca21c2075fe71585c82cdd4c632053d",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft_cff.py": "9e2df4fb3baadc44f4a5402077f21a0d38f91bec828610e4a1115fd5edd161cc",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "287d84f8aedb878d393bb660204ddf7058e6e94f0bfc5212f57189a50e5bdb1a",
+    "tests/test_font_appearance.py": "7a7bac20895a975bd645ff0d06a8f5712c791b6fc048f0b9730a9eb153da862b",
+    "tests/test_bitmap_fonts.py": "7c38c0e9174e775c9e1dc0e94d65251c10801cf54fb729e46347ae8aa93cd2bc"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -445,7 +506,10 @@
   "image_appearance_diagnostics": {
     "field": "layout.image_limitations",
     "unsupported_properties": [
-      "alpha:pdf-printer-dither",
+      "alpha:native-process-brush-phase",
+      "alpha:printer-coordinate-rounding",
+      "alpha:source-bitmap-alpha",
+      "alpha:rotated-printer-pattern",
       "effect:<unsupported>"
     ],
     "installed_skill_cli_verified": true,
@@ -500,8 +564,9 @@
     "contrast_minus_100_native_value": 1,
     "pdf_lossless_images": true,
     "whole_page_pixel_parity_verified": false,
-    "native_pdf_transparency_dither_reproduced": false,
-    "local_report_sha256": "ea1898f10fcba2840ddcb0df2c4f5cccdadf99ee9e79554f76d35c6ea277c9d2"
+    "native_pdf_transparency_dither_reproduced": true,
+    "local_report_sha256": "ea1898f10fcba2840ddcb0df2c4f5cccdadf99ee9e79554f76d35c6ea277c9d2",
+    "png_samples_path": "SourceLayout raster path; native PNG oracle is distinct from PDF stencil rendering"
   },
   "installed_font_appearance": {
     "families": [
@@ -531,7 +596,7 @@
     "whole_font_equivalence_verified": false,
     "whole_document_equivalence_verified": false,
     "remaining": [
-      "bitmap HFT",
+      "bitmap glyph placement/styles and other bitmap families",
       "missing glyphs",
       "bold/italic variants",
       "hinting",
@@ -539,5 +604,78 @@
       "script classification"
     ],
     "local_report_sha256": "b3b7f685b36c89be03cf6658b5912597fa805cc9ebf7d2f0f57fc4c44643538a"
+  },
+  "pdf_alpha_stencil": {
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "alpha_values_per_format": 256,
+    "repeated_values_per_format": 12,
+    "native_mask_samples": 520,
+    "all_sample_mask_bytes_equal": true,
+    "independent_pdf_mask_payload_checked": true,
+    "source_scope": "opaque RGB and opaque RGBA; fractional source alpha remains diagnosed",
+    "mask_size": [
+      8,
+      8
+    ],
+    "mask_dpi": 300,
+    "opaque_values": [
+      0,
+      3
+    ],
+    "omitted_values": [
+      252,
+      255
+    ],
+    "partial_values": [
+      4,
+      251
+    ],
+    "native_initial_phase": "inferred from first mask in each native export; survives prior exports in reused process",
+    "independent_initial_phase": 0,
+    "whole_page_pixel_parity_verified": false,
+    "remaining": [
+      "native process brush initial phase",
+      "printer coordinate quantization",
+      "source bitmap alpha",
+      "rotated patterns"
+    ]
+  },
+  "bitmap_font_appearance": {
+    "families": [
+      "명조",
+      "고딕"
+    ],
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "sizes_pt": [
+      5,
+      8,
+      10,
+      12,
+      18,
+      24,
+      36,
+      50
+    ],
+    "native_bitmap_mask_samples": 208,
+    "all_native_mask_pixels_equal": true,
+    "independent_pdf_mask_payloads_equal": true,
+    "comparison_scope": "tight ink masks from embedded native RGB glyph images and independent PDF masks, without resizing; placement and native buffer padding excluded",
+    "renderer": "largest installed strike; em rounded to nearest 600dpi integer; cell boundaries truncated in full em coordinates",
+    "font_assets_distributed": false,
+    "whole_font_equivalence_verified": false,
+    "whole_document_equivalence_verified": false,
+    "remaining": [
+      "printer glyph placement and native buffer padding/scaling",
+      "bold/italic and horizontal stretch",
+      "other bitmap families",
+      "missing script faces and fallback",
+      "hinting and vertical metrics"
+    ]
   }
 }

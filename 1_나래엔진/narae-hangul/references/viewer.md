@@ -40,8 +40,8 @@ python "6_나래뷰어/narae_viewer.py" verify "문서.hwpx" --reference hancom.
 
 ## 호환성 범위
 
-밝기·대비·그림 투명도와 회색조·흑백 조합은 REA 분석과 한컴 PNG의 색상 표본으로 확인했습니다. 한컴 PDF 프린터가 투명도를 점무늬로 바꾸는 경우에는 차이가 남으며 `layout.image_limitations`에 `alpha:pdf-printer-dither`로 기록합니다. 검사한 색상 표본과 쪽 전체 픽셀 일치를 구분합니다.
+밝기·대비·그림 투명도와 회색조·흑백 조합은 REA 분석과 한컴 PNG 색상 표본으로 확인했습니다. PDF는 불투명 원본에 300 dpi의 8×8 흰 점무늬를 합성합니다. alpha 0~3은 불투명, 252~255는 생략하며 중간 단계의 무늬는 출력 순서에 따라 이동합니다. 한컴 프로세스의 앞선 출력이 시작 위치에 영향을 주므로 독립 PDF는 재현 가능한 0부터 시작하고 `alpha:native-process-brush-phase`를 남깁니다. `alpha:printer-coordinate-rounding`과 원본 알파·회전 진단도 확인합니다. `verify`는 이 차이를 보정하지 않고 그대로 검사합니다.
 
-설치된 한양 신명조·중고딕은 문자별 HFT와 설치 Unicode 문자표를 읽어 보통 외곽선으로 표시합니다. HCI Poppy·Hollyhock은 영문 외곽선과 글자 폭을 지원합니다. 누락된 글꼴의 기본 대체 순서는 설치된 한컴의 한국어 FontDB 설정을 사용하고, 설정이 없으면 일반 대체 글꼴을 사용합니다. 진단의 `hft_fonts`, `font_substitutions`, `glyph_substitutions`, `font_fallback_config`를 확인하세요. 글꼴 파일·문자표·변환 캐시는 배포하지 않습니다.
+설치된 한양 신명조·중고딕과 HCI Poppy·Hollyhock의 보통 외곽선을 읽습니다. 명조·고딕은 가장 큰 비트맵 저장 크기를 사용하고 600 dpi 정수 픽셀 경계로 확대해 PDF에 넣습니다. 기본 FontDB 대체 순서와 미지원 문자 진단도 유지합니다. `hft_fonts`의 `normal_bitmap_only`, `bitmap_renderer`, `font_substitutions`, `glyph_substitutions`, `font_fallback_config`를 확인하세요. 설치 글꼴·문자표·변환 캐시는 배포하지 않습니다. 비트맵 마스크 표본의 일치를 위치·스타일·전체 문서 일치로 확대하지 않습니다.
 
-독립 모드는 모든 HWP/HWPX의 쪽수·픽셀 일치를 보장하지 않습니다. 특히 저장된 줄 배치가 없는 문단, HFT 비트맵·미지원 문자·힌팅, 미지원 개체와 한컴 PDF의 그림 압축에 차이가 남습니다. 한컴 자체로 정확히 확인할 작업은 한컴 백엔드를 사용하고, 독립 모드 개선은 기준 출력과 별도로 비교합니다. 검증 표본과 남은 차이는 `6_나래뷰어/validation.md`를 확인하세요.
+독립 모드는 모든 HWP/HWPX의 쪽수·픽셀 일치를 보장하지 않습니다. 특히 저장된 줄 배치가 없는 문단, HFT 비트맵의 위치·스타일·미지원 문자·힌팅, 미지원 개체와 한컴 PDF의 그림 압축에 차이가 남습니다. 한컴 자체로 정확히 확인할 작업은 한컴 백엔드를 사용하고, 독립 모드 개선은 기준 출력과 별도로 비교합니다. 검증 표본과 남은 차이는 `6_나래뷰어/validation.md`를 확인하세요.

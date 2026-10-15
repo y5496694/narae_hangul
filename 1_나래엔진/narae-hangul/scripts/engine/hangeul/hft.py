@@ -2,8 +2,8 @@
 
 No native DLL is imported. Fonts are read from the user's installation.
 Implemented: group inventory, direct/KS outline glyphs and direct bitmap glyphs.
-Implemented Hangul bitmap composition for map kind 2. Full Jaso, map kind 4,
-vendor variations and native strike selection remain incomplete.
+Implemented Hangul bitmap composition for map kind 2 and Full Jaso kind 3.
+Map kind 4 offsets and other vendor variations remain incomplete.
 """
 from __future__ import annotations
 from dataclasses import dataclass
@@ -24,6 +24,34 @@ class Glyph:
     bounds: tuple[int,int,int,int]
     operations: tuple
     provenance: dict
+
+    def bitmap_mask(self, em_pixels):
+        """Independent monochrome raster, with its origin relative to the em.
+
+        Native bitmap scaling expands pixel cell boundaries using integer
+        truncation, rather than resampling a cropped ink box. At printer
+        resolution the requested em is rounded to the nearest integer. OR composition is
+        retained. Returns a Pillow L mask and (left, top) in full-em pixels.
+        """
+        import math
+        from PIL import Image,ImageDraw
+        if not self.kind.startswith('bitmap'):raise HftError('Not a bitmap glyph')
+        if not 0<float(em_pixels)<=8192:raise HftError('Bitmap em exceeds rendering limit')
+        em=max(1,math.floor(float(em_pixels)+.5));scale=em/self.units_per_em
+        rectangles=[]
+        for op,x,y,w,h in self.operations:
+            if op!='R':raise HftError('Invalid bitmap operation')
+            left=math.floor(x*scale+1e-9);right=math.floor((x+w)*scale+1e-9)
+            top=math.floor((self.units_per_em-y-h)*scale+1e-9)
+            bottom=math.floor((self.units_per_em-y)*scale+1e-9)
+            if right>left and bottom>top:rectangles.append((left,top,right,bottom))
+        if not rectangles:return Image.new('L',(1,1)),(0,0)
+        left=min(r[0] for r in rectangles);top=min(r[1] for r in rectangles)
+        right=max(r[2] for r in rectangles);bottom=max(r[3] for r in rectangles)
+        if (right-left)*(bottom-top)>16_777_216:raise HftError('Bitmap surface exceeds limit')
+        image=Image.new('L',(right-left,bottom-top));draw=ImageDraw.Draw(image)
+        for x,y,r,b in rectangles:draw.rectangle((x-left,y-top,r-left-1,b-top-1),fill=255)
+        return image,(left,top)
 
     def painter_path(self, em_size=1000, native_pdf_quantization=False):
         """Qt path; outlines apply observed 0.15em native baseline adjustment.
@@ -192,6 +220,10 @@ class HftFont:
             try:return codes.index(code)
             except ValueError:return None
         if kind==2:return self._composite_indices(record,code)
+        if kind==3:
+            if (code&0x83c0)!=0x8000 or 0xe829<=code<=0xe83f:return None
+            if 0x20<=code&255<=0x3f and code>>8 in (0xec,0xf0,0xf4,0xf8,0xfc):return None
+            return ((code>>5)&0x3e0)|((code&0x20)<<5)|(code&0x1f)
         raise HftError(f'Glyph map kind {kind} not implemented')
 
     def _composite_indices(self,record,code):
@@ -225,6 +257,9 @@ class HftFont:
         groups=[g for g in self.groups if g['kind']==int(prefer_outline) and (strike is None or g['strike']==strike)]
         if not groups and prefer_outline:
             groups=[g for g in self.groups if g['kind']==0 and (strike is None or g['strike']==strike)]
+        # Printer output selects the largest available bitmap strike. Smaller
+        # strikes are retained for explicit diagnostic requests.
+        if groups and not groups[0]['kind']:groups.sort(key=lambda g:g['strike'],reverse=True)
         for g in groups:
             for record in g['children']:
                 try:index=self.glyph_index(record,character)
