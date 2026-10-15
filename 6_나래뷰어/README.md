@@ -2,7 +2,7 @@
 
 HWP/HWPX 읽기 전용 화면·CLI입니다. PDF와 쪽별 PNG로 출력하고 나래엔진의 결과를 한컴 기준 PDF와 전체 쪽 비교할 수 있습니다.
 
-그림의 잘라내기·뒤집기·회색조·흑백 효과를 표시합니다. 밝기·대비·그림 개체 투명도 등 남은 제한은 검증 JSON의 `layout.image_limitations`에서 확인할 수 있습니다.
+그림의 잘라내기·뒤집기·회색조·흑백·밝기·대비·투명도를 표시하고 PDF에 무손실로 넣습니다. 설치된 HFT의 한자·특수문자·일본어와 HCI Poppy·Hollyhock 영문 외곽선도 읽습니다. 한컴 PDF의 투명도 점무늬, 미지원 효과와 글꼴 차이는 검증 JSON의 `layout.image_limitations`, `font_substitutions`, `glyph_substitutions`에서 확인할 수 있습니다.
 
 ![나래한글 뷰어 화면](preview.png)
 

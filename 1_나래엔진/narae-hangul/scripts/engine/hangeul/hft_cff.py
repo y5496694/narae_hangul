@@ -93,7 +93,8 @@ def convert_outline_fonts(hft_paths, cache_path, *, characters=None,
         if total_operations>max_total_operations:
             raise HftError("HFT outline conversion operation budget exceeded")
         ops = normalized_operations(glyph, quantization)
-        advance = round(font.advance(char, 1000))
+        width = font.advance(char, 1000)
+        advance = math.trunc(width) if quantization == 'native-pdf' else round(width)
         if char==" " and space_advance_em is not None:
             advance=round(space_advance_em*1000)
         if not 0<=advance<=65535:
@@ -147,6 +148,7 @@ def convert_outline_fonts(hft_paths, cache_path, *, characters=None,
     cache.parent.mkdir(parents=True, exist_ok=True)
     fb.save(str(cache))
     metadata = {"family": family, "cache_path": str(cache.resolve()),
+                "unicode_mappings":list({m['path']:m for f in fonts for m in f.mapping_sources}.values()),
                 "cache_sha256": hashlib.sha256(cache.read_bytes()).hexdigest(),
                 "quantization": quantization, "units_per_em": 1000,
                 "space_advance_em_override": space_advance_em,

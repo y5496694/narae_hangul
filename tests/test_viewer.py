@@ -263,7 +263,7 @@ class ViewerTests(unittest.TestCase):
                     self.assertEqual(["#00ff00", "#ff0000", "#ff0000"] if horizontal
                                      else ["#ff0000", "#ff0000", "#00ff00"], colors)
 
-    def test_read_report_identifies_unapplied_image_appearance(self):
+    def test_read_report_identifies_remaining_pdf_transparency_difference(self):
         from hangeul.formats import save_hwpx
         model = self.cropped_picture()
         picture = model.blocks[0].runs[0].picture
@@ -274,7 +274,7 @@ class ViewerTests(unittest.TestCase):
             report = document.report()
         limitations = report["layout"]["image_limitations"]
         self.assertEqual(1, len(limitations))
-        self.assertEqual({"alpha", "brightness", "contrast"}, set(limitations[0]["unsupported"]))
+        self.assertEqual({"alpha:pdf-printer-dither"}, set(limitations[0]["unsupported"]))
         self.assertTrue(any("layout.image_limitations" in warning for warning in report["warnings"]))
         self.assertFalse(report["independent_parity_verified"])
 

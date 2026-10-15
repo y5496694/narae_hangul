@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 import hashlib
+import re
 import struct
 MAX_FONT_BYTES = 32 * 1024 * 1024
 
@@ -64,6 +65,25 @@ class HftFont:
         checksum=self.u16(42);header=bytearray(self.data[:512]);header[42:44]=b'\0\0'
         if sum(header)&65535!=checksum:raise HftError('Header checksum mismatch')
         self.sha256=hashlib.sha256(self.data).hexdigest()
+        self.unicode_tables={}
+        self.mapping_sources=[]
+        # REA LoadUnicodeTbl: general symbols are indexed by Unicode; the
+        # CJK table starts at U+3400. Tables belong to this installation and
+        # are read as data, never copied into a distribution or executed.
+        base=self.path.resolve().parent.parent.parent
+        code_dir=next((p for p in (base/'Bin'/'Code',base/'Code') if (p/'u300_gen.dat').is_file()),None)
+        if code_dir is not None:
+            for name,count in (('gen',0x4000),('cjk',0x6f00)):
+                path=code_dir/('u300_'+name+'.dat')
+                if not path.is_file():continue
+                if path.stat().st_size>128*1024:raise HftError('Unicode mapping table exceeds limit')
+                with path.open('rb') as stream:data=stream.read(128*1024+1)
+                if len(data)>128*1024:raise HftError('Unicode mapping table exceeds limit')
+                header=re.search(rb'Data count : (\d+) *\r?\n',data[:640])
+                if b'Unicode version : 3.00' not in data[:640] or not header or int(header[1])!=count or len(data)-header.end()!=count*2:
+                    raise HftError('Invalid installed Unicode mapping table')
+                self.unicode_tables[name]=struct.unpack('<'+'H'*count,data[header.end():])
+                self.mapping_sources.append({'path':str(path),'sha256':hashlib.sha256(data).hexdigest()})
         self.family=self.data[44:108].split(b'\0')[0].decode('johab','replace')
         self.vendor_hint=self.data[308:340].split(b'\0')[0].decode('ascii','replace')
         self.outline_count=self.u16(422);self.bitmap_count=self.u16(424)
@@ -136,10 +156,20 @@ class HftFont:
     def u16(self,offset):return self.unpack('<H',offset)[0]
     def u32(self,offset):return self.unpack('<I',offset)[0]
 
-    @staticmethod
-    def hchar(character):
+    def hchar(self,character):
         if len(character)!=1:raise HftError('One Unicode character required')
-        if ord(character)<128:return ord(character)
+        code=ord(character)
+        if code<128:return code
+        if not 0xac00<=code<=0xd7a3:
+            table=self.unicode_tables.get('gen')
+            if code<0x4000 and table is not None:
+                value=table[code]
+                if value!=0x3441:return value
+            table=self.unicode_tables.get('cjk')
+            index=code-0x3400 if 0x3400<=code<=0x9fff else code-0x8c00 if 0xf900<=code<=0xfaff else -1
+            if table is not None and 0<=index<len(table) and table[index]!=0x3441:
+                return table[index]
+            raise HftError('Unicode→HChar mapping unavailable')
         try:b=character.encode('johab')
         except UnicodeEncodeError as exc:raise HftError('Unicode→HChar mapping incomplete') from exc
         if len(b)!=2:raise HftError('Unsupported HChar width')
@@ -235,7 +265,8 @@ class HftFont:
         data=self.slice(offset,length)
         if self.vendor_hint.startswith('Hanyang outline font for HWP 2.1'):
             data=self.decode_hanyang(data)
-        elif self.vendor_hint:raise HftError(f'Unsupported outline vendor {self.vendor_hint!r}')
+        elif self.vendor_hint and not self.vendor_hint.startswith('Human Font for HWP 2.1'):
+            raise HftError(f'Unsupported outline vendor {self.vendor_hint!r}')
         operations=decode_contours(data)
         return Glyph(character,r['em'],'outline',tuple(bounds),operations,
                      {'font_sha256':self.sha256,'group_offset':group['offset'],'record_offset':r['offset'],

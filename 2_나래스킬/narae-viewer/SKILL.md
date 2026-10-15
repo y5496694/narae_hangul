@@ -16,7 +16,8 @@ python <skill-dir>/scripts/viewer.py verify "원본.hwp" --reference "수정본.
 ```
 
 - 기본 `independent`는 기존 나래 에디터의 `SourceLayout` 읽기 모드다. 한컴을 실행하지 않는다. 저장된 배치가 없거나 미지원 글꼴·개체가 있으면 표시와 쪽수가 다를 수 있다. `warnings`와 `layout`을 확인한다.
-- 그림은 잘라내기·뒤집기와 회색조·흑백 효과를 표시한다. 아직 적용하지 못하는 밝기·대비·그림 투명도와 다른 색상 효과는 `layout.image_limitations`에 나온다. 검사한 색상 영역의 일치를 그림 압축·해상도·가장자리까지의 전체 픽셀 일치로 확대하지 않는다.
+- 그림은 잘라내기·뒤집기·회색조·흑백·밝기·대비·그림 투명도를 표시한다. 밝기·대비는 한컴의 정수 계산과 경계값을 따르고, 그림 투명도는 원본 비트맵 알파에서 뺀다. 한컴 PNG와 검사한 내부 색상 표본의 일치를 쪽 전체 일치로 확대하지 않는다. 한컴 PDF의 투명도 점무늬와 차이는 `layout.image_limitations`의 `alpha:pdf-printer-dither`, 미지원 색상 효과는 `effect:...`로 확인한다.
+- 글꼴 확인에는 `layout.font_substitutions`, `glyph_substitutions`, `hft_fonts`, `font_fallback_config`도 읽는다. 설치된 한양 신명조·중고딕의 보통 외곽선은 한글·영문·일부 특수문자·한자·일본어, HCI Poppy·Hollyhock은 영문을 지원한다. 지원 문자표와 글꼴 해시는 `hft_fonts`에 기록한다. 비트맵 HFT·미지원 문자·굵게/기울임·힌팅과 전체 문서 차이는 남는다. 설치 글꼴이나 변환 캐시를 배포하지 않는다.
 - 한컴 자체 조판이 필요한 읽기·출력은 `--backend hancom`을 명시한다. Windows, 설치된 한컴, pywin32, 등록된 파일 접근 모듈이 필요하다. 개인 작업 사본을 별도 문서 탭에서 PDF로 출력한다. 이를 독립 엔진의 일치로 보고하지 않는다.
 - `read`는 쪽별 텍스트와 용지 크기를 JSON으로 반환한다. `open`은 편집 기능이 없는 창을 연다. PDF는 전체 문서이며 `--pages`는 읽기·PNG 범위에만 적용된다. PNG는 화면과 동일한 PDF에서 흰 종이 배경으로 렌더링한다.
 - 종료 코드 `0`은 실행 성공 또는 전체 비교 일치, `1`은 실행 오류, `2`는 비교 완료 후 차이 발견이다. `success:true`만으로 일치라고 판단하지 말고 `comparison.match`, `page_count_match`, 모든 `pages`를 확인한다.

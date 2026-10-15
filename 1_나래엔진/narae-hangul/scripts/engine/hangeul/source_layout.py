@@ -15,7 +15,7 @@ from PySide6.QtGui import (QColor, QFont, QFontDatabase, QFontMetricsF, QImage, 
 from PySide6.QtGui import QPainterPath
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem
 from .formats import Paragraph, Table, Drawing, _table_grid
-from .font_resolver import InstalledHftResolver,InstalledSfntResolver
+from .font_resolver import InstalledHftResolver,InstalledSfntResolver,installed_default_fonts
 from .picture_effects import apply_tone
 
 SYNTHETIC_BOLD_PROPERTY=0x108001
@@ -170,6 +170,7 @@ class SourceLayout:
         self._hft_kind_substitutions={}
         self._missing_glyphs={}
         self._hft_resolver=InstalledHftResolver()
+        self._default_font_families,self._default_font_config=installed_default_fonts()
         self._sfnt_resolver=InstalledSfntResolver()
         self._families=set(QFontDatabase.families())
         self._fonts={}
@@ -205,7 +206,9 @@ class SourceLayout:
                     for run in block.runs:
                         if run.image:
                             picture=run.picture
-                            unsupported=[name for name in ('brightness','contrast','alpha') if getattr(picture,name,0)]
+                            unsupported=[]
+                            if picture.alpha:
+                                unsupported.append('alpha:pdf-printer-dither')
                             if picture.effect not in ('','REAL_PIC','GRAY_SCALE','BLACK_WHITE'):unsupported.append('effect:'+picture.effect)
                             if unsupported:
                                 self._image_limitations.append({'source_index':block.source_index,
@@ -246,7 +249,7 @@ class SourceLayout:
         collect(model.blocks)
         for part in model.header_footers:collect(part.blocks)
         if self._image_limitations:
-            self.warnings.append('그림의 밝기·대비·투명도·색상 효과 중 미지원 속성이 있습니다. layout.image_limitations를 확인하세요.')
+            self.warnings.append('그림의 미지원 색상 효과 또는 한컴 PDF의 투명도 점무늬와 차이가 있습니다. layout.image_limitations를 확인하세요.')
         for name,characters in self._missing_glyphs.items():
             fallback=self._fallback_font_family(name)
             self.glyph_substitutions[name]={'font':fallback,'distinct_characters':len(characters)}
@@ -730,6 +733,12 @@ class SourceLayout:
         return fallback
 
     def _fallback_font_family(self,name):
+        for family in self._default_font_families:
+            if family in self._families:return family
+            resolved=self._sfnt_resolver.resolve(family)
+            if resolved:
+                self._families.add(resolved)
+                return resolved
         serif=any(value in name.lower() for value in ('명조','바탕','serif','times','batang'))
         choices=('바탕','Batang','Noto Serif CJK KR') if serif else ('맑은 고딕','Malgun Gothic','Noto Sans CJK KR')
         fallback=next((f for f in choices if f in self._families),QFont().family())
@@ -1061,7 +1070,8 @@ class SourceLayout:
         run=command.source;picture=run.picture
         image=QImage.fromData(run.image)
         if image.isNull():return
-        image=apply_tone(image,picture.effect)
+        image=apply_tone(image,picture.effect,brightness=picture.brightness,
+                         contrast=picture.contrast,alpha=picture.alpha)
         iw=getattr(picture,'image_width_pt',0) or picture.original_width_pt
         ih=getattr(picture,'image_height_pt',0) or picture.original_height_pt
         left,top,right,bottom=picture.crop
@@ -1070,9 +1080,9 @@ class SourceLayout:
             source=QRectF(left/iw*image.width(),top/ih*image.height(),(right-left)/iw*image.width(),(bottom-top)/ih*image.height())
         target=QRectF(*(v/.75 for v in command.rect))
         painter.save()
-        if picture.effect in ('GRAY_SCALE','BLACK_WHITE'):
-            # PDF output must not add JPEG artifacts to the computed tone map.
-            painter.setRenderHint(QPainter.RenderHint.LosslessImageRendering,True)
+        # Preserve source PNG pixels too: Qt's default PDF JPEG conversion
+        # introduces channel errors even when no adjustment is requested.
+        painter.setRenderHint(QPainter.RenderHint.LosslessImageRendering,True)
         if picture.rotation or picture.flip_h or picture.flip_v:
             # Reflection belongs to the displayed, cropped rectangle. Mirroring
             # the complete bitmap first changes which source pixels imgClip
@@ -1161,6 +1171,7 @@ class SourceLayout:
                 'objects':[[{'kind':c.kind,'rect_pt':list(c.rect),'source_index':getattr(c.source,'source_index',None)} for c in commands] for commands in self.pages],
                 'warnings':self.warnings,'font_substitutions':self.font_substitutions,
                 'glyph_substitutions':self.glyph_substitutions,'hft_fonts':self._hft_resolver.fonts,
+                'font_fallback_config':self._default_font_config,
                 'hft_kind_substitutions':self._hft_kind_substitutions,
                 'script_ambiguities':[{'source_font':name,'language':language,'distinct_characters':len(characters)}
                                       for (name,language),characters in self._script_ambiguities.items()],

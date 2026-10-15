@@ -1,5 +1,6 @@
 """Native-created property order and visible picture-tone regressions."""
 from io import BytesIO
+import hashlib
 import os
 from pathlib import Path
 import sys
@@ -12,7 +13,7 @@ from PIL import Image, ImageDraw
 from PySide6.QtGui import QColor, QImage
 from hangeul.formats import Paragraph, ParaStyle, Run, load_document, save_hwp, save_hwpx
 from hangeul.geometry import DocumentModel, PictureGeometry
-from hangeul.picture_effects import apply_tone
+from hangeul.picture_effects import apply_tone, channel_table
 from hangeul.viewer import application, Document, compare
 
 
@@ -66,6 +67,69 @@ class PictureEffectsTests(unittest.TestCase):
                          [result.pixelColor(x, 0).name() for x in range(3)])
         self.assertEqual(image, apply_tone(image, "REAL_PIC"))
         self.assertEqual(image, apply_tone(image, "unknown"))
+
+    def test_native_integer_adjustments_and_extreme_contrast(self):
+        # Observed Hancom PNG samples, including non-round coefficients and
+        # native -100 contrast's 1 rather than the usual middle-gray formula.
+        values = (0, 73, 146, 255)
+        for brightness, contrast, expected in (
+                (25,25,[32,129,226,255]), (-25,25,[0,0,77,222]),
+                (17,37,[0,97,212,255]), (-31,-47,[0,38,77,134]),
+                (0,-100,[1,1,1,1]), (0,100,[0,0,255,255])):
+            self.assertEqual(expected, [channel_table(brightness,contrast)[v] for v in values])
+
+    def test_picture_alpha_subtracts_from_bitmap_alpha_and_does_not_change_input(self):
+        image=QImage(4,1,QImage.Format.Format_RGBA8888)
+        for x,alpha in enumerate((0,80,128,255)):
+            image.setPixelColor(x,0,QColor(50,100,150,alpha))
+        before=image.copy()
+        result=apply_tone(image,'REAL_PIC',alpha=100)
+        self.assertEqual([0,0,28,155],[result.pixelColor(x,0).alpha() for x in range(4)])
+        self.assertEqual(before,image)
+
+    def test_adjusted_hwp_and_hwpx_have_identical_pixels(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);model=fixture([dict(brightness=25,contrast=25),
+                dict(alpha=128),dict(effect='BLACK_WHITE',brightness=50)])
+            save_hwp(model,root/'a.hwp');save_hwpx(model,root/'b.hwpx')
+            with Document(root/'a.hwp') as first,Document(root/'b.hwpx') as second:
+                self.assertTrue(compare(first,second)['match'])
+
+    @unittest.skipUnless(os.environ.get("NARAE_RUN_HANCOM_TESTS") == "1", "requires installed Hancom")
+    def test_adjustments_match_native_png_in_both_formats(self):
+        from hangeul.hwp_automation_bridge import HancomBridge
+        settings=[dict(brightness=b,contrast=c) for b,c in ((0,0),(0,-100),(0,-75),(0,-25),
+            (0,-10),(0,10),(0,25),(0,75),(0,100),(25,25),(-25,25),(25,-25),(-25,-25),
+            (17,37),(-31,-47),(25,0),(-25,0))]
+        settings += [dict(alpha=a) for a in (1,10,50,100,128,200,255)]
+        settings += [dict(effect=e,brightness=b,contrast=c) for e,b,c in (
+            ('GRAY_SCALE',25,25),('GRAY_SCALE',-31,-47),('BLACK_WHITE',50,0),
+            ('BLACK_WHITE',25,25),('BLACK_WHITE',-25,-25))]
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            for suffix,save in (('hwp',save_hwp),('hwpx',save_hwpx)):
+                source=root/('input.'+suffix);save(fixture(settings),source)
+                before=hashlib.sha256(source.read_bytes()).digest()
+                with HancomBridge() as bridge:
+                    bridge.open_doc(source)
+                    action=bridge.hwp.CreateAction('PrintToImage')
+                    params=action.CreateSet();action.GetDefault(params)
+                    for key,value in dict(Format=3,FileName=str(root/(suffix+'.png')),
+                                          ColorDepth=24,Resolution=96,Range=6).items():
+                        params.SetItem(key,value)
+                    self.assertTrue(action.Execute(params))
+                with Document(source) as own:
+                    self.assertEqual(len(settings),own.count)
+                    for page in range(len(settings)):
+                        with Image.open(root/(suffix+'%03d.png'%(page+1))) as png:
+                            native=png.convert('RGB')
+                        actual=own.render(page,96)
+                        for i in range(256):
+                            x=round((56.69+(i%16+.5)*6)*96/72)
+                            y=round((56.69+(i//16+.5)*6)*96/72)
+                            self.assertEqual(native.getpixel((x,y)),actual.pixelColor(x,y).getRgb()[:3],
+                                             f'{suffix} page {page+1} patch {i}')
+                self.assertEqual(before,hashlib.sha256(source.read_bytes()).digest())
 
     def test_tone_only_has_no_unsupported_effect_and_both_formats_match(self):
         with tempfile.TemporaryDirectory() as folder:

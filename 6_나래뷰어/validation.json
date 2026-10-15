@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-15T21:11:40+09:00",
+  "date_kst": "2026-10-15T22:17:13+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "c040de1398a601d82ac695d1e4f920df0a68ea27",
+  "base_commit": "314f6f0d45f59dbd1375284171ecccb8efccc7bc",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -20,10 +20,16 @@
       "independent_pages": 24,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.017447029189509557,
-      "changed_fraction_max": 0.49160144937297107,
+      "changed_fraction_min": 0.017916234503877117,
+      "changed_fraction_max": 0.49134664170224995,
       "errors": [],
-      "independent_identical_pages": 0
+      "independent_identical_pages": 0,
+      "environment_retry": {
+        "prior_errors": [
+          "Unable to allocate output buffer."
+        ],
+        "retried_in_isolation": true
+      }
     },
     {
       "id": "report-hwpx",
@@ -35,8 +41,8 @@
       "independent_pages": 24,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.017447029189509557,
-      "changed_fraction_max": 0.49160144937297107,
+      "changed_fraction_min": 0.017916234503877117,
+      "changed_fraction_max": 0.49134664170224995,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -51,7 +57,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.021801209606810437,
-      "changed_fraction_max": 0.11204578007067265,
+      "changed_fraction_max": 0.11203343256239982,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -65,8 +71,8 @@
       "independent_pages": 7,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.05828585155152054,
-      "changed_fraction_max": 0.1669405568501731,
+      "changed_fraction_min": 0.05409218874176646,
+      "changed_fraction_max": 0.15570544682264936,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -95,8 +101,8 @@
       "independent_pages": 9,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.032982439598234534,
-      "changed_fraction_max": 0.35207572839073803,
+      "changed_fraction_min": 0.03294090707040774,
+      "changed_fraction_max": 0.34168698393027924,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -111,7 +117,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.013126523794770943,
-      "changed_fraction_max": 0.12272076222291069,
+      "changed_fraction_max": 0.12275892724848125,
       "errors": [],
       "independent_identical_pages": 0
     }
@@ -152,7 +158,8 @@
       "run": 48,
       "failures": 0,
       "errors": 0,
-      "skipped": 0
+      "skipped": 0,
+      "historical_commit": "4a8af206035d8a4a7821cc7e66d0195ef8edbe54"
     },
     "legacy_layout": {
       "run": 19,
@@ -166,6 +173,24 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0
+    },
+    "appearance_native": {
+      "run": 35,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "viewer, picture effects, installed fonts; fresh sequential run",
+      "log_sha256": "7a0e3e10311e84f85fed6d270df556a31a5a2eab904d483dc2b4f3ecaf8c6af6"
+    },
+    "full_native_rerun": {
+      "complete": false,
+      "reason": "An earlier full-suite attempt encountered COM server launch errors and was interrupted; do not count it as passed."
+    },
+    "repository_portable": {
+      "run": 56,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 24
     }
   },
   "rea": {
@@ -191,6 +216,11 @@
       {
         "name": "HncBaseDraw.dll",
         "sha256": "52734f0b0fc92cf890fc7085708fb72de62f67c0b5e0aa5bf668db7646199fb1",
+        "unchanged": true
+      },
+      {
+        "name": "HncFoundation.dll",
+        "sha256": "f9b024395144cf31e827f074df023d754e1e2b7242112a72e66faa8fe613ad6e",
         "unchanged": true
       }
     ],
@@ -275,6 +305,96 @@
         "parameters": {
           "procedure": "0x1006ad20"
         }
+      },
+      {
+        "query": "effects-native-channel",
+        "evidence_id": "ev_497edefb976541c35465cdd25654a9ee2aa47771661c14aca2a5f25dee952fe1",
+        "record_sha256": "01716b3570b2b45f40a72efcb7b7badf0d7c5d99f96a4cf226750ad2203c27e0",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1000b070"
+        }
+      },
+      {
+        "query": "effects-transform-rgba",
+        "evidence_id": "ev_f932f1077a3c1f643b76ea0e11f5cea299899ca3f20d967b3ca79c01026f48bb",
+        "record_sha256": "198939e56d724cf7b5441b8df0e836a7ccd173694db9fd7330b8d6cd8849ba48",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10065ce0"
+        }
+      },
+      {
+        "query": "font-hchar-width-inner",
+        "evidence_id": "ev_1b65c01e3ded34183c5a157bcb659e8d0fee03e593f52f0320ba076a15a38cea",
+        "record_sha256": "d95879a24965ac1ed4a5ab5b68a55b00f5fe44516a1d2140c106118cdf1a7c07",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10074ee0"
+        }
+      },
+      {
+        "query": "font-native-substitute",
+        "evidence_id": "ev_2860288216f15d9911a15646025253d9e92720728db97c2287f49c593548baf3",
+        "record_sha256": "5b21dd340322ec4388d987acb22e056954388efcb436e76b21b35d52ffa334c5",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10073290"
+        }
+      },
+      {
+        "query": "font-char-base",
+        "evidence_id": "ev_5a67478ff34b7299de16d23e091d6f09f0b422e8957fdcbffbf8c21e1953c749",
+        "record_sha256": "869dc6eae1e041dd1fb3c4371872fa281b8c4cdf0e334c0f22caa8e1f31df190",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10061d30"
+        }
+      },
+      {
+        "query": "font-char-load-table",
+        "evidence_id": "ev_5b10a355cad88af1406f612955d19a318679314db98d71f71bf9647b0c802246",
+        "record_sha256": "daf967271e484262ad913332a3ec904ec1728fe836f8dc8e9ce9a6d5c8b2030a",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1005db70"
+        }
+      },
+      {
+        "query": "font-char-table-path",
+        "evidence_id": "ev_d20d6e753751b0f3af193b815b158a6c90cdee90c1ddca6518e413d3ec186440",
+        "record_sha256": "b1b87f910888963736564eb088103204d8b477b53685d8031a1c4564f9b416be",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1005c280"
+        }
+      },
+      {
+        "query": "font-char-hanja",
+        "evidence_id": "ev_42af966329263e98f196dbbc23569e03e3b36d4913342e4d9e576f4f18668472",
+        "record_sha256": "107aa29ef47951bd8464f66a339c8edafbee8382fac931effd5f2c3a841d155d",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10061750"
+        }
+      },
+      {
+        "query": "font-human-loader",
+        "evidence_id": "ev_26c034df2453ea9c0d22dd028c480e68c89d012e098477b19b74a619b8d9c037",
+        "record_sha256": "4bc53cd02bd3a6b0a38c2dab6f70352af73ac0ad99b38f92e54577b67241e51e",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100ab220"
+        }
+      },
+      {
+        "query": "font-human-glyph",
+        "evidence_id": "ev_c8ef03335f39bedbbd4fa496875b7a0e173e138eae9e43c317a04537010a8e93",
+        "record_sha256": "5da2c11f48c44d4f4c8bb77cc509b746f10b07e2be35dd75340586513df97e5c",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100abc00"
+        }
       }
     ],
     "sessions_closed": true,
@@ -290,19 +410,25 @@
       "set_options": "0x10065280",
       "gdiplus_alpha_matrix": "0x1003f2f0",
       "pixel_buffer_path": "0x1006ad20",
-      "scope": "Static option and drawing-path investigation; tone formula established by native output samples.",
-      "complete_brightness_contrast_transparency_formula_recovered": false
+      "scope": "Recovered channel/alpha calculation, verified internal PNG samples; PDF printer dither and resampling remain distinct.",
+      "complete_brightness_contrast_transparency_formula_recovered": true,
+      "channel_transform": "0x1000b070",
+      "rgba_transform": "0x10065ce0"
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "272410fea07045de08316864a11886c2e0ec2f137b1036e2a6327bce3eb5c8c3",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "3d3e049201c45bbb22949b0c73a9febb0c0ef69ae240132b8fd6057648b7a0e8",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "aaae813c439dd364b316c7a82af2706065764a23620930c46792c95236aa0182",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ce85282e3baef73c3c4668410ea8d6e6ed9ff963df212fd97c8907be817bc7b6",
-    "tests/test_viewer.py": "7001bb3e4d46d8763be6b2d4d96e1656f07f4b2393d8fb81d2dcc29ff2a78567",
-    "2_나래스킬/narae-viewer/SKILL.md": "671fbe6e49f8cd2745870d8205463b11cd3cd8b9c42d1dba374b63e253afc7c6",
+    "tests/test_viewer.py": "480e239824a1e3e1bfffdab3e24fd34fd374f81cbbfffd4781d8bf8648c8083d",
+    "2_나래스킬/narae-viewer/SKILL.md": "ba1bd87a9cac1f7acc61e6d1ecbcc59b8ebd8789734ccf2effb074ecac392201",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "f46987c958f1bedf7077d04b59070f6d32c6eb968cdf7a50771a5364078c421c",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "12f680aeb6f6631aa31ec158138e8e47f926823db468a879419e3139f4d03e5e",
-    "tests/test_picture_effects.py": "3f8bc5051c2c7cf0113ca89323badd4e368a4908874d01b0dd57fffcffd6f060"
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "b7d8a6b2ae0cfc762fea291091e97b82b99ec6d1bb25ce2f1e00ebd09aa0976a",
+    "tests/test_picture_effects.py": "90f75cffcb2000f83c4516bc029e119fa340242c0b6bf2ee881723357983ee28",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "f20b83b0941477d824453d529a53a52194b17a6610fc87ca5d3129b6c4bd4b53",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft_cff.py": "e9ad563bb1c73b65e42b8dcd7aa82d003b12876df501064fec961a8c870af9b3",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "990c863e4cd8d3bbfdedd8b5a0f8078c688a8801bb24ecaa4522ea3ac178e7a3",
+    "tests/test_font_appearance.py": "7a7bac20895a975bd645ff0d06a8f5712c791b6fc048f0b9730a9eb153da862b"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -319,10 +445,8 @@
   "image_appearance_diagnostics": {
     "field": "layout.image_limitations",
     "unsupported_properties": [
-      "brightness",
-      "contrast",
-      "alpha",
-      "effect"
+      "alpha:pdf-printer-dither",
+      "effect:<unsupported>"
     ],
     "installed_skill_cli_verified": true,
     "supported_tones": [
@@ -352,8 +476,68 @@
     "brightness_byte_offset": 69,
     "native_created_property_cases": 5,
     "native_pdf_pair_match": true,
-    "independent_adjustments_supported": false,
+    "independent_adjustments_supported": true,
     "specification_order_differs_from_native_export": true,
     "specification_url": "https://cdn.hancom.com/link/docs/한글문서파일형식_5.0_revision1.3.pdf"
+  },
+  "picture_adjustments": {
+    "properties": [
+      "brightness",
+      "contrast",
+      "alpha"
+    ],
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "combinations_per_format": 29,
+    "native_reference": "Hancom PrintToImage, PNG, 24-bit RGB, 96 dpi",
+    "patches_per_combination": 256,
+    "total_exact_internal_pixel_samples": 14848,
+    "all_internal_samples_match": true,
+    "tone_order": "gray -> integer brightness/contrast -> black/white threshold >128",
+    "alpha_rule": "max(0, bitmap_alpha - picture_alpha_byte)",
+    "contrast_minus_100_native_value": 1,
+    "pdf_lossless_images": true,
+    "whole_page_pixel_parity_verified": false,
+    "native_pdf_transparency_dither_reproduced": false,
+    "local_report_sha256": "ea1898f10fcba2840ddcb0df2c4f5cccdadf99ee9e79554f76d35c6ea277c9d2"
+  },
+  "installed_font_appearance": {
+    "families": [
+      "한양신명조",
+      "한양중고딕",
+      "HCI Poppy",
+      "HCI Hollyhock"
+    ],
+    "hanyang_script_sources": [
+      "Hangul",
+      "Latin",
+      "Hanja",
+      "Japanese",
+      "Other (Sinmyeongjo)",
+      "Symbol"
+    ],
+    "human_font_script": "Latin",
+    "native_type3_outline_samples": 108,
+    "all_sample_paths_equal": true,
+    "all_sample_truncated_advances_equal": true,
+    "cff_advances_checked": true,
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "fallback": "Installed FontDB Default Fonts KOR / Hangul order; generic fallback if unavailable",
+    "whole_font_equivalence_verified": false,
+    "whole_document_equivalence_verified": false,
+    "remaining": [
+      "bitmap HFT",
+      "missing glyphs",
+      "bold/italic variants",
+      "hinting",
+      "vertical metrics",
+      "script classification"
+    ],
+    "local_report_sha256": "b3b7f685b36c89be03cf6658b5912597fa805cc9ebf7d2f0f57fc4c44643538a"
   }
 }
