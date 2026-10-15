@@ -185,6 +185,11 @@ class SourceLayout:
         self._image_limitations=[]
         self._pdf_picture_alpha=False
         self._pdf_alpha_sequence=0
+        self._pdf_page_width=self.width
+        self._pdf_page_height=self.height
+        self._pdf_bitmap_cache={}
+        self._pdf_bitmap_bytes=0
+        self._pdf_bitmaps=[]
         self._bitmap_images={}
         self._bitmap_image_bytes=0
         self._metrics_device=QImage(1,1,QImage.Format.Format_RGB32)
@@ -1188,8 +1193,51 @@ class SourceLayout:
         source=QRectF(0,0,image.width(),image.height())
         if iw>0 and ih>0 and right>left and bottom>top:
             source=QRectF(left/iw*image.width(),top/ih*image.height(),(right-left)/iw*image.width(),(bottom-top)/ih*image.height())
+        prepared=False
+        if self._pdf_picture_alpha:
+            from .pdf_bitmap import prepare_bitmap,BitmapBackendError
+            import hashlib
+            key=(hashlib.sha256(run.image).digest(),command.rect[2:],self._pdf_page_width)
+            unsupported=[]
+            if picture.alpha:unsupported.append('picture alpha')
+            if not image_is_opaque(image):unsupported.append('source alpha')
+            if picture.effect not in ('','REAL_PIC') or picture.brightness or picture.contrast:unsupported.append('picture effects')
+            if picture.rotation or picture.flip_h or picture.flip_v:unsupported.append('rotation or reflection')
+            if source!=QRectF(0,0,image.width(),image.height()):unsupported.append('source crop')
+            record={'source_index':getattr(command.source,'source_index',-1),'source_start':run.source_start,
+                    'source_sha256':key[0].hex(),'rect_pt':list(command.rect),
+                    'page_size_pt':[self._pdf_page_width,self._pdf_page_height]}
+            if not unsupported:
+                try:
+                    if key not in self._pdf_bitmap_cache:
+                        pixels,facts=prepare_bitmap(run.image,*command.rect[2:],self._pdf_page_width)
+                        data=pixels.tobytes()
+                        bitmap=QImage(data,pixels.width,pixels.height,pixels.width*3,QImage.Format.Format_RGB888).copy()
+                        if self._pdf_bitmap_bytes+bitmap.sizeInBytes()>64*1024*1024:
+                            self._pdf_bitmap_cache.clear();self._pdf_bitmap_bytes=0
+                        self._pdf_bitmap_cache[key]=(bitmap,facts)
+                        self._pdf_bitmap_bytes+=bitmap.sizeInBytes()
+                    image,facts=self._pdf_bitmap_cache[key]
+                    source=QRectF(0,0,image.width(),image.height())
+                    record.update(status='prepared',**facts)
+                    prepared=True
+                except (BitmapBackendError,OSError,ValueError) as error:
+                    unsupported.append(str(error))
+            if unsupported:
+                record.update(status='source-path',remaining=unsupported)
+                warning='일부 PDF 그림은 기존 표시 경로를 사용했습니다. layout.pdf_bitmaps의 remaining을 확인하세요.'
+                if warning not in self.warnings:self.warnings.append(warning)
+            if record not in self._pdf_bitmaps:self._pdf_bitmaps.append(record)
         target=QRectF(*(v/.75 for v in command.rect))
+        clip=None
+        if prepared:
+            from .pdf_bitmap import image_frame
+            frame=image_frame(command.rect,(self._pdf_page_width,self._pdf_page_height))
+            target=QRectF(*(v/.75 for v in frame['rect']))
+            clip=QRectF(*(v/.75 for v in frame['clip']))
+            record['image_matrix_pt']=frame['matrix'];record['clip_pt']=frame['clip']
         painter.save()
+        if clip is not None:painter.setClipRect(clip,Qt.ClipOperation.IntersectClip)
         # Preserve source PNG pixels too: Qt's default PDF JPEG conversion
         # introduces channel errors even when no adjustment is requested.
         painter.setRenderHint(QPainter.RenderHint.LosslessImageRendering,True)
@@ -1268,6 +1316,8 @@ class SourceLayout:
         painter=QPainter()
         if not painter.begin(printer):raise OSError('원본 배치 PDF/인쇄를 시작하지 못했습니다.')
         previous_alpha=self._pdf_picture_alpha
+        previous_width=self._pdf_page_width
+        previous_height=self._pdf_page_height
         self._pdf_picture_alpha=printer.outputFormat()==printer.OutputFormat.PdfFormat
         self._pdf_alpha_sequence=0
         try:
@@ -1276,10 +1326,14 @@ class SourceLayout:
                     width,height=self.page_size(index)
                     printer.setPageSize(printer_page_size(width,height))
                     if not printer.newPage():raise OSError('다음 쪽을 출력하지 못했습니다.')
+                self._pdf_page_width=width
+                self._pdf_page_height=height
                 painter.save();painter.scale(printer.resolution()/96,printer.resolution()/96)
                 self.paint_page(painter,index);painter.restore()
         finally:
             self._pdf_picture_alpha=previous_alpha
+            self._pdf_page_width=previous_width
+            self._pdf_page_height=previous_height
             if not painter.end():raise OSError('PDF/인쇄를 완료하지 못했습니다.')
         if printer.outputFormat()==printer.OutputFormat.PdfFormat:
             from .pdf_text import add_source_text
@@ -1304,6 +1358,7 @@ class SourceLayout:
                                             for (name,language),offset in self._script_offsets.items()],
                 'drawing_limitations':list(dict.fromkeys(self._drawing_limitations.values())),
                 'image_limitations':self._image_limitations,
+                'pdf_bitmaps':self._pdf_bitmaps,
                 'pdf_picture_alpha':'ordered-8x8-white-stencil-300dpi; document brush sequence',
                 'pdf_alpha_native_initial_phase_known':False,
                 'installed_sfnt_fonts':self._sfnt_resolver.fonts}

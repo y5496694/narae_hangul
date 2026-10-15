@@ -42,6 +42,8 @@ python "6_나래뷰어/narae_viewer.py" verify "문서.hwpx" --reference hancom.
 
 밝기·대비·그림 투명도와 회색조·흑백 조합은 REA 분석과 한컴 PNG 색상 표본으로 확인했습니다. PDF는 불투명 원본에 300 dpi의 8×8 흰 점무늬를 합성합니다. alpha 0~3은 불투명, 252~255는 생략하며 중간 단계의 무늬는 출력 순서에 따라 이동합니다. 한컴 프로세스의 앞선 출력이 시작 위치에 영향을 주므로 독립 PDF는 재현 가능한 0부터 시작하고 `alpha:native-process-brush-phase`를 남깁니다. `alpha:printer-coordinate-rounding`과 원본 알파·회전 진단도 확인합니다. `verify`는 이 차이를 보정하지 않고 그대로 검사합니다.
 
+일반 불투명 BMP/PNG의 PDF는 96 dpi로 축소하고 RGB555 4×4 양자화와 색상 수에 따른 자동 JPEG 품질을 적용합니다. 그림 위치·크기·클립은 600 dpi 프린터 격자와 PDF 숫자 정밀도로 변환합니다. 색상 점무늬와 투명도 8×8 점무늬는 별개입니다. Windows의 32비트 GDI+를 자체 C# 보조 프로그램으로 호출하며 한컴 DLL은 사용하지 않습니다. .NET Framework 4 x86 컴파일러가 없거나 원본 알파·효과·잘라내기·반전·회전, JPEG·색인 이미지 등 지원 밖의 경로는 원본 표시를 유지하고 `layout.pdf_bitmaps`에 사유를 남깁니다. `prepared`와 표본 픽셀 일치를 전체 문서 일치로 해석하지 않습니다.
+
 설치된 한양 신명조·중고딕과 HCI Poppy·Hollyhock의 보통 외곽선을 읽습니다. 명조·고딕은 가장 큰 비트맵 저장 크기를 사용하고 600 dpi 정수 픽셀 경계로 확대해 PDF에 넣습니다. 기본 FontDB 대체 순서와 미지원 문자 진단도 유지합니다. `hft_fonts`의 `normal_bitmap_only`, `bitmap_renderer`, `font_substitutions`, `glyph_substitutions`, `font_fallback_config`를 확인하세요. 설치 글꼴·문자표·변환 캐시는 배포하지 않습니다. 비트맵 마스크 표본의 일치를 위치·스타일·전체 문서 일치로 확대하지 않습니다.
 
 자간은 각 글자와 공백의 폭에 비율로 적용합니다. 원본 제어 문자의 UTF16 위치는 유지하면서 가짜 자간 폭을 없앴습니다. 기울임 얼굴이 없는 서체에는 기준선 중심의 약 1/3 합성 기울임을 쓰고 실제 Italic 얼굴은 유지합니다. 글자별 대체와 프린터 정수 좌표·누적 폭·PDF 정밀도는 전체 화면 일치에 남은 과제입니다. 캐시 없는 문단의 줄 높이는 `fontLineHeight` 설정을 따르며 표·도형의 `none` 채우기는 투명하게 표시합니다.

@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T00:22:51+09:00",
+  "date_kst": "2026-10-16T01:20:33+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "6e408965c06c20da9dc40bd1eb479003d3e429c4",
+  "base_commit": "bb409b18ea582c588c5c9944077af6c6cbfc1105",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -21,7 +21,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.01669719868712312,
-      "changed_fraction_max": 0.49188656456399826,
+      "changed_fraction_max": 0.23590139055393167,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -36,7 +36,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.01669719868712312,
-      "changed_fraction_max": 0.49188656456399826,
+      "changed_fraction_max": 0.23590139055393167,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -95,8 +95,8 @@
       "independent_pages": 9,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.03294090707040774,
-      "changed_fraction_max": 0.34168698393027924,
+      "changed_fraction_min": 0.00798659285101721,
+      "changed_fraction_max": 0.2500033675022562,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -169,23 +169,28 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 46,
+      "run": 51,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "viewer, picture effects, outline and bitmap HFT; fresh sequential run",
-      "log_sha256": "947222256b3088e0e86dc046cdd0266da4b71ed81404324a8166c0d863d5eb67"
+      "scope": "viewer, picture effects, outline and bitmap HFT, PDF bitmap sampling; sequential native run",
+      "log_sha256": "251d56ecf41e367e5ebbe94cd85980cc41553b0a3d509199d4ae9aa44009865d"
     },
     "full_native_rerun": {
       "complete": false,
       "reason": "An earlier full-suite attempt encountered COM server launch errors and was interrupted; do not count it as passed."
     },
     "repository_portable": {
-      "run": 67,
+      "run": 72,
       "failures": 0,
       "errors": 0,
-      "skipped": 28,
-      "log_sha256": "f04826b3f4f3d03b4fbefc7c712636f0f00d09abd67bff6815a9a350f7dd38b3"
+      "skipped": 29,
+      "log_sha256": "22466ae4c4db3e8c875a13d35753b598216c940a0b1397689fbbdc9350834e30"
+    },
+    "cold_bitmap_cache": {
+      "concurrent_workers": 4,
+      "all_native_raster_hashes_equal": true,
+      "log_sha256": "e2e3e2c0779b7237b02dff377998abce3ef588a4089d5263d31331a52ec1e90e"
     }
   },
   "rea": {
@@ -521,6 +526,51 @@
         "parameters": {
           "session_id": "d4423e0f-9917-4d93-9e38-4ba857f00e34"
         }
+      },
+      {
+        "query": "sampler-live-resize-path",
+        "evidence_id": "ev_5a285638384a149a0931fee700483a30852d31f615368df63b3990f62904ea51",
+        "record_sha256": "44c49f1ec8b00a9ff3a55706f3498a26b82f3432c699b9e211c6b638310ec903",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10006c82"
+        }
+      },
+      {
+        "query": "sampler-live-draw-cache-path",
+        "evidence_id": "ev_2a37b124e33f62d8ccab18b97512d4f7b233833c16476096e045db421ab4ed9f",
+        "record_sha256": "c489a141cbce5903bf9ee5cc6dd3ef82ae0a1537bd98cafde8c8bb925fefe551",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10006963"
+        }
+      },
+      {
+        "query": "sampler-frida-observed",
+        "evidence_id": "ev_bf4842d1e94073209e9dc461106f2f35ca5be676cd4eaaab362760a9ce73dee3",
+        "record_sha256": "c673c523215dee5575010f4f117c353d52d7288a40ab9752f237ae21575bccde",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "36bb3ef4-24d8-43ad-ab00-2f5f4276ba5d"
+        }
+      },
+      {
+        "query": "sampler-state-observed",
+        "evidence_id": "ev_d709c1b6083863b7a12496873bf08b557129fc075f5ca00f2c67ebc868300ba1",
+        "record_sha256": "c87d3992761d5dc8d1ec123869d076a12428b88853db1160e31dda33104c584d",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "031bca84-f5a5-4263-9158-4467a761d56d"
+        }
+      },
+      {
+        "query": "sampler-synthetic-observed",
+        "evidence_id": "ev_a0fa0cc5776fe452cd81d32f7f32a4010b57d2b6f42f05f6478739fbceeb6b18",
+        "record_sha256": "b31b5fc88bafd85b8077c9dc96262437b5789abf289ba0b9dbd9ec0bd5926e82",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "e7a2e51d-dc94-4efd-a840-4597398a781a"
+        }
       }
     ],
     "sessions_closed": true,
@@ -546,14 +596,21 @@
       "empirical_scope": "ordered PDF stencil ranks/phase and bitmap cell scaling derived from native PDF object payloads",
       "sessions_closed": true,
       "raw_decompilation_distributed": false
+    },
+    "picture_sampler_analysis": {
+      "sampling_entry": "HncBaseDraw::_SaveBitmapPlus at0x100069d0",
+      "dynamic_scope": "OS GDI+ image allocation/drawing state and source hashes; synthetic pre-JPEG bitmap; native bitmap classification",
+      "frida_observation_exports_completed": true,
+      "sessions_closed": true,
+      "raw_pixels_and_decompilation_distributed": false
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "4587748f83491c327ceafbac94def80ef09bdf9575f20c11888b13f607492e94",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "3022cf287d133bc64fd312d001ed2cb3aee9f6d44a35064a45e3b824a2ad90ba",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "aaae813c439dd364b316c7a82af2706065764a23620930c46792c95236aa0182",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ce85282e3baef73c3c4668410ea8d6e6ed9ff963df212fd97c8907be817bc7b6",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "434f971510dffb0deb714481fccba19a1ed1cd000f8156ffe7a573d5c05a0e6d",
+    "2_나래스킬/narae-viewer/SKILL.md": "b73e47d3bdd24075fda9825ea5eb8fef245ca6b538370e45fe4a88de32cc7267",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "9ddea78197436c54cf2fdbfca98a3910e56868b64908461d894308f496f2b4ef",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
@@ -561,7 +618,10 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft_cff.py": "9e2df4fb3baadc44f4a5402077f21a0d38f91bec828610e4a1115fd5edd161cc",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "287d84f8aedb878d393bb660204ddf7058e6e94f0bfc5212f57189a50e5bdb1a",
     "tests/test_font_appearance.py": "0fa1a3f4fd1f0689ea81858dcccb4d955263093ec1b0e05eaffaa0b4129e925d",
-    "tests/test_bitmap_fonts.py": "7c38c0e9174e775c9e1dc0e94d65251c10801cf54fb729e46347ae8aa93cd2bc"
+    "tests/test_bitmap_fonts.py": "7c38c0e9174e775c9e1dc0e94d65251c10801cf54fb729e46347ae8aa93cd2bc",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap.py": "fc4c35c459d14dc88432b5e965181c74bb48b9270f62cc5f0dbcec4c6326a839",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "a7184955a8c9feeb5ce71c7af69f7741d11b6793ecbe865da150fc49686d3c36",
+    "tests/test_pdf_bitmap.py": "d0c601eba3f244739134c19b27a96338efea28e5bf295b65e8066df8c4367a48"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -825,8 +885,8 @@
       "16c3d2cf0fcc24982457ace36d65f0d9a2abadd6f8eaf6c3b916c341ae95be44"
     ],
     "jpeg_codestream_bytes_equal": false,
-    "resampler_reproduced": false,
-    "independent_pipeline_implemented": false,
+    "resampler_reproduced": true,
+    "independent_pipeline_implemented": true,
     "whole_page_pixel_parity_verified": false,
     "instrumented_export_completed": false,
     "instrumented_export_failure": "PrintToPDFEx COM server exception; partial PDF excluded from all parity references",
@@ -834,6 +894,84 @@
     "source_unchanged": true,
     "frida_session_closed": true,
     "raw_documents_and_bitmap_payloads_distributed": false,
-    "codec_report_sha256": "9a601d7cc15f40c73ecf16bb4fc241c6c8a911203b0528fd29c9fabdec1dd67c"
+    "codec_report_sha256": "9a601d7cc15f40c73ecf16bb4fc241c6c8a911203b0528fd29c9fabdec1dd67c",
+    "implementation_scope": "opaque RGB/fully opaque RGBA BMP/PNG without picture effects, crop, rotation/reflection or picture alpha; other paths remain diagnosed"
+  },
+  "pdf_bitmap_sampling": {
+    "backend": "own source-only C# adapter, locally compiled for Windows .NET Framework x86; OS GDI+ only",
+    "uses_hancom_runtime": false,
+    "native_sampling": "32-bit GDI+ bilinear; x64 differs on a high-frequency synthetic fixture",
+    "bitmap_dpi": 96,
+    "upscale": false,
+    "color_quantization": "RGB555 with ordered 4x4 ranks, bottom-up bitmap rows",
+    "ranks_topological": [
+      [
+        0,
+        4,
+        1,
+        5
+      ],
+      [
+        6,
+        2,
+        7,
+        3
+      ],
+      [
+        1,
+        5,
+        0,
+        4
+      ],
+      [
+        7,
+        3,
+        6,
+        2
+      ]
+    ],
+    "jpeg": "auto quality from device image width/bitmap width, clipped 35..75; >1024 colors and quality>70 multiplies by0.7; <4000 bytes or <32 colors is lossless",
+    "qt_storage": "JPEG-decoded RGB stored without further lossy encoding",
+    "printer_frame": "600dpi grid in half-HWPUNIT integer coordinates, float32 paper factors, 3-decimal image matrix and independently rounded clip edges",
+    "native_synthetic_whole_pages": 12,
+    "all_synthetic_whole_pages_equal": true,
+    "synthetic_formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "synthetic_bitmap_sources": [
+      "RGB BMP",
+      "RGB PNG",
+      "fully opaque RGBA PNG"
+    ],
+    "synthetic_target_sizes": [
+      [
+        64,
+        48
+      ],
+      [
+        96,
+        72
+      ]
+    ],
+    "native_real_document_image_payloads": 8,
+    "all_real_sample_decoded_pixels_equal": true,
+    "native_image_matrices": 8,
+    "all_sample_image_matrices_equal": true,
+    "payload_report_sha256": "f70c3ace0c32d6452234cebbc2c95e5a7dda07127f3ea3fb15e23d3992cf04e9",
+    "frame_report_sha256": "65a35beaf4bb40de268e25133398f2b5155362ea5c85af9704493f2a3e6befba",
+    "source_sampling_oracle_sha256": "aeee05ef07a36fac9c3ed1c19e9c347759b02a74704258d8a741ce6b5861c0e7",
+    "rgb555_oracle_sha256": "6005448007302ae3e8ec7545ab06d21ae4cdf3cd31b9f9cb07b13eea19fdce93",
+    "diagnostics": "layout.pdf_bitmaps: prepared means processed, source-path includes remaining reasons; not a parity claim",
+    "compiled_adapter_distributed": false,
+    "source_images_or_documents_distributed": false,
+    "whole_document_equivalence_verified": false,
+    "remaining": [
+      "JPEG and indexed source paths",
+      "source alpha and picture alpha/effects",
+      "crop, rotation and reflection",
+      "JPEG coefficient edge cases and native repeated-image compression cache",
+      "other printer geometry, fonts, tables and page boundaries"
+    ]
   }
 }
