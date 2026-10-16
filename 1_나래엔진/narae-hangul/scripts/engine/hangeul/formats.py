@@ -830,10 +830,11 @@ def _load_hwpx(path):
                     inherited = tuple(tc.get("hasMargin") == "0" or value in (-1, 65535, 4294967295) for value in raw_margins)
                     t.cells.append(Cell(_int(_attr(addr, "rowAddr"), row), _int(_attr(addr, "colAddr"), col),
                         max(1, _int(_attr(span, "rowSpan"), 1)), max(1, _int(_attr(span, "colSpan"), 1)),
-                        parse_blocks(sub, {"kind": "cell", "table_source_index": t.source_index, "row": _int(_attr(addr, "rowAddr"), row), "col": _int(_attr(addr, "colAddr"), col), "parent": t.scope}) if sub is not None else [], _num(_attr(size, "width")) / 100,
+                        parse_blocks(sub, {"kind": "cell", "table_source_index": t.source_index, "row": _int(_attr(addr, "rowAddr"), row), "col": _int(_attr(addr, "colAddr"), col), "line_wrap": _attr(sub,"lineWrap","BREAK"), "parent": t.scope}) if sub is not None else [], _num(_attr(size, "width")) / 100,
                         fill.background, height=_num(_attr(size, "height")) / 100,
                         padding=tuple(t.padding[i] if inherited[i] else raw_margins[i] / 100 for i in range(4)),
-                        borders=fill.borders, vertical_align=_attr(sub, "vertAlign", "CENTER"), header=tc.get("header") == "1", padding_inherited=inherited))
+                        borders=fill.borders, vertical_align=_attr(sub, "vertAlign", "CENTER"), header=tc.get("header") == "1", padding_inherited=inherited,
+                        native_flags={"BREAK":0,"SQUEEZE":8,"KEEP":16}.get(_attr(sub,"lineWrap","BREAK"),0)))
             _table_grid(t)
             return t
         def drawing(e, owner):
@@ -1365,7 +1366,7 @@ def _load_hwp(path):
                         table.cells.append(current)
                         cell_scope = {"kind": "cell", "table_source_index": table.source_index, "table_source_para_id": table.source_para_id,
                             "row": row, "col": col, "row_span": rs, "col_span": cs, "width_pt": width / 100, "height_pt": height / 100,
-                            "padding": current.padding, "parent": p.scope}
+                            "padding": current.padding, "line_wrap": {0:"BREAK",1:"SQUEEZE",2:"KEEP"}.get((common>>3)&3,"BREAK"), "parent": p.scope}
                         for sub in x.children:
                             if sub.tag == 66:
                                 current.blocks.extend(paragraph(sub, cell_scope))
@@ -2031,7 +2032,7 @@ def save_hwpx(document_or_html, path) -> list[str]:
             for c in sorted((x for x in table.cells if x.row == row), key=lambda c: c.col):
                 bid = border_fills.index(BorderFill(tuple(c.borders), c.background)) + 1
                 tc = _element(tr, "hp", "tc", name="", header=int(c.header), hasMargin=int(not all(c.padding_inherited)), protect=0, editable=0, dirty=0, borderFillIDRef=bid)
-                sub = _element(tc, "hp", "subList", id="", textDirection="HORIZONTAL", lineWrap="BREAK", vertAlign=c.vertical_align, linkListIDRef=0, linkListNextIDRef=0, textWidth=0, textHeight=0, hasTextRef=0, hasNumRef=0)
+                sub = _element(tc, "hp", "subList", id="", textDirection="HORIZONTAL", lineWrap={0:"BREAK",1:"SQUEEZE",2:"KEEP"}.get((c.native_flags>>3)&3,"BREAK"), vertAlign=c.vertical_align, linkListIDRef=0, linkListNextIDRef=0, textWidth=0, textHeight=0, hasTextRef=0, hasNumRef=0)
                 write_blocks(sub, c.blocks or [Paragraph()])
                 _element(tc, "hp", "cellAddr", colAddr=c.col, rowAddr=c.row)
                 _element(tc, "hp", "cellSpan", colSpan=c.col_span, rowSpan=c.row_span)

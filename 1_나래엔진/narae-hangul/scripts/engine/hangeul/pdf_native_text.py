@@ -54,7 +54,8 @@ class PdfNativeText:
         self.precision=6
         self.facts={'processed_lines':0,'legacy_lines':0,'glyphs':0,'fonts':[],
                     'legacy_reasons':{},'number_precision':6,'glyph_fallbacks':{},'suppressed_strike_glyphs':0,'stretched_glyphs':0,
-                    'device_centered_lines':0,'device_metric_fallbacks':{},'whole_document_parity_verified':False}
+                    'device_centered_lines':0,'device_metric_fallbacks':{},'fitted_lines':0,
+                    'condensed_word_gaps':0,'condensed_character_gaps':0,'whole_document_parity_verified':False}
 
     def _center_cached_line(self,command,text,parts,metrics):
         # A saved, single-line paragraph uses device-centered widths. Uncached
@@ -109,6 +110,29 @@ class PdfNativeText:
             if character!=' ':alignment=pen
         self.facts['device_centered_lines']+=1
         return result,alignment
+
+    def _fit_saved_line(self,command,text,parts,metrics,alignment):
+        if not command.source.line_segments:return parts,False
+        from .pdf_line_fit import condense_line
+        text=text.replace('\u200b','')
+        if not metrics or len(text)!=len(metrics):return parts,False
+        # The existing alignment width excludes trailing ordinary spaces.
+        # Device-centered lines may have a different final advance, so use
+        # that actual width instead of rebuilding it from source metrics.
+        end=len(text.rstrip(' '));total=alignment+sum(m[4] for m in metrics[end:])
+        advances=[parts[i+1][0]-part[0] if i+1<len(parts) else total-part[0] for i,part in enumerate(parts)]
+        scope=command.source.scope;all_gaps=command.source.style.line_wrap=='SQUEEZE'
+        while scope:
+            all_gaps=all_gaps or scope.get('line_wrap','BREAK')!='BREAK'
+            scope=scope.get('parent')
+        result=condense_line(text,advances,[m[5] for m in metrics],round(command.extra['line']['width_pt']*100),all_gaps)
+        if result is None:return parts,False
+        pen=0;fitted=[]
+        for part,advance in zip(parts,result['advances']):fitted.append((pen,*part[1:]));pen+=advance
+        self.facts['fitted_lines']+=1
+        if result['word_adjustment']:self.facts['condensed_word_gaps']+=result['word_gaps']
+        if result['character_adjustment']:self.facts['condensed_character_gaps']+=result['character_gaps']
+        return fitted,True
 
     def _hanja_fallback(self,font,character,raw,index):
         from PySide6.QtGui import QRawFont,QFont
@@ -307,18 +331,20 @@ class PdfNativeText:
                 # Quantize the base half-em before stretch/tracking. Reversing
                 # this order changes 11pt/50% and 18pt/95% by four HWP units.
                 delta=_round(math.floor(size*100/8+1e-9)*stretch/100*tracking)*4
+                untracked_delta=_round(math.floor(size*100/8+1e-9)*stretch/100)*4
             else:
                 logical_em=math.trunc(_round(size*100)/4)
                 width=(math.floor(advance*logical_em*stretch/100+1e-9) if stretch!=100
                        else _round(advance*logical_em))
                 delta=_round(width*tracking)*4
+                untracked_delta=width*4
             if self.fonts[key].get('script_fallback'):hft_fallback_mode=True
             rgb=(color.red(),color.green(),color.blue());fallback=fmt.property(FONT_FALLBACK_PROPERTY) or hft_fallback_mode
             group_key=(key,em,rgb,_language_index(character)[0],tracking_percent,scale)
             if fallback or current_group!=group_key:group_number+=1
             current_group=group_key
             parts.append((pen,key,glyph,em,rgb,scale,group_number))
-            metrics.append((key,em,stretch,tracking_percent,delta))
+            metrics.append((key,em,stretch,tracking_percent,delta,untracked_delta))
             if stretch!=100:stretched+=1
             if fmt.property(STRIKE_SHAPE_PROPERTY) in INVISIBLE_STRIKE_SHAPES:suppressed_strike+=1
             if character.isspace() or fallback:current_group=None
@@ -328,8 +354,9 @@ class PdfNativeText:
             self.facts['processed_lines']+=1;return True
         parts,centered_alignment=self._center_cached_line(command,text,parts,metrics)
         if centered_alignment is not None:alignment_pen=centered_alignment
+        parts,fitted=self._fit_saved_line(command,text,parts,metrics,alignment_pen)
         factor={'CENTER':.5,'RIGHT':1}.get(command.source.style.align,0)
-        alignment=(math.floor(command.rect[2]*100/4+1e-9)*4-alignment_pen)*factor
+        alignment=0 if fitted else (math.floor(command.rect[2]*100/4+1e-9)*4-alignment_pen)*factor
         x=printer_pixel(command.rect[0]);line=command.extra['line'];offset=line.get('y_pt',0)
         y=_round((printer_pixel(command.rect[1]-offset)*12+_round(offset*100)+_round(line['baseline_pt']*100))/12)
         origin=command.extra.get('table_text_origin')

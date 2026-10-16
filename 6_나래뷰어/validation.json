@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T15:15:43+09:00",
+  "date_kst": "2026-10-16T16:15:35+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "895d208259d4ba13aab1e03b3f518284c9c833ac",
+  "base_commit": "11d790f46d6d8b405e7e7bff7cfcad6678c5a6bc",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -51,7 +51,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.0199928608952168,
+      "changed_fraction_max": 0.015473672867360821,
       "errors": [],
       "independent_identical_pages": 1
     },
@@ -66,7 +66,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.054034941203410604,
-      "changed_fraction_max": 0.15334482774103458,
+      "changed_fraction_max": 0.14841480443791896,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -81,7 +81,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.20483281473798587,
+      "changed_fraction_max": 0.20485189725077116,
       "errors": [],
       "independent_identical_pages": 2
     },
@@ -169,11 +169,11 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 85,
+      "run": 89,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "83 distinct historical final passes through 895d208 plus 2 mixed-border tests; current mixed/grid/cached groups freshly passed 14 tests, not a full 85-test run",
+      "scope": "85 distinct historical final passes through 11d790f plus 4 saved-line tests; current line-fit/mixed/grid/cached groups freshly passed 18 tests, not a full 89-test run",
       "whole_group_fresh_pass_claimed": false,
       "component_log_sha256": [
         "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
@@ -187,7 +187,11 @@
         "7433e63c1be550938962b4e7b98bc369f1c85664757de6bae7b91b0ab3ef0e0d",
         "3f1052c7c4817d8c897e5184803b58024a32f5177cad649165fbac21883208b5",
         "0b81fc4021fbbd3745831de80bf4f599c52364b00b784817fbed2c47522969a9",
-        "1f05cd41e6b183750f67a4a871f80fdf4409280aa4508fd20bb3b46f3f5922f7"
+        "1f05cd41e6b183750f67a4a871f80fdf4409280aa4508fd20bb3b46f3f5922f7",
+        "6ce7144d6555e4e0a0823e766d3935da269e6bb3600d364dd8c2a91a6b2a82a0",
+        "ffc51ee66f511b74b22e528f0fb5d21d2b4a5f900f476c0d04534f3dc768ba21",
+        "f6015d2de4bb9147ca4b92f8f1a01725d8eb15c5972e076eb79b5cb9862c4975",
+        "79f098052f03ddae3512768f4e9e2ca0f18a0e9a6806d84c7d99b286e77079e0"
       ]
     },
     "full_native_rerun": {
@@ -213,12 +217,12 @@
       "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 106,
-      "passed": 61,
-      "skipped": 45,
+      "run": 110,
+      "passed": 63,
+      "skipped": 47,
       "failures": 0,
       "errors": 0,
-      "log_sha256": "564ff5fe9d2947433e23115511d12f6f93ead2d98266f893bf0930e0776fb362"
+      "log_sha256": "7a6e69e194a0629c4ff0c85e03c1f96bf696f099f272e5baaa3c9ca53d33103b"
     },
     "cold_bitmap_cache": {
       "concurrent_workers": 4,
@@ -415,7 +419,7 @@
       "rgb_tolerance": 0,
       "alignment": false,
       "resizing": false,
-      "native_log_sha256": "0b81fc4021fbbd3745831de80bf4f599c52364b00b784817fbed2c47522969a9",
+      "native_log_sha256": "f6015d2de4bb9147ca4b92f8f1a01725d8eb15c5972e076eb79b5cb9862c4975",
       "scope": "Prior 88 grid pages plus 40 complete merged-grid pages; uniform SOLID/NONE borders, opaque fill, inline body tables",
       "border_width_native_conversion_labels": 28,
       "precision_pages_exact": 4,
@@ -465,14 +469,14 @@
       "rgb_tolerance": 0,
       "alignment": false,
       "resizing": false,
-      "log_sha256": "1f05cd41e6b183750f67a4a871f80fdf4409280aa4508fd20bb3b46f3f5922f7",
+      "log_sha256": "79f098052f03ddae3512768f4e9e2ca0f18a0e9a6806d84c7d99b286e77079e0",
       "visual_qa": "Whole-page cached multifont and fully merged native/independent image pairs inspected; RGB differences zero"
     },
     "normal_font_regression_current": {
       "whole_pages_exact": 202,
       "precision_pages_exact": 4,
       "references": "Existing native PDF references reused without replacement",
-      "log_sha256": "d3392b4941058de77c5e9e986a04045d378d71483440716ffcd2b6a639cbb25c"
+      "log_sha256": "b455750d49a0a8b9d3e27621ff7d3bfbe92a6d52bb3af749f0ce156f0ab6730a"
     },
     "mixed_table_border_pages": {
       "run": 2,
@@ -487,9 +491,29 @@
       "rgb_tolerance": 0,
       "alignment": false,
       "resizing": false,
-      "native_log_sha256": "3f1052c7c4817d8c897e5184803b58024a32f5177cad649165fbac21883208b5",
+      "native_log_sha256": "ffc51ee66f511b74b22e528f0fb5d21d2b4a5f900f476c0d04534f3dc768ba21",
       "scope": "12 conflicting interior-edge cases, 24 outer-edge cases, 4 merged/fill cases; solid colors, thickness, NONE, reversed order and opaque fills",
       "visual_qa": "Whole page and junction images for outer-edge, merged and opaque-fill cases inspected; all three native/independent pairs exact"
+    },
+    "saved_pdf_line_fit": {
+      "run": 4,
+      "passed": 4,
+      "whole_pages_exact": 184,
+      "pages_per_scope_and_format": 46,
+      "formats": [
+        "hwp",
+        "hwpx"
+      ],
+      "scopes": [
+        "body",
+        "cell"
+      ],
+      "dpi": 96,
+      "rgb_tolerance": 0,
+      "alignment": false,
+      "resizing": false,
+      "log_sha256": "6ce7144d6555e4e0a0823e766d3935da269e6bb3600d364dd8c2a91a6b2a82a0",
+      "scope": "10 width cases, 4 fonts/4 size-tracking-stretch cases, Arial cached device widths, 9 spaces/punctuation/no-space cases, 3 mixed-font alignments, 2 font-space cases, 4 wrap-mode cases and 1 smaller leading-space case per scope and format"
     }
   },
   "rea": {
@@ -1323,8 +1347,8 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "52bbbdec290189059a89402171f073276d8bdde1ecba059f76149b837602759c",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ac8024577c0d112f4da78005fc12fc01fb8617d30022e0c0138056d3064d4a96",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "198ea39178ca7bd79b79f32fd2b24a3b5e68d360e55fb08be4c90935979ac868",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "d75b226d7627bb268566c0456128c688cb0cce3492db1c43b620cfff15d8f47b",
+    "2_나래스킬/narae-viewer/SKILL.md": "fc4ec0b6a7d721595ead02f8d33b1a931977c9c4ac1f718068a44e4e38cd2085",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "29a855dd7961ac405322d02afc33496066fccdc160992c62406f9fea1cb6063a",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "275925621e5437441b86f3e4b98d35c69a134409a33b6c050e021938026886b0",
@@ -1336,21 +1360,23 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "5e2216bbf741981dd31bfa44663664a57a8ce539d8d39f502b5215de924e6e8f",
     "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "24929db32de1b04976a3c9bfce1543dca725138ca767a187697cfc262ae3e66f",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "a7e02a4aa80b4ac23cee4ba59ce618299803ba97790adc79ba4d4ec73c0a1f92",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "4e30bddebf4e2fbf42f3bd97658ed00712c758f8743b40faef3e1be67e74cbb6",
     "tests/test_pdf_native_text.py": "1a71fa6835520e9333f920914180835e7d3b5002802cfd76f351ab4821fe3631",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "89e08126b83cc8cdd630c35afd58db02318de1dc41b820d45175cf9de4b85194",
     "tests/test_text_decorations.py": "2b3fed445c5a53b5ef553dfef9ef5beedb086e2588959885b8c0420ba82162ac",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwpx_native.py": "564aa217a166bdcd5ed814a4c6405159b947aa8a17acb81a3ad773a159b2eec1",
     "tests/test_inline_spacing.py": "61b3de9dddf1e7517475f0b5917dfb23b338b3211c8152c827573938eb6172f2",
     "tests/test_pdf_stretch.py": "dcf48403fa663ef49a46933d395ef3984e088fd9eabe1617bc9f0a4fad24e0c6",
-    "1_나래엔진/narae-hangul/references/viewer.md": "47e32adb8f9edd16b40727e29d4b252a874b79a3a130dd1872ae1cdd567fd509",
-    "6_나래뷰어/README.md": "ef2d4ca89c6027d65b0fb047eb418a6e5f2b4e4dd499105610298b2db5293161",
+    "1_나래엔진/narae-hangul/references/viewer.md": "188b96aaf620ec71f9e0b585a0d20c8aa282a3abb8cc9f9d0053d36a38d7de45",
+    "6_나래뷰어/README.md": "4d0c5cc1ccd74b3ed33ff919fba91950a9880c79a0b763f18839b3c1fb277983",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "816ce876463a169877f3ad052113ed44c5ef35d3cdf5ca815a067018b4d57693",
     "tests/test_pdf_table_frames.py": "1c0d7df362ab78952b2e33b9ab5c48aeb43d62b5ae6d783e08f2c9eeba548718",
-    "5_유틸리티/hancom_rea_findings.md": "417c817c4a2a78983390b9e55c6b5dffeb84a78e637216e89d6f35186e221456",
+    "5_유틸리티/hancom_rea_findings.md": "55b841bc3f7ef5f2f87db22ce33217d23c791b70776b8b649167e782c7c53256",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_device_metrics.py": "9627ec91821ba34c0d37069f983e89b8753b968e9b5bd1d4ce1c019410699740",
     "tests/test_pdf_device_metrics.py": "007a971d27e5cf2687cc3966a0d7a745cbd01b0c3658a7f4cdc85cde880bd954",
-    "tests/test_pdf_mixed_table_frames.py": "f204eee622dcdb6e717c55623fe39bf9d8ca2c4b7383b56593376191ac4ef130"
+    "tests/test_pdf_mixed_table_frames.py": "f204eee622dcdb6e717c55623fe39bf9d8ca2c4b7383b56593376191ac4ef130",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_line_fit.py": "b0c6a4d3131c7d510127993c6620dcbb4965f85c2a00fc4da8ac69959d15fdc3",
+    "tests/test_pdf_line_fit.py": "0cc1b60dbb3f1f1ae208dda38f4fd1fb7a694f7cd65f13e7ca51605999dc82f7"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -2273,6 +2299,190 @@
         "legacy_reasons": {},
         "whole_document_parity_verified": false
       }
+    }
+  },
+  "saved_pdf_line_fit": {
+    "behavior": "For overflowing saved lines, compress eligible ordinary/full-width word spaces up to ceil(minimum untracked space/5), then distribute the remainder over eligible non-space gaps. Integer division truncates toward zero and overflow fitting returns before alignment. Leading spaces participate for SQUEEZE paragraphs or SQUEEZE/KEEP cells; retain container wrap modes in both formats.",
+    "independent_runtime": "Original spacing computation from source styles/cache and installed font widths; renderer never loads Hancom or reads a reference PDF",
+    "source_width_rounding": "Frame quantization to four HWPUNIT precedes paragraph margins in native fixture construction",
+    "observations": [
+      {
+        "evidence_id": "ev_410b4184fe4004f62f6635377deb1a4abc4621f18f7f01ffdcc21fd71edae3e4",
+        "messages": 80,
+        "truncated": false
+      },
+      {
+        "evidence_id": "ev_60c924ca905eb8bcbb67e11b1b5fa0a3dc7788eb3b02e0a77472c79511341ea2",
+        "messages": 69,
+        "truncated": false
+      }
+    ],
+    "observer_sha256": [
+      "002f8d15a656d6fb247dc1d78d4b43108098e3ea4948da5fe11d4f1d924d3ca7",
+      "1aa52fbbd7c49edd49f4ddc2ea7a08df899f9ed401912bfada0c5957b04c8b5f"
+    ],
+    "installed_binary_sha256": {
+      "HncBaseDraw.dll": "52734f0b0fc92cf890fc7085708fb72de62f67c0b5e0aa5bf668db7646199fb1",
+      "HNCE2PTP.dll": "42b1eaf97af05ff3662ffa23272b9c19ea5948345c8363969b28b601b741c458",
+      "HncFontLib.dll": "bc7300311c5bb367bc5eaf211c5c92744d372d28ff008feb83ba650cd5e1d232",
+      "HwpApp.dll": "0aa051839026fe803f5ec24965ac112a8e54aecf0da0132f91e20483078429d1",
+      "HwpAppModule.dll": "3a7b930af2cb467b66775cef5f793aecab28cba2b58596226f04bb5512489bf3"
+    },
+    "real_pixels": {
+      "report-hwp": {
+        "before": 1755448,
+        "after": 1755448,
+        "exact": 1,
+        "before_max_fraction": 0.18037913585402102,
+        "max_fraction": 0.18037913585402102,
+        "reference_sha256": "59d00f031684f77c3c17323686df5ed18ceac1c800494fc3ad3ae45fd348c0a5"
+      },
+      "report-hwpx": {
+        "before": 1755448,
+        "after": 1755448,
+        "exact": 1,
+        "before_max_fraction": 0.18037913585402102,
+        "max_fraction": 0.18037913585402102,
+        "reference_sha256": "81625234203ea5fce32ce098057125140a11f5c51c40dc9b461f16dbe8b1a9bd"
+      },
+      "trip-hwpx": {
+        "before": 17811,
+        "after": 13785,
+        "exact": 1,
+        "before_max_fraction": 0.0199928608952168,
+        "max_fraction": 0.015473672867360821,
+        "reference_sha256": "e4bf914e2b4b9ea1d6410c37e69cd32a4a2c2ed404002d5d05e31c043608bcdf"
+      },
+      "form-hwp": {
+        "before": 613431,
+        "after": 610487,
+        "exact": 0,
+        "before_max_fraction": 0.15334482774103458,
+        "max_fraction": 0.14841480443791896,
+        "reference_sha256": "b2cc8c977f1d211cc755ca3742171c91ade919377937be0830fbfb9639d840cb"
+      },
+      "guide-hwp": {
+        "before": 3907954,
+        "after": 3891081,
+        "exact": 2,
+        "before_max_fraction": 0.20483281473798587,
+        "max_fraction": 0.20485189725077116,
+        "reference_sha256": "4043d88876e1342b1873f83bf7960983f21504f576c0e7cb701b9f62fe35124d"
+      },
+      "lesson-hwp": {
+        "before": 870040,
+        "after": 870054,
+        "exact": 0,
+        "before_max_fraction": 0.22941782620994355,
+        "max_fraction": 0.22941782620994355,
+        "reference_sha256": "3aed17b54f71f25cd6f795cfe03dd6db1e8810c3ed2d8dd5848aa80452e00832"
+      },
+      "minutes-hwpx": {
+        "before": 172806,
+        "after": 172806,
+        "exact": 0,
+        "before_max_fraction": 0.11340625098218816,
+        "max_fraction": 0.11340625098218816,
+        "reference_sha256": "c6389ce79c6a1cebf148ef78f14dd94d3bb12839fb57bec6b6142e3b840fbed5"
+      }
+    },
+    "real_diagnostics": {
+      "report-hwp": {
+        "fitted_lines": 0,
+        "condensed_word_gaps": 0,
+        "condensed_character_gaps": 0,
+        "device_metric_fallbacks": {
+          "stretch-or-tracking": 4,
+          "mixed-font-metrics": 52,
+          "multiline-paragraph": 333
+        }
+      },
+      "report-hwpx": {
+        "fitted_lines": 0,
+        "condensed_word_gaps": 0,
+        "condensed_character_gaps": 0,
+        "device_metric_fallbacks": {
+          "stretch-or-tracking": 4,
+          "mixed-font-metrics": 52,
+          "multiline-paragraph": 333
+        }
+      },
+      "trip-hwpx": {
+        "fitted_lines": 1,
+        "condensed_word_gaps": 2,
+        "condensed_character_gaps": 16,
+        "device_metric_fallbacks": {
+          "control-or-postprocessed-character": 2,
+          "stretch-or-tracking": 7,
+          "mixed-font-metrics": 2
+        }
+      },
+      "form-hwp": {
+        "fitted_lines": 6,
+        "condensed_word_gaps": 67,
+        "condensed_character_gaps": 126,
+        "device_metric_fallbacks": {
+          "stretch-or-tracking": 19,
+          "multiline-paragraph": 10,
+          "mixed-font-metrics": 3
+        }
+      },
+      "guide-hwp": {
+        "fitted_lines": 15,
+        "condensed_word_gaps": 116,
+        "condensed_character_gaps": 9,
+        "device_metric_fallbacks": {
+          "mixed-font-metrics": 420,
+          "multiline-paragraph": 269,
+          "stretch-or-tracking": 102,
+          "control-or-postprocessed-character": 1
+        }
+      },
+      "lesson-hwp": {
+        "fitted_lines": 1,
+        "condensed_word_gaps": 3,
+        "condensed_character_gaps": 9,
+        "device_metric_fallbacks": {
+          "control-or-postprocessed-character": 1,
+          "multiline-paragraph": 24,
+          "stretch-or-tracking": 63,
+          "mixed-font-metrics": 5
+        }
+      },
+      "minutes-hwpx": {
+        "fitted_lines": 0,
+        "condensed_word_gaps": 0,
+        "condensed_character_gaps": 0,
+        "device_metric_fallbacks": {
+          "stretch-or-tracking": 1,
+          "multiline-paragraph": 7
+        }
+      }
+    },
+    "real_pages_exact": 5,
+    "real_documents_exact": 0,
+    "real_pages_checked": 124,
+    "native_references_reused_unchanged": true,
+    "corpus_log_sha256": "4fde39fd8837f3b54d97096defdf0098eb4f4f52482f3bfae53c108bccd32072",
+    "additional_probe": {
+      "whole_pages": 64,
+      "exact": 54,
+      "remaining_pages": 10,
+      "log_sha256": "bc90dcecd4e8b1bc9057f4af78be763fe0ec84723fc266011f5af164ae7ad3ef",
+      "limitations": [
+        "3 Arial tracking/stretch cases per body/cell retain device-width differences",
+        "4 unpadded cell cases retain one boundary pixel each"
+      ]
+    },
+    "remaining": [
+      "cached TrueType device widths with tracking/stretch/mixed measurements",
+      "unpadded cell clipping boundaries",
+      "other text styles, multiline context and untested DPI combinations",
+      "actual full-document parity remains unmet"
+    ],
+    "visual_qa": {
+      "whole_pages": 3,
+      "scope": "Stored synthetic HWPX body references, native/independent whole pages and glyph crops checked; no public source documents or fonts"
     }
   }
 }
