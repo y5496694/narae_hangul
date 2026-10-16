@@ -58,15 +58,17 @@ class PdfNativeText:
                     'legacy_reasons':{},'number_precision':6,'glyph_fallbacks':{},'suppressed_strike_glyphs':0,'stretched_glyphs':0,
                     'device_centered_lines':0,'device_centered_stretched_lines':0,'continuation_tracking_aligned_lines':0,'device_metric_fallbacks':{},'fitted_lines':0,
                     'condensed_word_gaps':0,'condensed_character_gaps':0,'cell_clipped_lines':0,'cell_clipped_painter_lines':0,'whole_document_parity_verified':False}
+        self.facts.update(justified_lines=0,expanded_word_gaps=0,expanded_character_gaps=0)
 
     def _center_cached_line(self,command,text,parts,metrics):
-        # A saved, single-line paragraph uses device-centered widths. Uncached
-        # paragraphs retain logical widths; a line cache is not a page-number
-        # heuristic. Tracking follows device centering of untracked widths.
-        if not command.source.line_segments:return parts,None
+        # Saved single lines and justified paragraphs use device-centered
+        # widths. Tracking follows centering of untracked widths. A cache
+        # is never inferred from a page number.
+        justified=command.source.style.align=='JUSTIFY'
+        if not command.source.line_segments and not justified:return parts,None
         text=text.replace('\u200b','')
         reason=None
-        if len(command.source.line_segments)!=1:reason='multiline-paragraph'
+        if len(command.source.line_segments)!=1 and not justified:reason='multiline-paragraph'
         elif len(metrics)!=len(text) or any(ord(c)>=65536 or c=='!' for c in text):reason='control-or-postprocessed-character'
         elif len({item[:4]+(item[6],) for item in metrics})!=1:reason='mixed-font-metrics'
         elif metrics:
@@ -113,6 +115,24 @@ class PdfNativeText:
         self.facts['device_centered_lines']+=1
         if font_width:self.facts['device_centered_stretched_lines']+=1
         return result,alignment
+
+    def _justify_line(self,command,text,parts,metrics,alignment):
+        from .pdf_line_fit import expand_line
+        text=text.replace('\u200b','')
+        if not metrics or len(text)!=len(metrics):return parts,False
+        # The final visible glyph contributes its untracked width, while
+        # intermediate positions retain tracking and device centering.
+        advances=[parts[i+1][0]-part[0] if i+1<len(parts) else alignment-part[0]
+                  for i,part in enumerate(parts)]
+        target=round(command.rect[2]*100) if command.source.line_segments else math.floor(command.rect[2]*25+1e-9)*4
+        result=expand_line(text,advances,[m[5] for m in metrics],target)
+        if result is None:return parts,False
+        pen=0;expanded=[]
+        for part,advance in zip(parts,result['advances']):expanded.append((pen,*part[1:]));pen+=advance
+        self.facts['justified_lines']+=1
+        if result['word_adjustment']:self.facts['expanded_word_gaps']+=result['word_gaps']
+        if result['character_adjustment']:self.facts['expanded_character_gaps']+=result['character_gaps']
+        return expanded,True
 
     def _fit_saved_line(self,command,text,parts,metrics,alignment):
         if not command.source.line_segments:return parts,False
@@ -278,10 +298,12 @@ class PdfNativeText:
             self.facts['legacy_lines']+=1
             reasons=self.facts['legacy_reasons'];reasons[reason]=reasons.get(reason,0)+1
             return False
-        if command.source.style.align=='JUSTIFY' and command.extra.get('justify_continuation'):
-            return legacy('justified-continuation')
+        justified=command.source.style.align=='JUSTIFY' and command.extra.get('justify_continuation')
         if len(self.records)>=MAX_LINES:return legacy('line-count-bounds')
-        text=layout.text();cursor=0;pen=0;alignment_pen=0;parts=[];metrics=[];terminal=len(text.rstrip('\u200b '))-1
+        # QTextLayout's synthetic suffix only requests Qt justification. It
+        # is not a source glyph; trailing blanks also must not be shaped.
+        text=layout.text()[:-2].rstrip(' \u3000') if justified else layout.text()
+        cursor=0;pen=0;alignment_pen=0;parts=[];metrics=[];terminal=len(text.rstrip('\u200b \u3000'))-1
         group_number=0;current_group=None;hft_fallback_mode=False;suppressed_strike=0;stretched=0;terminal_tracking=0
         if len(text)+self.characters>MAX_CHARACTERS:return legacy('character-count-bounds')
         for position,character in enumerate(text):
@@ -347,7 +369,7 @@ class PdfNativeText:
             if fmt.property(STRIKE_SHAPE_PROPERTY) in INVISIBLE_STRIKE_SHAPES:suppressed_strike+=1
             if character.isspace() or fallback:current_group=None
             pen+=delta
-            if character!=' ':
+            if character not in ' \u3000':
                 # A continuation retains spacing for layout, but centering
                 # and right alignment measure the final visible glyph only.
                 if position==terminal:terminal_tracking=delta-untracked_delta
@@ -356,7 +378,9 @@ class PdfNativeText:
             self.facts['processed_lines']+=1;return True
         parts,centered_alignment=self._center_cached_line(command,text,parts,metrics)
         if centered_alignment is not None:alignment_pen=centered_alignment
-        parts,fitted=self._fit_saved_line(command,text,parts,metrics,alignment_pen)
+        expanded=False
+        if justified:parts,expanded=self._justify_line(command,text,parts,metrics,alignment_pen)
+        parts,fitted=(parts,False) if expanded else self._fit_saved_line(command,text,parts,metrics,alignment_pen)
         factor={'CENTER':.5,'RIGHT':1}.get(command.source.style.align,0)
         if terminal_tracking and centered_alignment is None and not fitted and factor:
             self.facts['continuation_tracking_aligned_lines']+=1

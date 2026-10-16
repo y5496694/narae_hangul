@@ -35,11 +35,13 @@ def draw_line(owner,painter,command,layout):
     formats=layout.formats()
     if not any(f.format.property(BITMAP_FONT_PROPERTY) for f in formats):return None
     def legacy(reason):return {'handled':False,'reason':reason}
-    if command.source.style.align=='JUSTIFY' and command.extra.get('justify_continuation'):
-        return legacy('justified-continuation')
+    justified=command.source.style.align=='JUSTIFY' and command.extra.get('justify_continuation')
     line=layout.lineAt(0);cursor=0;pen=0;groups=[];group=None;remaining=set()
-    characters=[];advances=[];untracked=[];fitting=None
-    text=layout.text();last_visible=len(text.rstrip('\u200b'))-1
+    characters=[];advances=[];untracked=[];fitting=None;expansion=None
+    # Trailing blanks remain in the native word bitmap buffer, although they
+    # are excluded from justification. Removing them changes its PDF frame.
+    text=layout.text()[:-2] if justified else layout.text()
+    last_visible=len(text.rstrip('\u200b \u3000'))-1
     for character_index,character in enumerate(text):
         length=len(character.encode('utf-16le'))//2
         fmt=next((f.format for f in formats if f.start<=cursor<f.start+f.length),None)
@@ -63,7 +65,7 @@ def draw_line(owner,painter,command,layout):
         if group is None or (not space and key!=group['key']):
             group={'key':key,'start':pen,'parts':[],'part_indices':[],'first':len(characters),'em':em,'bearing':None}
             groups.append(group)
-        terminal=character_index==last_visible and not command.extra.get('justify_continuation')
+        terminal=character_index>=last_visible and (justified or not command.extra.get('justify_continuation'))
         glyph_tracking=1 if terminal else tracking
         if not space:
             bitmap=owner._bitmap_image(family,character,size,color)
@@ -97,21 +99,26 @@ def draw_line(owner,painter,command,layout):
         characters.append(character);advances.append(delta);untracked.append(untracked_delta)
         pen+=delta;group['end']=pen;group['last']=len(characters);cursor+=length
         if space:group=None
-    if command.source.line_segments:
+    width_hwp=round(command.rect[2]*100) if command.source.line_segments else math.floor(command.rect[2]*25+1e-9)*4
+    if justified:
+        from .pdf_line_fit import expand_line
+        expansion=expand_line(''.join(characters),advances,untracked,width_hwp)
+        if expansion is not None:advances=expansion['advances']
+    if command.source.line_segments and expansion is None:
         from .pdf_line_fit import condense_line
         scope=command.source.scope;all_gaps=command.source.style.line_wrap=='SQUEEZE'
         while scope:
             all_gaps=all_gaps or scope.get('line_wrap','BREAK')!='BREAK';scope=scope.get('parent')
         fitting=condense_line(''.join(characters),advances,untracked,round(command.rect[2]*100),all_gaps)
-        if fitting is not None:
-            positions=[0]
-            for advance in fitting['advances']:positions.append(positions[-1]+advance)
-            for group in groups:
-                group['start']=positions[group['first']];group['end']=positions[group['last']]
-                group['parts']=[(positions[index],*part[1:]) for index,part in zip(group['part_indices'],group['parts'])]
-            pen=positions[-1]
+        if fitting is not None:advances=fitting['advances']
+    if fitting is not None or expansion is not None:
+        positions=[0]
+        for advance in advances:positions.append(positions[-1]+advance)
+        for group in groups:
+            group['start']=positions[group['first']];group['end']=positions[group['last']]
+            group['parts']=[(positions[index],*part[1:]) for index,part in zip(group['part_indices'],group['parts'])]
+        pen=positions[-1]
     factor={'CENTER':.5,'RIGHT':1}.get(command.source.style.align,0)
-    width_hwp=round(command.rect[2]*100) if command.source.line_segments else math.floor(command.rect[2]*100/4+1e-9)*4
     alignment=0 if fitting is not None else math.trunc((width_hwp-pen)*factor) if command.source.line_segments else (width_hwp-pen)*factor
     plans=[];total_pixels=0
     for group in groups:
@@ -137,7 +144,8 @@ def draw_line(owner,painter,command,layout):
                                         (em*20+50)//100+top,ink)
             image_painter.end()
             x=printer_pixel(command.rect[0])+start+bearing
-            y=printer_pixel(command.rect[1])+_round(command.extra['line']['baseline_pt']/.12)-em
+            line=command.extra['line'];offset=line.get('y_pt',0)
+            y=_round((printer_pixel(command.rect[1]-offset)*12+_round(offset*100)+_round(line['baseline_pt']*100))/12)-em
             max_height=max(1,BITMAP_BYTES//(aligned//8));allocated_height=min(max_height,height)
             stripe=QImage(aligned,allocated_height,QImage.Format.Format_RGB888);stripe.fill(0xffffff)
             for yy in range(0,height,max_height):
@@ -156,4 +164,6 @@ def draw_line(owner,painter,command,layout):
     finally:painter.restore()
     return {'handled':True,'groups':len(plans),'image_chunks':chunks,'remaining':sorted(remaining),
         'fitted_lines':int(fitting is not None),'condensed_word_gaps':fitting['word_gaps'] if fitting and fitting['word_adjustment'] else 0,
-        'condensed_character_gaps':fitting['character_gaps'] if fitting and fitting['character_adjustment'] else 0}
+        'condensed_character_gaps':fitting['character_gaps'] if fitting and fitting['character_adjustment'] else 0,
+        'justified_lines':int(expansion is not None),'expanded_word_gaps':expansion['word_gaps'] if expansion and expansion['word_adjustment'] else 0,
+        'expanded_character_gaps':expansion['character_gaps'] if expansion and expansion['character_adjustment'] else 0}

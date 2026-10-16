@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T20:26:48+09:00",
+  "date_kst": "2026-10-16T21:15:25+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "50e24f0b2f51c0236d12a70bf3ba1ca0e930c476",
+  "base_commit": "0d23be266a611381abe7e61fd556e73cde37ff62",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -21,7 +21,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.18037913585402102,
+      "changed_fraction_max": 0.16830439526394483,
       "errors": [],
       "independent_identical_pages": 1
     },
@@ -36,7 +36,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.18037913585402102,
+      "changed_fraction_max": 0.16830439526394483,
       "errors": [],
       "independent_identical_pages": 1
     },
@@ -81,7 +81,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.20485189725077116,
+      "changed_fraction_max": 0.20567581280279457,
       "errors": [],
       "independent_identical_pages": 2
     },
@@ -96,7 +96,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0006207429158977537,
-      "changed_fraction_max": 0.22941782620994355,
+      "changed_fraction_max": 0.23060879950789567,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -111,7 +111,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.003229434663721225,
-      "changed_fraction_max": 0.11340625098218816,
+      "changed_fraction_max": 0.030582532990297104,
       "errors": [],
       "independent_identical_pages": 0
     }
@@ -169,11 +169,11 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 106,
+      "run": 108,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "101 historical final native appearance passes plus5 new line-spacing-unit native methods. Current related union13 distinct passes is assembled from final module/subset/portable logs, not a fresh full106 run. Existing native-context failure remains.",
+      "scope": "106 historical final native appearance passes plus2 new justification methods. Fresh related15 are a module/subset union; not a fresh whole108 run. Existing native-context failure remains.",
       "whole_group_fresh_pass_claimed": false,
       "component_log_sha256": [
         "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
@@ -209,7 +209,8 @@
         "8f55f00153f036d69e106fed78e5b73f0f3ee3e218c3f613f0e43770b380b695",
         "05b922929f85e7eb39efe5a30c9a7e0970a892816213d5d1f4122d53e6d693b8",
         "1274a51a66ed2c5b94f505e5bd2066ff624860691d52065a0e4863f74651fe11",
-        "66def86637e01b96a892ed33dee560e5944ecd1aa5f336ea149272a50baccb01"
+        "66def86637e01b96a892ed33dee560e5944ecd1aa5f336ea149272a50baccb01",
+        "b0977ed9321652fddd53f6e3c295154ee3bead3e3ba38b0839be3c0390edec7a"
       ]
     },
     "full_native_rerun": {
@@ -235,9 +236,9 @@
       "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 137,
-      "passed": 72,
-      "skipped": 65,
+      "run": 140,
+      "passed": 73,
+      "skipped": 67,
       "failures": 0,
       "errors": 0,
       "log_sha256": "845086660acf2ab09f01a5b58169330161059dbdd80d85ada33e0e25d2d154c0"
@@ -1549,11 +1550,11 @@
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "088ff4fc1f09d2068e94e4c1332bbfeb23d423ccd9fcf8cebafe5d92e9593830",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "85c0790a23c0f79f0816c48df56a586ae674efb9b86dcadbb9c1df620ba2a7a8",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "52bbbdec290189059a89402171f073276d8bdde1ecba059f76149b837602759c",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "2a926644ab598b2ae037c0af2e6f71a0350e53ff4e18afe56989ae64a5c7b534",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "af4ea4e9cc42b8f67418fb9b0021874c6df24f6f8857442efdec6904c226ef06",
+    "2_나래스킬/narae-viewer/SKILL.md": "f3722ce5d1097eae6dac827752416697eb5d29799e5493a1561aa0fd0d0bf381",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "fb40ee0ba3bd73dba0dbe1aef6db2768f5281d0f731d9d353002b8bf640eeac8",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
@@ -1565,8 +1566,8 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap.py": "8ba39fefddd97e1b6450c5eef6124fa38448f7835d12525da5413db3208ee4a8",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "5e2216bbf741981dd31bfa44663664a57a8ce539d8d39f502b5215de924e6e8f",
     "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "7c0c085dc6005b94c5bf6de0b52463164814c9964051b61640ca25e2fdd93824",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "4afd6277d0b921fe468e4dc99272eea3bf10eb4fc39b6e53f81262151215e8d2",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "51e33fb62bd39e384b3cb0ab7b39ab46f934419a161e5283d59cbaa1f10a65e3",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "ae4c7a649e2b92dfeda022be6c5d9ed18816e894e20053f7e861c94a4a644d22",
     "tests/test_pdf_native_text.py": "1a71fa6835520e9333f920914180835e7d3b5002802cfd76f351ab4821fe3631",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "669433dbcc221d5a7bd51c5ed02355d80401301d04923b3bc4ecee66a49eae89",
     "tests/test_text_decorations.py": "2b3fed445c5a53b5ef553dfef9ef5beedb086e2588959885b8c0420ba82162ac",
@@ -1574,14 +1575,14 @@
     "tests/test_inline_spacing.py": "61b3de9dddf1e7517475f0b5917dfb23b338b3211c8152c827573938eb6172f2",
     "tests/test_pdf_stretch.py": "dcf48403fa663ef49a46933d395ef3984e088fd9eabe1617bc9f0a4fad24e0c6",
     "1_나래엔진/narae-hangul/references/viewer.md": "1edca6d766bd089011070db30155e10cf0900471c89d9ceda1530d891f641add",
-    "6_나래뷰어/README.md": "a831c22dbe862f5a2c932c600cc77a3cd25cba146744b7b8a486cbe9b307c614",
+    "6_나래뷰어/README.md": "0d109db7eb68a36fd98013b94999013adde95cd4d2b4189b2afdbf789be0dc13",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "478bd0411db359e3a73021da9a81d736b936f018a1d87efabb1505e3015f7450",
     "tests/test_pdf_table_frames.py": "1c0d7df362ab78952b2e33b9ab5c48aeb43d62b5ae6d783e08f2c9eeba548718",
     "5_유틸리티/hancom_rea_findings.md": "61d0dfd6fddcb81e52ec071608278c9eee0d888aeff4ca3dfccd41b2fb5ac3ef",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_device_metrics.py": "d34cf23187060a4b41590eb3906312192160bb3f7c0ebff8ab60ada8bd4acc87",
     "tests/test_pdf_device_metrics.py": "1a3ce42dccdcce868780a79c807211c6404f7cd28bf88763d04233bbcfce5680",
     "tests/test_pdf_mixed_table_frames.py": "f204eee622dcdb6e717c55623fe39bf9d8ca2c4b7383b56593376191ac4ef130",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_line_fit.py": "b0c6a4d3131c7d510127993c6620dcbb4965f85c2a00fc4da8ac69959d15fdc3",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_line_fit.py": "ebc814887576280b490c6bd55e10477e97dfebb1a7f8b59239956d24bbd92590",
     "tests/test_pdf_line_fit.py": "3d775fe5f7ad1aabbf0d1dd49cd19c9193a7038588a22fe138cce204fd1463e7",
     "tests/test_pdf_cached_tracking.py": "5c68ce6d0d0a22ae29cddf16888b3bcd341bb3251c6021f8456c5d0add613054",
     "tests/test_pdf_cell_clip.py": "160d7b8c5a2c7d2e4ade6c7a74f4c95fe56122a2eecc7f5a908528eb558d1c75",
@@ -1590,7 +1591,8 @@
     "tests/test_pdf_continued_alignment.py": "c965545541d4c6e213f6ef24204c5f9a3da31a69f0de2a5aefe4e0cd3de54b4d",
     "tests/test_pdf_source_alpha.py": "81e8249d50adbe8a76c28cb9b609007dc70bc607f7d52ba81298b1c580ff262a",
     "tests/test_percent_line_spacing.py": "3ec8366e8acb85c440d11058aeae3286c0b0b4b6805665b57c2a78e6bd14c4ad",
-    "tests/test_line_spacing_units.py": "8ef2ad9f03766338ad6cdd9feb9889c867fc2fc9ab24a60c44f66f6bcaa68217"
+    "tests/test_line_spacing_units.py": "8ef2ad9f03766338ad6cdd9feb9889c867fc2fc9ab24a60c44f66f6bcaa68217",
+    "tests/test_pdf_justification.py": "70e6761c662536d95ca474fefd9039e49164a70e0f8ca8c93c440d1b29c5d54e"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -2871,7 +2873,7 @@
       "whole actual documents remain different"
     ]
   },
-  "current_validation_stage": "nonpercent_line_spacing_units",
+  "current_validation_stage": "continued_pdf_justification",
   "pdf_cell_clipping": {
     "behavior": "Clip direct cell text and paragraph backgrounds at the prepared physical cell rectangle, including outline/bitmap/painter paths. Preserve original glyph CTMs; transform clip points into the current parent coordinate system. Invert the single-precision PDF device parent for physical grid fills/strokes.",
     "scope": "Prepared complete single-page inline body grids with SOLID/NONE cell borders; text clips use cell edges rather than padding/pen extents",
@@ -6568,6 +6570,279 @@
       "spacing-units-portable-final.log": "9789808bcd55de8ef74820b9419c8388684cc2bcd1f89517ecb4aad8d3acf24e",
       "spacing-units-portable-first.log": "2b15e65321549f7c80d2d74afb7fada51aa9f8aeb6c3948ec13de6fa6b272955",
       "spacing-units-preserved-final.log": "66def86637e01b96a892ed33dee560e5944ecd1aa5f336ea149272a50baccb01"
+    }
+  },
+  "continued_pdf_justification": {
+    "base_commit": "0d23be266a611381abe7e61fd556e73cde37ff62",
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "dpi": 96,
+    "pixel_tolerance": 0,
+    "rule": {
+      "distribution": "Continued JUSTIFY: visible width excludes terminal tracking/trailing blanks. Expand interior word gaps, otherwise character gaps; integer quotient with no remainder redistribution. Existing negative-overflow condensation retained.",
+      "device": "Uniform verified TTF justified text uses GDI-centered untracked widths before tracking, including continued and final lines. Mixed/unsupported metrics retain diagnosed fallback.",
+      "bitmap": "Final visible glyph and subsequent blanks have untracked widths; preserve trailing bitmap allocation and round paragraph origin before relative baseline."
+    },
+    "evidence": {
+      "justify-minutes-frida-observed-final.json": {
+        "evidence_id": "ev_bd58c64950509db690bcb046a101b2bf541160bd5e510276e3e234e6529634c8",
+        "sha256": "398c9dc3370a411c677edfb6979c709bea279b466443c2825bf75f0c1d6341d6",
+        "messages": 123
+      },
+      "justify-fixture-frida-observed.json": {
+        "evidence_id": "ev_b186de03c323e4bb6584149aa4cec6e304ef1d0a3e5eb0bfecc58cf8d7192882",
+        "sha256": "878d65b2402fac3c89fcdd8eef98410ba0f129ef05f5b31512c3f9a49dba42a9",
+        "messages": 45
+      },
+      "line-distribution-static": {
+        "evidence_id": "ev_6498a23699b639a34c62169fc99e1b75541898e54c2b87ed64f38686cca46c23",
+        "sha256": "c8cb20eb5175e0d4d938aa69899ff526aaa9456f243e90b62a2c090e98c3e663"
+      }
+    },
+    "hook_sha256": "6677610717ce0e6f265e9f0cf3fba02e599185ac3debeaa75e59f1d5722e57c5",
+    "installed_binaries_unchanged": true,
+    "binaries": {
+      "HwpApp.dll": "0aa051839026fe803f5ec24965ac112a8e54aecf0da0132f91e20483078429d1",
+      "HncBaseDraw.dll": "52734f0b0fc92cf890fc7085708fb72de62f67c0b5e0aa5bf668db7646199fb1"
+    },
+    "fixture_scope": {
+      "cached_cases": 18,
+      "uncached_cases": 17,
+      "formats": 2,
+      "whole_page_comparisons_exact": 70,
+      "new_unique_pages_exact": 36,
+      "count_scope": "36 format/case pairs; 34 overlapping uncached comparisons are not added again.",
+      "historical_unique_pages_exact": 2350,
+      "preserved_original_8_cached_pages_exact": 8,
+      "preserved_extended_16_cached_formats_pages_exact": 32,
+      "original_uncached_leading_spaces_remaining_pixels": 8345,
+      "uncached_scope": "The uncached test excludes the known consecutive-leading/trailing-space reflow case. That original whole-page failure remains recorded; cached coverage includes it."
+    },
+    "test_scope": {
+      "new_module_passed": 3,
+      "new_native_methods_passed": 2,
+      "new_portable_methods_passed": 1,
+      "fresh_related_distinct_passed": 15,
+      "related_scope": "new justification3 + saved line-fit4 + bitmap words1 + cell clip3 + device metrics4",
+      "portable_run": 140,
+      "portable_passed": 73,
+      "portable_skipped": 67
+    },
+    "actual": {
+      "report-hwp": {
+        "before": 1755338,
+        "after": 1142737,
+        "exact": 1,
+        "reference_sha256": "59d00f031684f77c3c17323686df5ed18ceac1c800494fc3ad3ae45fd348c0a5",
+        "max_fraction": 0.16830439526394483
+      },
+      "report-hwpx": {
+        "before": 1755338,
+        "after": 1142737,
+        "exact": 1,
+        "reference_sha256": "81625234203ea5fce32ce098057125140a11f5c51c40dc9b461f16dbe8b1a9bd",
+        "max_fraction": 0.16830439526394483
+      },
+      "trip-hwpx": {
+        "before": 0,
+        "after": 0,
+        "exact": 2,
+        "reference_sha256": "e4bf914e2b4b9ea1d6410c37e69cd32a4a2c2ed404002d5d05e31c043608bcdf",
+        "max_fraction": 0.0
+      },
+      "form-hwp": {
+        "before": 609370,
+        "after": 609963,
+        "exact": 0,
+        "reference_sha256": "b2cc8c977f1d211cc755ca3742171c91ade919377937be0830fbfb9639d840cb",
+        "max_fraction": 0.14713852108280912
+      },
+      "guide-hwp": {
+        "before": 3876487,
+        "after": 3807756,
+        "exact": 2,
+        "reference_sha256": "4043d88876e1342b1873f83bf7960983f21504f576c0e7cb701b9f62fe35124d",
+        "max_fraction": 0.20567581280279457
+      },
+      "lesson-hwp": {
+        "before": 869202,
+        "after": 850220,
+        "exact": 0,
+        "reference_sha256": "3aed17b54f71f25cd6f795cfe03dd6db1e8810c3ed2d8dd5848aa80452e00832",
+        "max_fraction": 0.23060879950789567
+      },
+      "minutes-hwpx": {
+        "before": 172806,
+        "after": 63282,
+        "exact": 0,
+        "reference_sha256": "c6389ce79c6a1cebf148ef78f14dd94d3bb12839fb57bec6b6142e3b840fbed5",
+        "max_fraction": 0.030582532990297104
+      }
+    },
+    "actual_total_pixel_reduction": 1421846,
+    "real_documents_exact": 1,
+    "real_pages_exact": 6,
+    "real_pages_checked": 124,
+    "independent_zero_difference_complete": false,
+    "checks": [
+      {
+        "check": "line-fit",
+        "exit": 0,
+        "seconds": 34.86,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.62,
+          "used_percent": 64.6
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.76,
+          "used_percent": 63.7
+        }
+      },
+      {
+        "check": "bitmap-words",
+        "exit": 0,
+        "seconds": 19.77,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.75,
+          "used_percent": 63.8
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.78,
+          "used_percent": 63.6
+        }
+      },
+      {
+        "check": "cell-clip",
+        "exit": 0,
+        "seconds": 31.26,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.78,
+          "used_percent": 63.6
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.78,
+          "used_percent": 63.6
+        }
+      },
+      {
+        "check": "device-metrics",
+        "exit": 0,
+        "seconds": 25.5,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.78,
+          "used_percent": 63.6
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.75,
+          "used_percent": 63.8
+        }
+      },
+      {
+        "check": "normal-fonts",
+        "exit": 0,
+        "seconds": 24.32,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.76,
+          "used_percent": 63.7
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.76,
+          "used_percent": 63.8
+        }
+      },
+      {
+        "check": "portable",
+        "exit": 0,
+        "seconds": 18.0,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.75,
+          "used_percent": 63.8
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.79,
+          "used_percent": 63.6
+        }
+      },
+      {
+        "check": "corpus",
+        "exit": 0,
+        "seconds": 92.24,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.78,
+          "used_percent": 63.6
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.75,
+          "used_percent": 63.8
+        }
+      },
+      {
+        "check": "installed-skill",
+        "exit": 0,
+        "seconds": 37.27,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.76,
+          "used_percent": 63.8
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.63,
+          "used_percent": 64.6
+        }
+      }
+    ],
+    "preserved_failures": [
+      {
+        "log": "justify-native-first.log",
+        "issue": "Both first native tests failed on bitmap word buffers; final new module3 passes after preserving trailing buffer allocation, baseline and terminal tracking."
+      },
+      {
+        "log": "justify-complete-first.log",
+        "issue": "Kept original16-page reference; bitmap word/Latin/tracking failures corrected against it. Some intermediate printed labels after adding two later public cases were stale; page order and reference were unchanged."
+      }
+    ],
+    "limits": [
+      "Actual form document has a small aggregate regression, explicitly retained in actual pixel totals; some other actual pages can also regress despite aggregate reductions.",
+      "All7 actual documents are compared; only1/7 and6/124 remain exact. Bold/italic/decorated/complex fonts and PNG source alpha remain.",
+      "Uncached consecutive trailing spaces can be over-consumed by Qt and carried to the wrong line; preserved original page remains8345 pixels nonexact.",
+      "Document-specific character-distribution suppression and mixed metrics are not fully recovered.",
+      "Fresh5pt stretch native context67 pixels and prior narrow-wrap24-page failures remain."
+    ],
+    "log_sha256": {
+      "justify-bitmap-words-final.log": "c24b432af96caa87ecbc7fbfd49cf3c43ccf4f828b4ba750e021ec066e834fd6",
+      "justify-cell-clip-final.log": "5a24738d361f82b882e1be9955c9ce5d010ce5e75603afcdd1c1a64647356810",
+      "justify-complete-fifth.log": "5c6ce1d2c8a1dcdc6d817853264f09b0f6874fc585c4fb36e3ef34be42a815a5",
+      "justify-complete-first.log": "d793ab0dd41795d4817f1a71a5211acbe30fce048bbb174218054645bc847df2",
+      "justify-complete-fourth.log": "c1334642e73a94fbcf4e9b13271dbeb1d5bc155cf3e035764e2a52022cf9031c",
+      "justify-complete-second.log": "f361227c9e47cafd1a2bbda7004202e14bcf88d066523bd1290c5527e2d210a7",
+      "justify-complete-third.log": "0ea49d88d654ffcdd6282c33792673e6777f1a44768f8541d6bb3b0022a0fc4d",
+      "justify-corpus-final.log": "6d0e2cbd5762114b6b104cc744feb47d18bfb9e1989a2c073e10087d4f6242f0",
+      "justify-corpus-first.log": "a2565708dceb90b6c67be7701712af5c17505e229987c19df47d6fa3b1d58f96",
+      "justify-device-metrics-final.log": "0c9ffb1dedde98d9f8f4361a1fec87c3fdb5fe3974221b6b1d2541801da5a57f",
+      "justify-installed-skill-final.log": "63a3673564e64beea127d3609c6ef6f44b58c3676c29a1b88299ea5dee1fc4f2",
+      "justify-line-fit-final.log": "6d4a7c1d582bbdcf3650b57aa174b0c494c9af86464efae84de0ff036334a2d7",
+      "justify-native-first.log": "64c79fa20231fa601ddaa961d323f35a3547062c62e53b0d8822559fdb89c58c",
+      "justify-native-second.log": "b0977ed9321652fddd53f6e3c295154ee3bead3e3ba38b0839be3c0390edec7a",
+      "justify-normal-fonts-final.log": "195db838d4de6a036c657411a69b67ba41d01e34df17aae3972d230b26be3859",
+      "justify-portable-final.log": "a7466f15a891e652d09f8ce22944a9ddf536891ecfa2e5f814e12fd9d1653146",
+      "justify-portable-first.log": "6a0c02893c115bd4b9d2a106431159ea165f12eec5ea89cd152a74c1b5df8798"
     }
   }
 }

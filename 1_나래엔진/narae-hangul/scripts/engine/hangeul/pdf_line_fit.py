@@ -1,9 +1,37 @@
-"""Logical spacing for an overflowing saved native text line."""
+"""Logical word/character spacing in native text frames."""
 import unicodedata
 
 
 def _divide(value,count):
     return -(abs(value)//count) if value<0 else value//count
+
+
+def expand_line(text,advances,untracked,target,all_gaps=False):
+    """Expand a continued justified line, excluding outer blank gaps.
+
+    The caller supplies the visible final advance without terminal tracking.
+    Positive space is divided over words, or characters when there are no
+    word gaps. Integer remainder stays unused, as with native condensation.
+    """
+    if len(text)!=len(advances) or len(text)!=len(untracked):raise ValueError('line-fit-width-count')
+    space=lambda c:c in ' \u3000'
+    first=next((i for i,c in enumerate(text) if not space(c) and untracked[i]),None)
+    last=next((i for i in range(len(text)-1,-1,-1) if not space(text[i]) and untracked[i]),None)
+    if first is None:return None
+    remaining=target-sum(advances[:last+1])
+    if remaining<=0:return None
+    start=0 if all_gaps else first
+    words=[i for i in range(start,last) if space(text[i]) and untracked[i]]
+    characters=[i for i in range(start,last) if not space(text[i]) and untracked[i]
+                and not unicodedata.category(text[i]).startswith('M')]
+    if not words and not characters:return None
+    word=remaining//len(words) if words else 0
+    character=remaining//len(characters) if not words else 0
+    result=list(advances)
+    for i in words:result[i]+=word
+    for i in characters:result[i]+=character
+    return dict(advances=result,word_adjustment=word,character_adjustment=character,
+                word_gaps=len(words),character_gaps=len(characters),remaining=remaining)
 
 
 def condense_line(text,advances,untracked,target,all_gaps=False):

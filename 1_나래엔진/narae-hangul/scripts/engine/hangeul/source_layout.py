@@ -201,7 +201,8 @@ class SourceLayout:
         self._pdf_bitmaps=[]
         self._pdf_bitmap_text={'processed_lines':0,'legacy_lines':0,'image_chunks':0,
                                'legacy_reasons':{},'remaining':{},'fitted_lines':0,'condensed_word_gaps':0,
-                               'condensed_character_gaps':0,'whole_document_parity_verified':False}
+                               'condensed_character_gaps':0,'justified_lines':0,'expanded_word_gaps':0,
+                               'expanded_character_gaps':0,'whole_document_parity_verified':False}
         self._pdf_native_writer=None
         self._pdf_table_frames={'processed_grids':0,'legacy_grids':0,'legacy_reasons':{},'whole_document_parity_verified':False}
         self._pdf_native_text={'processed_lines':0,'legacy_lines':0,'glyphs':0,'fonts':[],
@@ -1120,7 +1121,7 @@ class SourceLayout:
                 key='processed_lines' if bitmap_text['handled'] else 'legacy_lines'
                 self._pdf_bitmap_text[key]+=1
                 self._pdf_bitmap_text['image_chunks']+=bitmap_text.get('image_chunks',0)
-                for key in ('fitted_lines','condensed_word_gaps','condensed_character_gaps'):
+                for key in ('fitted_lines','condensed_word_gaps','condensed_character_gaps','justified_lines','expanded_word_gaps','expanded_character_gaps'):
                     self._pdf_bitmap_text[key]=self._pdf_bitmap_text.get(key,0)+bitmap_text.get(key,0)
                 if not bitmap_text['handled']:
                     reason=bitmap_text['reason'];reasons=self._pdf_bitmap_text['legacy_reasons']
@@ -1540,7 +1541,7 @@ class SourceLayout:
         self._pdf_bitmap_cache.clear();self._pdf_bitmap_bytes=0
         self._pdf_bitmap_qualities.clear();self._pdf_bitmaps.clear()
         self._pdf_source_alpha_done.clear();self._pdf_source_alpha_failed.clear()
-        self._pdf_bitmap_text.update(processed_lines=0,legacy_lines=0,image_chunks=0,legacy_reasons={},remaining={},fitted_lines=0,condensed_word_gaps=0,condensed_character_gaps=0)
+        self._pdf_bitmap_text.update(processed_lines=0,legacy_lines=0,image_chunks=0,legacy_reasons={},remaining={},fitted_lines=0,condensed_word_gaps=0,condensed_character_gaps=0,justified_lines=0,expanded_word_gaps=0,expanded_character_gaps=0)
         self._pdf_table_frames.update(processed_grids=0,legacy_grids=0,legacy_reasons={})
         try:
             for index in range(len(self.pages)):
