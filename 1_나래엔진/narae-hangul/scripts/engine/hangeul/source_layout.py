@@ -14,7 +14,7 @@ from PySide6.QtGui import (QColor, QFont, QFontDatabase, QFontMetricsF, QImage, 
                           QTextCharFormat, QTextOption, QTransform, QPageSize, QPageLayout)
 from PySide6.QtGui import QPainterPath
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem
-from .formats import Paragraph, Table, Drawing, _table_grid
+from .formats import Paragraph, Table, Drawing, _table_grid,INVISIBLE_STRIKE_SHAPES
 from .font_resolver import InstalledHftResolver,InstalledSfntResolver,installed_default_fonts,BITMAP_FAMILIES
 from .picture_effects import apply_tone,pdf_alpha_tile,image_is_opaque
 
@@ -26,6 +26,8 @@ BITMAP_TRACKING_PROPERTY=0x108005
 BITMAP_SPACE_PROPERTY=0x108006
 OUTLINE_FONT_PROPERTY=0x108007
 FONT_FALLBACK_PROPERTY=0x108008
+STRIKE_SHAPE_PROPERTY=0x108009
+STRIKE_COLOR_PROPERTY=0x10800a
 TEXT_DPI=600
 TEXT_UNIT_PT=72/TEXT_DPI
 TEXT_TO_VIEW=96/TEXT_DPI
@@ -729,7 +731,8 @@ class SourceLayout:
         font.setPointSizeF(style.size)
         font.setBold(style.bold and not self._synthetic_bold(style,fallback))
         font.setItalic(style.italic and not self._synthetic_italic(style,fallback))
-        font.setUnderline(style.underline);font.setStrikeOut(style.strike)
+        font.setUnderline(style.underline)
+        font.setStrikeOut(style.strike and style.strike_shape not in INVISIBLE_STRIKE_SHAPES)
         font.setStretch(style.stretch)
         font.setKerning(getattr(style,'use_kerning',False))
         # Native advances apply spacing as a percentage of each character's
@@ -748,6 +751,8 @@ class SourceLayout:
 
     def _char_format(self,style,fallback=False):
         fmt=QTextCharFormat();fmt.setFont(self._font(style,fallback));fmt.setForeground(QColor(style.color))
+        if style.strike:fmt.setProperty(STRIKE_SHAPE_PROPERTY,style.strike_shape)
+        if style.strike_color:fmt.setProperty(STRIKE_COLOR_PROPERTY,style.strike_color)
         fmt.setProperty(BITMAP_TRACKING_PROPERTY,style.letter_spacing)
         if fallback:fmt.setProperty(FONT_FALLBACK_PROPERTY,style.font)
         if not fallback and style.font in BITMAP_FAMILIES and style.font in self._source_fonts:
@@ -1065,7 +1070,10 @@ class SourceLayout:
             painter.setPen(QPen(color,max(.5/TEXT_TO_VIEW,metrics.lineWidth())))
             baseline=command.extra['line']['baseline_pt']/TEXT_UNIT_PT
             if fmt.fontUnderline():painter.drawLine(QPointF(first,baseline+metrics.underlinePos()),QPointF(last,baseline+metrics.underlinePos()))
-            if fmt.fontStrikeOut():painter.drawLine(QPointF(first,baseline-metrics.strikeOutPos()),QPointF(last,baseline-metrics.strikeOutPos()))
+            if fmt.fontStrikeOut():
+                strike_color=QColor(fmt.property(STRIKE_COLOR_PROPERTY) or color)
+                if strike_color.isValid():painter.setPen(QPen(strike_color,max(.5/TEXT_TO_VIEW,metrics.lineWidth())))
+                painter.drawLine(QPointF(first,baseline-metrics.strikeOutPos()),QPointF(last,baseline-metrics.strikeOutPos()))
             painter.restore()
         painter.restore()
 

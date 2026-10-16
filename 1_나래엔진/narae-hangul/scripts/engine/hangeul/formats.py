@@ -28,6 +28,10 @@ from .geometry import (PageLayout, Border, BorderFill, ObjectPosition, PictureGe
     position_from_data, picture_from_data)
 
 ATTRIBUTION = "본 제품은 한컴의 HWP 문서 파일(.hwp) 공개 문서를 참고하여 개발하였습니다."
+STRIKE_SHAPES = ("SOLID", "DOT", "DASH", "DASH_DOT", "DASH_DOT_DOT", "LONG_DASH", "CIRCLE",
+                 "DOUBLE_SLIM", "SLIM_THICK", "THICK_SLIM", "SLIM_THICK_SLIM", "WAVE", "DOUBLEWAVE",
+                 "THICK3D", "THICKREV3D", "3D")
+INVISIBLE_STRIKE_SHAPES = frozenset(STRIKE_SHAPES[13:])
 NS = {p: "http://www.hancom.co.kr/hwpml/2011/" + n for p, n in
       (("hp", "paragraph"), ("hh", "head"), ("hs", "section"), ("hc", "core"), ("hv", "version"))}
 NS.update(opf="http://www.idpf.org/2007/opf/", ocf="urn:oasis:names:tc:opendocument:xmlns:container",
@@ -69,6 +73,8 @@ class TextStyle:
     language_spacing: tuple = ()
     language_relative_sizes: tuple = ()
     language_offsets: tuple = ()
+    strike_shape: str = "SOLID"
+    strike_color: str = ""  # empty means inherit the text color
 
 
 @dataclass(frozen=True)
@@ -681,7 +687,9 @@ def _load_hwpx(path):
                     language_ratios=tuple(_int(_attr(_child(e,"ratio"),name),100) for name in ("hangul","latin","hanja","japanese","other","symbol","user")),
                     language_spacing=tuple(_int(_attr(_child(e,"spacing"),name)) for name in ("hangul","latin","hanja","japanese","other","symbol","user")),
                     language_relative_sizes=tuple(_int(_attr(_child(e,"relSz"),name),100) for name in ("hangul","latin","hanja","japanese","other","symbol","user")),
-                    language_offsets=tuple(_int(_attr(_child(e,"offset"),name)) for name in ("hangul","latin","hanja","japanese","other","symbol","user")))
+                    language_offsets=tuple(_int(_attr(_child(e,"offset"),name)) for name in ("hangul","latin","hanja","japanese","other","symbol","user")),
+                    strike_shape=_attr(_child(e,"strikeout"),"shape","SOLID") if strike else "SOLID",
+                    strike_color=_attr(_child(e,"strikeout"),"color","") if strike else "")
             elif _local(e) == "paraPr":
                 # Modern files provide version-specific switch cases. The
                 # default expresses canonical HWP units; CHAR cases may be half.
@@ -1130,8 +1138,9 @@ def _load_hwp(path):
             size, prop = struct.unpack_from("<iI", d, 42)
             color, _, shade = struct.unpack_from("<III", d, 52)
             underline_type = (prop >> 2) & 3
+            strike = bool(prop & (7 << 18)) or underline_type == 2
             chars[len(chars)] = TextStyle(fonts[fid] if fid < min(font_count or len(fonts), len(fonts)) else "맑은 고딕",
-                max(1, size / 100), bool(prop & 2), bool(prop & 1), underline_type in (1, 3), bool(prop & (7 << 18)) or underline_type == 2,
+                max(1, size / 100), bool(prop & 2), bool(prop & 1), underline_type in (1, 3), strike,
                 _colorref(color), "" if shade == 0xFFFFFFFF else _colorref(shade), bool(prop & (1 << 15)), bool(prop & (1 << 16)), d[14], struct.unpack_from("<b", d, 21)[0],
                 tuple(fonts[index] if index < len(fonts) else "맑은 고딕" for index in
                     (sum(font_counts[:lang]) + struct.unpack_from("<H", d, lang * 2)[0] for lang in range(7))),
@@ -1140,7 +1149,10 @@ def _load_hwp(path):
                     (sum(font_counts[:lang])+struct.unpack_from("<H",d,lang*2)[0] for lang in range(7))),
                 use_font_space=bool(prop & (1 << 25)), use_kerning=bool(prop & (1 << 30)),
                 language_ratios=tuple(d[14:21]), language_spacing=struct.unpack_from("<7b", d, 21),
-                language_relative_sizes=tuple(d[28:35]), language_offsets=struct.unpack_from("<7b", d, 35))
+                language_relative_sizes=tuple(d[28:35]), language_offsets=struct.unpack_from("<7b", d, 35),
+                strike_shape=STRIKE_SHAPES[(prop >> (4 if underline_type == 2 else 26)) & 15] if strike else "SOLID",
+                strike_color=(_colorref(struct.unpack_from("<I",d,56 if underline_type == 2 else 70)[0])
+                    if underline_type == 2 or len(d) >= 74 else _colorref(color)) if strike else "")
         elif r.tag == 25 and len(d) >= 28:
             prop, left, right, indent, before, after, line = struct.unpack_from("<I6i", d)
             line_type = prop & 3
@@ -1922,7 +1934,8 @@ def save_hwpx(document_or_html, path) -> list[str]:
             if enabled:
                 _element(cp, "hh", name)
         _element(cp, "hh", "underline", type="BOTTOM" if s.underline else "NONE", shape="SOLID", color=s.color)
-        _element(cp, "hh", "strikeout", shape="SOLID" if s.strike else "NONE", color=s.color)
+        if s.strike_shape not in STRIKE_SHAPES:raise ValueError("지원하지 않는 취소선 모양입니다.")
+        _element(cp, "hh", "strikeout", shape=s.strike_shape if s.strike else "NONE", color=s.strike_color or s.color)
         _element(cp, "hh", "outline", type="NONE")
         _element(cp, "hh", "shadow", type="NONE", color="#C0C0C0", offsetX=10, offsetY=10)
     tabs = _element(refs, "hh", "tabProperties", itemCnt=1)
@@ -2255,6 +2268,8 @@ def save_hwp(document_or_html, path) -> list[str]:
     for s in chars:
         flags = int(s.italic) | (int(s.bold) << 1) | (int(s.underline) << 2) | (int(s.strike) << 18) | (int(s.superscript) << 15) | (int(s.subscript) << 16)
         flags |= int(s.use_font_space) << 25 | int(s.use_kerning) << 30
+        if s.strike_shape not in STRIKE_SHAPES:raise ValueError("지원하지 않는 취소선 모양입니다.")
+        flags |= STRIKE_SHAPES.index(s.strike_shape) << 26
         d = struct.pack("<7H", *(fonts.index(face) for face in _font_pairs(s)))
         for values, fallback, signed in ((s.language_ratios, s.stretch, False), (s.language_spacing, s.letter_spacing, True),
             (s.language_relative_sizes, 100, False), (s.language_offsets, 0, True)):
@@ -2265,7 +2280,7 @@ def save_hwp(document_or_html, path) -> list[str]:
                 raise ValueError("HWP 언어별 글자 서식 값이 허용 범위를 벗어났습니다.")
             d += struct.pack("<7b", *values) if signed else bytes(values)
         d += struct.pack("<iIbbIIIIHI", round(s.size * 100), flags, 0, 0, _rgb(s.color), _rgb(s.color),
-                         _rgb(s.background) if s.background else 0xFFFFFFFF, 0x00C0C0C0, 1, _rgb(s.color))
+                         _rgb(s.background) if s.background else 0xFFFFFFFF, 0x00C0C0C0, 1, _rgb(s.strike_color or s.color))
         docinfo.extend(_record(21, 1, d))
     docinfo.extend(_record(22, 1, struct.pack("<II", 0, 0)))
     for s in paras:

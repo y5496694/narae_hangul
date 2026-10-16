@@ -204,7 +204,7 @@ class _References:
         for field, local in (("bold", "bold"), ("italic", "italic"), ("superscript", "supscript"), ("subscript", "subscript")):
             if getattr(before, field) != getattr(after, field):
                 toggles[local] = getattr(after, field)
-        for field, local, attr, enabled, disabled in (("underline", "underline", "type", "BOTTOM", "NONE"), ("strike", "strikeout", "shape", "SOLID", "NONE")):
+        for field, local, attr, enabled, disabled in (("underline", "underline", "type", "BOTTOM", "NONE"),):
             if getattr(before, field) != getattr(after, field):
                 child = next((n for n in source["children"] if n["name"] == local), None)
                 values = {attr: enabled if getattr(after, field) else disabled}
@@ -213,6 +213,12 @@ class _References:
                     if local == "underline":
                         values["shape"] = "SOLID"
                 changes.append(((local,), values))
+        if (before.strike_shape != after.strike_shape or before.strike_color != after.strike_color
+            or before.strike != after.strike):
+            from .formats import STRIKE_SHAPES
+            if after.strike_shape not in STRIKE_SHAPES:raise ValueError("지원하지 않는 취소선 모양입니다.")
+            changes.append((("strikeout",),dict(shape=after.strike_shape if after.strike else "NONE",
+                                               color=after.strike_color or after.color)))
         for field, local, array, fallback in (("stretch", "ratio", "language_ratios", after.stretch),
                 ("letter_spacing", "spacing", "language_spacing", after.letter_spacing),
                 (None, "relSz", "language_relative_sizes", 100), (None, "offset", "language_offsets", 0)):

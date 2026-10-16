@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T09:46:42+09:00",
+  "date_kst": "2026-10-16T11:19:46+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "6b57ff09db1c443e1ee9710fff7b1c893f02a61a",
+  "base_commit": "576a8dce71d506ff870258d4f852d8a30e9c4817",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -81,7 +81,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.21660223512349752,
+      "changed_fraction_max": 0.20753130654597537,
       "errors": [],
       "independent_identical_pages": 2
     },
@@ -95,8 +95,8 @@
       "independent_pages": 9,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.007534225047930782,
-      "changed_fraction_max": 0.23519533758087618,
+      "changed_fraction_min": 0.0006207429158977537,
+      "changed_fraction_max": 0.2271335371794699,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -169,17 +169,17 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 61,
+      "run": 67,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "58 font/viewer/picture final passes at 6b57ff0 plus 3 fresh legacy-decoration tests",
+      "scope": "58 font/viewer/picture final passes at 6b57ff0 plus 9 fresh character-decoration tests",
       "whole_group_fresh_pass_claimed": false,
       "component_log_sha256": [
         "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
         "5f38f29c9c8335f0844afb24b4cfe768297b574ae58dee894851a72139956e9e",
         "6c6a3acf8e3c20713c4ab941922969c8d52bc5cde8984f98f679e66e97096b58",
-        "e71b434868f4e6ea83bab58e152867da3d6d3e501001d2bd63084920f71d6923"
+        "2c5f768978b7882f2e75d3d0964a94f54efdf9d60445468fe4103e2900f9ea14"
       ]
     },
     "full_native_rerun": {
@@ -205,12 +205,12 @@
       "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 82,
-      "passed": 48,
+      "run": 88,
+      "passed": 52,
       "failures": 0,
       "errors": 0,
-      "skipped": 34,
-      "log_sha256": "fb069e8fc7c1121238347a06b9e859bada5581dde1498f5109e52fd4b2874e1a"
+      "skipped": 36,
+      "log_sha256": "fc83a5a0b86e3df243d70d99a078b2b7d9eeea63faab267cae57c31c80c1f451"
     },
     "cold_bitmap_cache": {
       "concurrent_workers": 4,
@@ -296,6 +296,35 @@
       "native_scope": "Legacy HWP, modern HWP and regenerated HWPX render identically within native outputs; independent outputs also equal each other",
       "independent_native_styled_text_pixel_parity_claimed": false,
       "preserved_edit_cases": 3
+    },
+    "strike_shape": {
+      "run": 9,
+      "passed": 9,
+      "log_sha256": "2c5f768978b7882f2e75d3d0964a94f54efdf9d60445468fe4103e2900f9ea14",
+      "whole_pages_independent_native_exact": 72,
+      "pages_per_format": 36,
+      "native_format_conversion_shapes": 16,
+      "formats": [
+        "hwp",
+        "hwpx"
+      ],
+      "normal_font_whole_page_regression": 202,
+      "normal_font_regression_log_sha256": "19077ecc264980af524b6d7a4bfef036bb7aeb8e92bb071bd6ebb4d46129d5c2",
+      "earlier_native_failures": [
+        {
+          "log_sha256": "c0b827b76470110c5ff6d4a001e0a964dc6ab232d46701dea8d343a04889e1c3",
+          "scope": "A new all-shape native HWP/HWPX pixel-equivalence assumption failed on five pages by 103 pixels each; persisted pair reproduces a one-printer-pixel advance difference. The regression now verifies native format-conversion metadata rather than claiming native layout equivalence."
+        },
+        {
+          "log_sha256": "c796eee26aaf9daa9399a17c0fa882b19d6d55c43e3c9326f8fe52635aa8d350",
+          "scope": "Native/native equivalence failed before retiring strictly empty hidden automation servers; preserve this context-dependent result."
+        },
+        {
+          "log_sha256": "99a791280c45b88fc0a929eb22824f4cb973d715f9c4184b63a42e258090fda7",
+          "scope": "The metadata assertion treated uppercase and lowercase RGB spelling as different; corrected the test to compare color values."
+        }
+      ],
+      "all_native_contexts_equivalent_claimed": false
     }
   },
   "rea": {
@@ -893,6 +922,15 @@
         "parameters": {
           "session_id": "f896cccd-a8a7-41d3-8791-65e12d6b5d29"
         }
+      },
+      {
+        "query": "strike-shape-gdi-frida-observed",
+        "evidence_id": "ev_da22660de36afbb40296445fa88465b6a3ce59f59007309c0961bd51cfdeed73",
+        "record_sha256": "774801959040517591b29e8282f4c3ced1954a9a6dc6e77bda151e27d0f5287e",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "20a3e9ed-7ab5-4e44-9427-e23c69483afe"
+        }
       }
     ],
     "sessions_closed": true,
@@ -974,15 +1012,25 @@
       "sessions_closed": true,
       "snapshot_sha256": "f75cf22e1b679b1ea19a94216f35110d783e5e38a8160d5c80095e0ce0f693d3",
       "raw_decompilation_distributed": false
+    },
+    "strike_shape_gdi": {
+      "script_sha256": "81d66e7e4460609a69286614c2254d327de73cbfa5d13a14e36553c73663f710",
+      "hooks_loaded": 11,
+      "print_jobs_observed": 0,
+      "messages_truncated": false,
+      "limitation": "Only hook readiness was observed. PrintToPDFEx did not produce captured StartDoc/EndDoc jobs; this trace does not establish strike geometry.",
+      "frida_session_closed": true,
+      "rea_server_closed": true,
+      "installed_binary_hashes_unchanged": true
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "c2f1f7f0e61c596fe392f567b82bd4be0c4c60b54f3f6c4a520327d390da8576",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "3aaefba142002c02650ae25d20c16b4719ad4119b5fc172db5d0abdb1f4fe895",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "9100636ad934c0effa8c48672d4869f6592e9726990664c6bdd53a80de13b8ce",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ce85282e3baef73c3c4668410ea8d6e6ed9ff963df212fd97c8907be817bc7b6",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "fd826ca432c5fb06bec92eec0fdfb318ea7c62126af68f9b52562f76da8840d5",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "e10e35615cfdb88e0a7f81cd56fbe6d879fbee55a2bbad8b31ba184db832176f",
+    "2_나래스킬/narae-viewer/SKILL.md": "b996ec2b2ec8cbd9586731e9417cf41b5e4133e8748a727b6108620c90386cbf",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "93da7b9553c09b0cb28da8817faffc810c8712eb8617a7f0fcc9665d8ac88c41",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "d21afa3cddf8033f2e033d151a83f8d62ecaeda8de776bc8a01ce8d3592ca25b",
@@ -994,10 +1042,11 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "5e2216bbf741981dd31bfa44663664a57a8ce539d8d39f502b5215de924e6e8f",
     "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "24929db32de1b04976a3c9bfce1543dca725138ca767a187697cfc262ae3e66f",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "487c63e2970d11256ef2e365c30bd18443f9079f597d39d55f1a0b827a1903d2",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "43f7cf806dc894c95e09be9eed8e8253c95a697f61229f4826cb458680a9e9af",
     "tests/test_pdf_native_text.py": "2b676982c806ea299f1eb9aed5585c384cdbfa6093af1fdfef8f6fb44bc39773",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "3bc1d2bd7b8c0d0e2ffcd804a83dde3416b85c426a027f8751659812851434e5",
-    "tests/test_text_decorations.py": "aa343516d1037c1dc47a37bc22396269f077337b44b6855983dbdbafdb11fc78"
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "e619e3a711d5c0820f25f577662159467ad160676acb234a9397df3882826d08",
+    "tests/test_text_decorations.py": "307e07ed47e28627cf9e698e5b42cd2700f038004980739df96bd030477ca019",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwpx_native.py": "9353a659b8d9e4ab83e94d5fdc64921667a1fb3590716f499e72632ec84248cc"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -1480,7 +1529,38 @@
     "preserved_edits": "Normalize legacy middle line to the modern strike flag when underline/strike changes; retain original flags for other edits",
     "native_xml_local_report_sha256": "4896c125a0bd05ae53733eb06b89c5cd79bee497aa02a2a0df7f5c4cda0f8ea1",
     "enum_oracle_log_sha256": "f35077e96a045122af56490c1de508615e5b109efd94bf3d98c1849335402b6b",
-    "shape_analysis_next": "Native strike shape codes 13..15 emit no visible line; independent rendering still treats them as solid and needs preserved shape metadata",
-    "shape_oracle_log_sha256": "4f05d12930c664684ade3c4599c14a6d03b57abcc8494ea5c40a4d7c5c39a3ad"
+    "shape_analysis_next": "Implemented shape/color preservation and the no-visible-stroke behavior of shapes 13..15; visible strike/underline geometry remains unresolved",
+    "shape_oracle_log_sha256": "4f05d12930c664684ade3c4599c14a6d03b57abcc8494ea5c40a4d7c5c39a3ad",
+    "shape_codes": [
+      "SOLID",
+      "DOT",
+      "DASH",
+      "DASH_DOT",
+      "DASH_DOT_DOT",
+      "LONG_DASH",
+      "CIRCLE",
+      "DOUBLE_SLIM",
+      "SLIM_THICK",
+      "THICK_SLIM",
+      "SLIM_THICK_SLIM",
+      "WAVE",
+      "DOUBLEWAVE",
+      "THICK3D",
+      "THICKREV3D",
+      "3D"
+    ],
+    "legacy_enum_2_precedence": "Read shape from bits 4..7 and color from byte 56 even when the modern strike flag is also set; transfer both on normalization",
+    "native_conversion_log_sha256": "e3f36d34b28cc4bc908a7f845b875a8e061c3408d1e8bef870c47c0095cba88d",
+    "legacy_precedence_log_sha256": "e12049f99c2b4850c62fc45a0eec088e03f7bc172157b36b832cca3537822e5a",
+    "guide_changed_pixels": {
+      "before": 4573882,
+      "after": 3973302,
+      "reduction_percent": 13.13
+    },
+    "guide_processed_lines": {
+      "before": 9,
+      "after": 1017
+    },
+    "remaining": "Visible strike/underline shapes, top underline, bold/italic/stretch, justification, table/object/page geometry and native pagination contexts"
   }
 }

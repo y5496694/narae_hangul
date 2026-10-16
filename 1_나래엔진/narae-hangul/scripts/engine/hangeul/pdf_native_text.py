@@ -52,7 +52,8 @@ class PdfNativeText:
         self.source_bytes=0;self.characters=0
         self.precision=6
         self.facts={'processed_lines':0,'legacy_lines':0,'glyphs':0,'fonts':[],
-                    'legacy_reasons':{},'number_precision':6,'glyph_fallbacks':{},'whole_document_parity_verified':False}
+                    'legacy_reasons':{},'number_precision':6,'glyph_fallbacks':{},'suppressed_strike_glyphs':0,
+                    'whole_document_parity_verified':False}
 
     def _hanja_fallback(self,font,character,raw,index):
         from PySide6.QtGui import QRawFont,QFont
@@ -186,7 +187,8 @@ class PdfNativeText:
         from fontTools.ttLib import TTLibError
         from .source_layout import (BITMAP_FONT_PROPERTY,OUTLINE_FONT_PROPERTY,FONT_FALLBACK_PROPERTY,_language_index,
             BITMAP_TRACKING_PROPERTY,BITMAP_SPACE_PROPERTY,SCRIPT_OFFSET_PROPERTY,
-            SYNTHETIC_BOLD_PROPERTY,SYNTHETIC_ITALIC_PROPERTY)
+            SYNTHETIC_BOLD_PROPERTY,SYNTHETIC_ITALIC_PROPERTY,STRIKE_SHAPE_PROPERTY)
+        from .formats import INVISIBLE_STRIKE_SHAPES
         formats=layout.formats()
         if any(item.format.property(BITMAP_FONT_PROPERTY) for item in formats):return None
         def legacy(reason):
@@ -197,7 +199,7 @@ class PdfNativeText:
             return legacy('justified-continuation')
         if len(self.records)>=MAX_LINES:return legacy('line-count-bounds')
         text=layout.text();cursor=0;pen=0;parts=[];terminal=len(text.rstrip('\u200b'))-1
-        group_number=0;current_group=None;hft_fallback_mode=False
+        group_number=0;current_group=None;hft_fallback_mode=False;suppressed_strike=0
         if len(text)+self.characters>MAX_CHARACTERS:return legacy('character-count-bounds')
         for position,character in enumerate(text):
             units=len(character.encode('utf-16le'))//2
@@ -242,6 +244,7 @@ class PdfNativeText:
             if fallback or current_group!=group_key:group_number+=1
             current_group=group_key
             parts.append((pen,key,glyph,em,rgb,group_number))
+            if fmt.property(STRIKE_SHAPE_PROPERTY) in INVISIBLE_STRIKE_SHAPES:suppressed_strike+=1
             if character.isspace() or fallback:current_group=None
             pen+=delta
         if not parts:
@@ -260,6 +263,7 @@ class PdfNativeText:
             painter.drawImage(QRectF(-100,-100,1,1),image)
         finally:painter.restore()
         self.characters+=len(parts);self.facts['processed_lines']+=1;self.facts['glyphs']+=len(parts)
+        self.facts['suppressed_strike_glyphs']+=suppressed_strike
         return True
 
     def finish(self,path):
