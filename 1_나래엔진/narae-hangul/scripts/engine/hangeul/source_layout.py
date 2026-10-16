@@ -438,14 +438,24 @@ class SourceLayout:
                     sizes.append(paragraph.end_style.size)
                 height=max(sizes,default=paragraph.default_style.size)
                 baseline=.85*height
-            if y+height>self.body_height and y>0:y=0
+            starts_new_page=y+height>self.body_height and y>0
+            if starts_new_page:y=0
             pitch=(height*style.line/100 if style.line_type=='PERCENT' else
                    height+style.line if style.line_type=='BETWEEN_LINES' else
                    max(height,style.line) if style.line_type=='AT_LEAST' else style.line)
+            spacing=max(0,pitch-height)
+            if style.line_type=='PERCENT':
+                # Native percent spacing quantizes the character height down
+                # to four HWPUNIT before calculating the gap, then rounds the
+                # signed gap independently to four units (ties away from 0).
+                em=math.floor(height*25+1e-9)*4
+                quarters=em*(style.line-100)/400
+                spacing=math.copysign(math.floor(abs(quarters)+.5+1e-9)*.04,quarters)
+            pitch=height+spacing
             lines.append(dict(text_start=line.textStart(),y_pt=y,height_pt=height,text_height_pt=height,
-                              baseline_pt=baseline,spacing_pt=max(0,pitch-height),
+                              baseline_pt=baseline,spacing_pt=spacing,starts_new_page=starts_new_page,
                               x_pt=style.left+indent,width_pt=max(1,available-indent),flags=0))
-            y+=max(height,pitch)
+            y+=pitch
         layout.endLayout()
         if lines:lines[-1]['spacing_pt']+=paragraph.style.after
         return lines
@@ -529,7 +539,7 @@ class SourceLayout:
                 flows=not image_only or any(r.image and r.picture.position.inline for r in block.runs)
                 for number,line in enumerate(lines):
                     y=line['y_pt']
-                    if flows and ((number and y<=last+.01) or y+1<last):
+                    if flows and ((number and line.get('starts_new_page',y<=last+.01)) or y+1<last):
                         if body or number or last>self.body_height*.4:
                             current+=1;local_offset=0.;previous_end=0.
                         else:
