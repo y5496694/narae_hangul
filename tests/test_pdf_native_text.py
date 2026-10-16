@@ -70,14 +70,17 @@ class NativePdfTextTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'Missing PDF text placement token'):fonts.finish(path)
             self.assertEqual(before,path.read_bytes())
 
-    def test_native_reference_prints_before_reading_page_count(self):
+    def test_native_reference_prints_before_reading_metadata(self):
         from unittest.mock import patch
         from hangeul.viewer import native_export
         class Settings(dict):
             def SetItem(self,key,value):self[key]=value
         class App:
-            Version='test'
             printed=False
+            @property
+            def Version(self):
+                if not self.printed:raise AssertionError('Version query changed pre-print layout')
+                return 'test'
             @property
             def PageCount(self):
                 if not self.printed:raise AssertionError('PageCount changed pre-print layout')
@@ -104,6 +107,8 @@ class NativePdfTextTests(unittest.TestCase):
             self.assertEqual(1,result['hancom_page_count'])
             self.assertIsNone(result['hancom_page_count_before_export'])
             self.assertEqual('print-before-count',result['hancom_pagination'])
+            self.assertTrue(result['hancom_metadata_after_export'])
+            self.assertEqual('test',result['hancom_version'])
             self.assertEqual(b'original',source.read_bytes())
 
     @staticmethod

@@ -15,23 +15,44 @@ def prepare(table,cells,origin,page_size):
     if not table.position.inline:return None,'floating-table'
     if not 0<table.rows*table.cols<=10000 or min(table.rows,table.cols)<=0:return None,'grid-size-bounds'
     if not cells or len(cells)>table.rows*table.cols:return None,'split-grid'
-    occupied=set();vertical={};horizontal={}
+    occupied={}
     for command in cells:
         cell=command.source;r,c,rs,cs=cell.row,cell.col,cell.row_span,cell.col_span
         if min(r,c)<0 or min(rs,cs)<=0 or r+rs>table.rows or c+cs>table.cols:return None,'invalid-cell-span'
         for row in range(r,r+rs):
             for col in range(c,c+cs):
                 if (row,col) in occupied:return None,'overlapping-grid'
-                occupied.add((row,col))
-        for col in (c,c+cs):vertical.setdefault(col,[]).append((r,r+rs))
-        for row in (r,r+rs):horizontal.setdefault(row,[]).append((c,c+cs))
+                occupied[row,col]=cell
     if len(occupied)!=table.rows*table.cols:return None,'incomplete-grid'
-    borders={border for c in cells for border in c.source.borders}
-    if len(borders)!=1:return None,'mixed-cell-borders'
-    border=next(iter(borders))
-    if border.style not in ('SOLID','NONE'):return None,'border-style'
-    color=QColor(border.color)
-    if not color.isValid() or color.alpha()!=255 or not math.isfinite(border.width_pt):return None,'border-color-or-width'
+    if any(len(c.source.borders)!=4 for c in cells):return None,'invalid-cell-borders'
+    borders={border for c in cells for border in c.source.borders};signatures={}
+    for border in borders:
+        if border.style not in ('SOLID','NONE'):return None,'border-style'
+        color=QColor(border.color)
+        if not color.isValid() or color.alpha()!=255 or not math.isfinite(border.width_pt):return None,'border-color-or-width'
+        signatures[border]=(border.style,border.width_pt,color.name())
+    def segments(edges,x_pixels=None):
+        result=[]
+        for boundary,first,last,side,pen,left,right in sorted(edges,key=lambda v:(v[0],v[1],v[3])):
+            if pen[0]=='NONE' or pen[1]<=0:continue
+            a=x_pixels[first]-math.floor(left/2) if x_pixels is not None else None
+            b=x_pixels[last]+math.ceil(right/2) if x_pixels is not None else None
+            if result and result[-1][0]==boundary and result[-1][3]==(pen,) and first<=result[-1][2]:
+                previous=result[-1]
+                # Only consecutive equal pens coalesce. Retain the first
+                # physical start and the farthest physical end; different
+                # side widths (including NONE) still affect horizontal caps.
+                result[-1]=(boundary,previous[1],max(last,previous[2]),(pen,),previous[4],
+                    max(b,previous[5]) if b is not None else None)
+            else:result.append((boundary,first,last,(pen,),a,b))
+        return result
+    vertical=[];horizontal=[]
+    for command in cells:
+        cell=command.source;r,c,rs,cs=cell.row,cell.col,cell.row_span,cell.col_span
+        left,right,top,bottom=(signatures[b] for b in cell.borders)
+        vertical.extend(((c,r,r+rs,1,left,0,0),(c+cs,r,r+rs,0,right,0,0)))
+        lp=max(1,math.floor(left[1]/.12+.5));rp=max(1,math.floor(right[1]/.12+.5))
+        horizontal.extend(((r,c,c+cs,1,top,lp,rp),(r+rs,c,c+cs,0,bottom,lp,rp)))
     xs={};ys={}
     for c in cells:
         color=QColor(c.source.background)
@@ -57,15 +78,9 @@ def prepare(table,cells,origin,page_size):
     yp=[coordinate_pixel(ys[i],1) if i in ys else None for i in range(table.rows+1)]
     xx=[round(f32(v*sx),3) if v is not None else None for v in xp]
     yy=[round(math.floor(ph)-f32(v*sy),3) if v is not None else None for v in yp]
-    def joined(intervals):
-        result=[]
-        for first,last in sorted(intervals):
-            if result and first<=result[-1][1]:result[-1]=(result[-1][0],max(last,result[-1][1]))
-            else:result.append((first,last))
-        return result
-    return {'x':xx,'y':yy,'border':border,'x_pixels':xp,'scale_x':sx,
-        'vertical':[(xx[col],yy[first],yy[last]) for col,intervals in sorted(vertical.items()) for first,last in joined(intervals)],
-        'horizontal':[(first,row,last) for row,intervals in sorted(horizontal.items()) for first,last in joined(intervals)]},None
+    vertical=segments(vertical);horizontal=segments(horizontal,xp)
+    return {'x':xx,'y':yy,'x_pixels':xp,'scale_x':sx,'cols':table.cols,'rows':table.rows,
+        'vertical':vertical,'horizontal':horizontal},None
 
 
 def _color(value,operator):
@@ -85,19 +100,28 @@ def fill_program(grid,cell):
 
 
 def stroke_program(grid):
-    border=grid['border']
-    if border.style=='NONE' or border.width_pt<=0:return None
-    pixels=max(1,math.floor(border.width_pt/.12+.5))
     f32=lambda v:struct.unpack('<f',struct.pack('<f',v))[0]
-    width=round(f32(pixels*grid['scale_x']),3)
-    x,y=grid['x'],grid['y'];left,right,top,bottom=x[0],x[-1],y[0],y[-1]
-    lines=[(v,first,v,last) for v,first,last in grid['vertical']]
-    # Native horizontal rules explicitly extend by half the pen width and
-    # use flat caps. Boundary rules are painted again after the shared grid.
-    horizontal=lambda a,v,b:(round(f32((grid['x_pixels'][a]-math.floor(pixels/2))*grid['scale_x']),3),y[v],
-        round(f32((grid['x_pixels'][b]+math.ceil(pixels/2))*grid['scale_x']),3),y[v])
-    lines.extend(horizontal(a,v,b) for a,v,b in grid['horizontal'])
-    lines.extend(((right,top,right,bottom),(left,top,left,bottom),horizontal(0,-1,-1),horizontal(0,0,-1)))
-    program=[_color(border.color,'RG'),f'{width} w','0 J','0 j','[] 0 d']
-    program.extend(f'{a} {b} m {c} {d} l S' for a,b,c,d in lines)
+    x,y=grid['x'],grid['y'];vertical=grid['vertical'];horizontal=grid['horizontal']
+    lines=[('v',*line) for line in vertical]+[('h',*line) for line in horizontal]
+    # Conflicting shared edges paint both pens: left then right cell, or
+    # upper then lower cell. Outer runs repeat right/down, left/up,
+    # bottom/right, top/left, without reversing each individual segment.
+    for kind,source,boundary in (('v',vertical,grid['cols']),('v',vertical,0),
+                                  ('h',horizontal,grid['rows']),('h',horizontal,0)):
+        selected=[line for line in source if line[0]==boundary]
+        if boundary==0:selected.reverse()
+        lines.extend((kind,*line) for line in selected)
+    if not lines:return None
+    program=['0 J','0 j','[] 0 d'];previous=None
+    for kind,boundary,first,last,pens,start,end in lines:
+        for pen in pens:
+            _,width,color=pen;pixels=max(1,math.floor(width/.12+.5))
+            if pen!=previous:
+                program.extend((_color(color,'RG'),f"{round(f32(pixels*grid['scale_x']),3)} w"));previous=pen
+            if kind=='v':a,b,c,d=x[boundary],y[first],x[boundary],y[last]
+            else:
+                a=round(f32(start*grid['scale_x']),3)
+                c=round(f32(end*grid['scale_x']),3)
+                b=d=y[boundary]
+            program.append(f'{a} {b} m {c} {d} l S')
     return '\n'.join(program)

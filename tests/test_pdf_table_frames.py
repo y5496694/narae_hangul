@@ -44,7 +44,7 @@ class PdfTableFramesTests(unittest.TestCase):
                             column_widths=widths,row_heights=heights),paragraph('AFTER')])
         return DocumentModel(blocks)
 
-    def test_shared_grid_uses_parent_origin_and_rejects_mixed_borders(self):
+    def test_shared_grid_uses_parent_origin_and_preflights_border_styles(self):
         cells=[Cell(0,i,width=100,height=30) for i in range(2)]
         commands=[Command('cell',(56.69+i*100,77.49,100,30),cell) for i,cell in enumerate(cells)]
         table=Table(1,2,cells,width=200,height=30)
@@ -54,7 +54,11 @@ class PdfTableFramesTests(unittest.TestCase):
         self.assertEqual([763.685,733.717],grid['y'])
         self.assertEqual(9,stroke_program(grid).count(' l S'))
         cells[1].borders=(Border('SOLID',1),)*4
-        self.assertEqual((None,'mixed-cell-borders'),prepare(table,commands,(56.69,56.69),(595.28,841.86)))
+        mixed,reason=prepare(table,commands,(56.69,56.69),(595.28,841.86))
+        self.assertIsNone(reason)
+        self.assertEqual(14,stroke_program(mixed).count(' l S'))
+        cells[1].borders=(Border('DASHED',1),)*4
+        self.assertEqual((None,'border-style'),prepare(table,commands,(56.69,56.69),(595.28,841.86)))
         cells[1].borders=cells[0].borders
         cells[0].col_span=2
         self.assertEqual((None,'overlapping-grid'),prepare(table,commands,(56.69,56.69),(595.28,841.86)))

@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T14:47:08+09:00",
+  "date_kst": "2026-10-16T15:15:43+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "cb88fc53587520af51bc71c9e946d89670cb653a",
+  "base_commit": "895d208259d4ba13aab1e03b3f518284c9c833ac",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -51,7 +51,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.02457378646443693,
+      "changed_fraction_max": 0.0199928608952168,
       "errors": [],
       "independent_identical_pages": 1
     },
@@ -66,7 +66,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.054034941203410604,
-      "changed_fraction_max": 0.15712316527252074,
+      "changed_fraction_max": 0.15334482774103458,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -81,7 +81,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.20751446903469425,
+      "changed_fraction_max": 0.20483281473798587,
       "errors": [],
       "independent_identical_pages": 2
     },
@@ -111,7 +111,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.003229434663721225,
-      "changed_fraction_max": 0.11367901866494251,
+      "changed_fraction_max": 0.11340625098218816,
       "errors": [],
       "independent_identical_pages": 0
     }
@@ -169,11 +169,11 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 83,
+      "run": 85,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "76 distinct historical final passes through cb88fc5 plus 3 merged-grid tests and 4 cached-metric tests; current table and metric groups freshly passed 12 tests, not a full 83-test run",
+      "scope": "83 distinct historical final passes through 895d208 plus 2 mixed-border tests; current mixed/grid/cached groups freshly passed 14 tests, not a full 85-test run",
       "whole_group_fresh_pass_claimed": false,
       "component_log_sha256": [
         "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
@@ -184,7 +184,10 @@
         "d44e8a5decbd01935120449d4f638acb5023eee99429501b4cbd89fa2c4ac76c",
         "549be769c9c4aaa2238fbf634a03044642f33227273b527805a5f4fffc0ce5a4",
         "53d53da5129ef89b9ee8cbc67ef1483e6b5c7d6caf3f39b050e75edc81a37625",
-        "7433e63c1be550938962b4e7b98bc369f1c85664757de6bae7b91b0ab3ef0e0d"
+        "7433e63c1be550938962b4e7b98bc369f1c85664757de6bae7b91b0ab3ef0e0d",
+        "3f1052c7c4817d8c897e5184803b58024a32f5177cad649165fbac21883208b5",
+        "0b81fc4021fbbd3745831de80bf4f599c52364b00b784817fbed2c47522969a9",
+        "1f05cd41e6b183750f67a4a871f80fdf4409280aa4508fd20bb3b46f3f5922f7"
       ]
     },
     "full_native_rerun": {
@@ -210,12 +213,12 @@
       "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 104,
-      "passed": 60,
-      "skipped": 44,
+      "run": 106,
+      "passed": 61,
+      "skipped": 45,
       "failures": 0,
       "errors": 0,
-      "log_sha256": "a51eba1131c21a3a573df5be8ef7054301fe4c786343e90d7cb6fde0a885fdef"
+      "log_sha256": "564ff5fe9d2947433e23115511d12f6f93ead2d98266f893bf0930e0776fb362"
     },
     "cold_bitmap_cache": {
       "concurrent_workers": 4,
@@ -412,7 +415,7 @@
       "rgb_tolerance": 0,
       "alignment": false,
       "resizing": false,
-      "native_log_sha256": "7433e63c1be550938962b4e7b98bc369f1c85664757de6bae7b91b0ab3ef0e0d",
+      "native_log_sha256": "0b81fc4021fbbd3745831de80bf4f599c52364b00b784817fbed2c47522969a9",
       "scope": "Prior 88 grid pages plus 40 complete merged-grid pages; uniform SOLID/NONE borders, opaque fill, inline body tables",
       "border_width_native_conversion_labels": 28,
       "precision_pages_exact": 4,
@@ -462,7 +465,7 @@
       "rgb_tolerance": 0,
       "alignment": false,
       "resizing": false,
-      "log_sha256": "53d53da5129ef89b9ee8cbc67ef1483e6b5c7d6caf3f39b050e75edc81a37625",
+      "log_sha256": "1f05cd41e6b183750f67a4a871f80fdf4409280aa4508fd20bb3b46f3f5922f7",
       "visual_qa": "Whole-page cached multifont and fully merged native/independent image pairs inspected; RGB differences zero"
     },
     "normal_font_regression_current": {
@@ -470,6 +473,23 @@
       "precision_pages_exact": 4,
       "references": "Existing native PDF references reused without replacement",
       "log_sha256": "d3392b4941058de77c5e9e986a04045d378d71483440716ffcd2b6a639cbb25c"
+    },
+    "mixed_table_border_pages": {
+      "run": 2,
+      "passed": 2,
+      "whole_pages_exact": 80,
+      "pages_per_format": 40,
+      "formats": [
+        "hwp",
+        "hwpx"
+      ],
+      "dpi": 96,
+      "rgb_tolerance": 0,
+      "alignment": false,
+      "resizing": false,
+      "native_log_sha256": "3f1052c7c4817d8c897e5184803b58024a32f5177cad649165fbac21883208b5",
+      "scope": "12 conflicting interior-edge cases, 24 outer-edge cases, 4 merged/fill cases; solid colors, thickness, NONE, reversed order and opaque fills",
+      "visual_qa": "Whole page and junction images for outer-edge, merged and opaque-fill cases inspected; all three native/independent pairs exact"
     }
   },
   "rea": {
@@ -1300,10 +1320,10 @@
   },
   "source_sha256": {
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "7249bf3bbd8b190aaf089845ca7cc050cc9aa66800a12fda3cedb606cdb193e4",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "9100636ad934c0effa8c48672d4869f6592e9726990664c6bdd53a80de13b8ce",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "52bbbdec290189059a89402171f073276d8bdde1ecba059f76149b837602759c",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ac8024577c0d112f4da78005fc12fc01fb8617d30022e0c0138056d3064d4a96",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "66402bcef1a6b2fdaffed4c228ce6a56cc41b72a4d55b75050159aa757a3a1a8",
+    "2_나래스킬/narae-viewer/SKILL.md": "198ea39178ca7bd79b79f32fd2b24a3b5e68d360e55fb08be4c90935979ac868",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "d75b226d7627bb268566c0456128c688cb0cce3492db1c43b620cfff15d8f47b",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
@@ -1317,19 +1337,20 @@
     "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "24929db32de1b04976a3c9bfce1543dca725138ca767a187697cfc262ae3e66f",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "a7e02a4aa80b4ac23cee4ba59ce618299803ba97790adc79ba4d4ec73c0a1f92",
-    "tests/test_pdf_native_text.py": "a856a38c83463e0b5f2fbfb613b6a92012d4d2712def7acb6ebcb6f936b5c5d9",
+    "tests/test_pdf_native_text.py": "1a71fa6835520e9333f920914180835e7d3b5002802cfd76f351ab4821fe3631",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "89e08126b83cc8cdd630c35afd58db02318de1dc41b820d45175cf9de4b85194",
     "tests/test_text_decorations.py": "2b3fed445c5a53b5ef553dfef9ef5beedb086e2588959885b8c0420ba82162ac",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwpx_native.py": "564aa217a166bdcd5ed814a4c6405159b947aa8a17acb81a3ad773a159b2eec1",
     "tests/test_inline_spacing.py": "61b3de9dddf1e7517475f0b5917dfb23b338b3211c8152c827573938eb6172f2",
     "tests/test_pdf_stretch.py": "dcf48403fa663ef49a46933d395ef3984e088fd9eabe1617bc9f0a4fad24e0c6",
-    "1_나래엔진/narae-hangul/references/viewer.md": "de0593d7b58f5f4c00392404b0e8ad1239b1d09009b63da799a5080f50c21e86",
-    "6_나래뷰어/README.md": "facd0c94c25edd79f5a5a0e4f899edc99b6050c087f5778728ef8856ce9a95c5",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "cf9cbe2dcb3419368f87f62f05f9b7bd738fa38e2593cdf750b5a56afe0b3043",
-    "tests/test_pdf_table_frames.py": "fd1227f98e716e2ef980afc842de76efaa6625b945cdf69eb80308802dbb7e3d",
-    "5_유틸리티/hancom_rea_findings.md": "689c6828daa78eda95122870b028e90756b3b5a9f252b3587c544223645e1ac1",
+    "1_나래엔진/narae-hangul/references/viewer.md": "47e32adb8f9edd16b40727e29d4b252a874b79a3a130dd1872ae1cdd567fd509",
+    "6_나래뷰어/README.md": "ef2d4ca89c6027d65b0fb047eb418a6e5f2b4e4dd499105610298b2db5293161",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "816ce876463a169877f3ad052113ed44c5ef35d3cdf5ca815a067018b4d57693",
+    "tests/test_pdf_table_frames.py": "1c0d7df362ab78952b2e33b9ab5c48aeb43d62b5ae6d783e08f2c9eeba548718",
+    "5_유틸리티/hancom_rea_findings.md": "417c817c4a2a78983390b9e55c6b5dffeb84a78e637216e89d6f35186e221456",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_device_metrics.py": "9627ec91821ba34c0d37069f983e89b8753b968e9b5bd1d4ce1c019410699740",
-    "tests/test_pdf_device_metrics.py": "007a971d27e5cf2687cc3966a0d7a745cbd01b0c3658a7f4cdc85cde880bd954"
+    "tests/test_pdf_device_metrics.py": "007a971d27e5cf2687cc3966a0d7a745cbd01b0c3658a7f4cdc85cde880bd954",
+    "tests/test_pdf_mixed_table_frames.py": "f204eee622dcdb6e717c55623fe39bf9d8ca2c4b7383b56593376191ac4ef130"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -1917,15 +1938,15 @@
   },
   "source_sha256_encoding": "SHA256 of source bytes with CRLF normalized to LF, matching Git archive; UTF-8 content is otherwise unchanged",
   "pdf_table_frames": {
-    "scope": "Single-page, inline, body-level, complete rectangular grids including merged cells with identical SOLID/NONE cell borders and opaque fills",
+    "scope": "Single-page, inline, body-level, complete rectangular grids including merged cells with opaque SOLID/NONE cell borders; colors and widths may differ",
     "coordinates": "Add logical cell offsets to the rounded parent origin; preserve the cumulative origin in cell glyph positions",
     "paths": "Shared vertical/horizontal rules, flat caps, asymmetric integer extensions for odd-width pens and repeated boundary rules after cell content",
     "width_labels": "HWPX borderFill width is a 16-label enumeration. Noncanonical labels import as 0.1 mm; writers use the nearest canonical label in both formats.",
     "diagnostic": "layout.pdf_table_frames counts processing and legacy reasons, never whole-document parity",
     "remaining": [
       "split/floating/nested grids",
-      "mixed border styles, widths or colors",
-      "other DPI and font/layout combinations"
+      "dashed/double/other line styles or translucent colors",
+      "other DPI and layout combinations"
     ],
     "real_pixels": {
       "report-hwp": {
@@ -2100,6 +2121,158 @@
       "HncFontLib.dll": "bc7300311c5bb367bc5eaf211c5c92744d372d28ff008feb83ba650cd5e1d232",
       "HwpApp.dll": "0aa051839026fe803f5ec24965ac112a8e54aecf0da0132f91e20483078429d1",
       "HwpAppModule.dll": "3a7b930af2cb467b66775cef5f793aecab28cba2b58596226f04bb5512489bf3"
+    }
+  },
+  "mixed_pdf_table_frames": {
+    "behavior": "Read original cell-side intervals in coordinate/side order; only consecutive equal pens coalesce, conflicts retain both pens; horizontal caps use the same cell vertical widths including NONE, retaining first physical start and farthest physical end; repeat outer runs right/down, left/up, bottom/right, top/left",
+    "independent_runtime": "Only independently built PDF paths; no Hancom library or reference PDF read by renderer",
+    "real_pixels": {
+      "report-hwp": {
+        "before": 1791200,
+        "after": 1755448,
+        "exact": 1,
+        "before_max_fraction": 0.18037913585402102,
+        "max_fraction": 0.18037913585402102,
+        "reference_sha256": "59d00f031684f77c3c17323686df5ed18ceac1c800494fc3ad3ae45fd348c0a5"
+      },
+      "report-hwpx": {
+        "before": 1791200,
+        "after": 1755448,
+        "exact": 1,
+        "before_max_fraction": 0.18037913585402102,
+        "max_fraction": 0.18037913585402102,
+        "reference_sha256": "81625234203ea5fce32ce098057125140a11f5c51c40dc9b461f16dbe8b1a9bd"
+      },
+      "trip-hwpx": {
+        "before": 21892,
+        "after": 17811,
+        "exact": 1,
+        "before_max_fraction": 0.02457378646443693,
+        "max_fraction": 0.0199928608952168,
+        "reference_sha256": "e4bf914e2b4b9ea1d6410c37e69cd32a4a2c2ed404002d5d05e31c043608bcdf"
+      },
+      "form-hwp": {
+        "before": 622744,
+        "after": 613431,
+        "exact": 0,
+        "before_max_fraction": 0.15712316527252074,
+        "max_fraction": 0.15334482774103458,
+        "reference_sha256": "b2cc8c977f1d211cc755ca3742171c91ade919377937be0830fbfb9639d840cb"
+      },
+      "guide-hwp": {
+        "before": 3911297,
+        "after": 3907954,
+        "exact": 2,
+        "before_max_fraction": 0.20751446903469425,
+        "max_fraction": 0.20483281473798587,
+        "reference_sha256": "4043d88876e1342b1873f83bf7960983f21504f576c0e7cb701b9f62fe35124d"
+      },
+      "lesson-hwp": {
+        "before": 875131,
+        "after": 870040,
+        "exact": 0,
+        "before_max_fraction": 0.22941782620994355,
+        "max_fraction": 0.22941782620994355,
+        "reference_sha256": "3aed17b54f71f25cd6f795cfe03dd6db1e8810c3ed2d8dd5848aa80452e00832"
+      },
+      "minutes-hwpx": {
+        "before": 174065,
+        "after": 172806,
+        "exact": 0,
+        "before_max_fraction": 0.11367901866494251,
+        "max_fraction": 0.11340625098218816,
+        "reference_sha256": "c6389ce79c6a1cebf148ef78f14dd94d3bb12839fb57bec6b6142e3b840fbed5"
+      }
+    },
+    "real_pages_exact": 5,
+    "real_documents_exact": 0,
+    "real_pages_checked": 124,
+    "native_references_reused_unchanged": true,
+    "corpus_log_sha256": "c495ffa1cedf06c2a0800014a50a43c011b23539a81e82e027699ff5b9a823ce",
+    "metadata_order": {
+      "after_export": true,
+      "diagnostic": "hancom_metadata_after_export",
+      "outputs_per_order": 4,
+      "pages_per_output": 44,
+      "before_differing_outputs": 1,
+      "after_differing_outputs": 0,
+      "probe_log_sha256": "b2ebb2c6a970dfa1b2a9a830533b99ec5e8f6d12e8e34d6532be1e1e8d848cae",
+      "limitation": "Finite observed timing comparison, not proof of every native process/layout state; stored reference PDFs were not replaced"
+    },
+    "intermediate_logs_sha256": {
+      "mixed-table-native-first-tests.log": "3ec690d4f7bc5bff733cf75c170d461ca7c3018c1ba2073fe3bf5be357fb555c",
+      "mixed-table-frames-expanded-first.log": "4d62d757574108ed85347875ddebf062d62b8aeffbbfdb527df1dc67906f2e2e",
+      "mixed-frames-native-grids-first-failed.log": "dd11d34896c281084ba9ff94d1af24719c6fb409750b49ba875284362f9d185c"
+    },
+    "original_binary_sha256": {
+      "HncBaseDraw.dll": "52734f0b0fc92cf890fc7085708fb72de62f67c0b5e0aa5bf668db7646199fb1",
+      "HNCE2PTP.dll": "42b1eaf97af05ff3662ffa23272b9c19ea5948345c8363969b28b601b741c458",
+      "HncFontLib.dll": "bc7300311c5bb367bc5eaf211c5c92744d372d28ff008feb83ba650cd5e1d232",
+      "HwpApp.dll": "0aa051839026fe803f5ec24965ac112a8e54aecf0da0132f91e20483078429d1",
+      "HwpAppModule.dll": "3a7b930af2cb467b66775cef5f793aecab28cba2b58596226f04bb5512489bf3"
+    },
+    "real_diagnostics": {
+      "report-hwp": {
+        "processed_grids": 2,
+        "legacy_grids": 25,
+        "legacy_reasons": {
+          "nested-table": 1,
+          "floating-table": 24
+        },
+        "whole_document_parity_verified": false
+      },
+      "report-hwpx": {
+        "processed_grids": 2,
+        "legacy_grids": 25,
+        "legacy_reasons": {
+          "nested-table": 1,
+          "floating-table": 24
+        },
+        "whole_document_parity_verified": false
+      },
+      "trip-hwpx": {
+        "processed_grids": 3,
+        "legacy_grids": 0,
+        "legacy_reasons": {},
+        "whole_document_parity_verified": false
+      },
+      "form-hwp": {
+        "processed_grids": 4,
+        "legacy_grids": 11,
+        "legacy_reasons": {
+          "floating-table": 3,
+          "border-style": 7,
+          "nested-table": 1
+        },
+        "whole_document_parity_verified": false
+      },
+      "guide-hwp": {
+        "processed_grids": 10,
+        "legacy_grids": 41,
+        "legacy_reasons": {
+          "border-style": 30,
+          "floating-table": 3,
+          "irregular-grid": 2,
+          "nested-table": 6
+        },
+        "whole_document_parity_verified": false
+      },
+      "lesson-hwp": {
+        "processed_grids": 13,
+        "legacy_grids": 8,
+        "legacy_reasons": {
+          "nested-table": 4,
+          "irregular-grid": 2,
+          "floating-table": 2
+        },
+        "whole_document_parity_verified": false
+      },
+      "minutes-hwpx": {
+        "processed_grids": 6,
+        "legacy_grids": 0,
+        "legacy_reasons": {},
+        "whole_document_parity_verified": false
+      }
     }
   }
 }

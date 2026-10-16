@@ -90,7 +90,6 @@ def native_export(source, target):
         shutil.copyfile(source, copy)
         with HancomBridge() as bridge:
             bridge.open_doc(copy)
-            version = str(bridge.hwp.Version)
             # SaveAs(PDF) inherits document print settings (including N-up,
             # selected ranges and odd/even pages). A verification reference
             # must explicitly export every logical page at its original size.
@@ -107,13 +106,15 @@ def native_export(source, target):
             bridge.check(action.Execute(settings), "PrintToPDFEx options")
             if not target.is_file() or target.stat().st_size == 0:
                 raise ValueError("한컴 PDF 출력 파일이 없습니다.")
-            # Opening a document may defer pagination. An early PageCount
-            # query can change the advances selected for the later PDF by
-            # one printer pixel. Print first, then inspect final count.
+            # Opening a document may defer pagination. Extra metadata calls
+            # before printing can let a screen-layout cache select different
+            # glyph advances. Read version and final count after the print.
+            version = str(bridge.hwp.Version)
             count = int(bridge.hwp.PageCount)
             return {"hancom_version": version, "hancom_page_count": count,
                     "hancom_page_count_before_export": None,
-                    "hancom_pagination": "print-before-count"}
+                    "hancom_pagination": "print-before-count",
+                    "hancom_metadata_after_export": True}
 
 
 class Document:
