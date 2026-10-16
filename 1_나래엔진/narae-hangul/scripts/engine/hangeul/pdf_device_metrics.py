@@ -51,10 +51,20 @@ def tracked_advances(text,advances,spacing):
     return result
 
 
-def installed_widths(family,em,characters,tables,font_width=0):
+def installed_widths(family,em,characters,tables,font_width=0,weight=0):
     """Return widths in 1/100 point units after verifying the selected face."""
+    return _installed_metrics(family,em,characters,tables,font_width,weight,False)
+
+
+def installed_average_width(family,em,tables,weight=0):
+    """Return GDI's integer average width, including synthetic font weight."""
+    return _installed_metrics(family,em,'',tables,0,weight,True)
+
+
+def _installed_metrics(family,em,characters,tables,font_width,weight,average):
     if sys.platform!='win32':raise ValueError('device-metrics-platform')
     if (not 0<em<=8192 or not isinstance(font_width,int) or not 0<=font_width<=65535
+        or not isinstance(weight,int) or not 0<=weight<=1000
         or len(characters)>20000 or any(not 0<=ord(c)<65536 for c in characters)):
         raise ValueError('device-metrics-bounds')
     import ctypes as c
@@ -69,7 +79,7 @@ def installed_widths(family,em,characters,tables,font_width=0):
     dc=gdi.CreateCompatibleDC(None);font=None;previous=None
     if not dc:raise ValueError('device-context-unavailable')
     try:
-        font=gdi.CreateFontW(-em,font_width,0,0,0,0,0,0,1,7,0,0,0,family)
+        font=gdi.CreateFontW(-em,font_width,0,0,weight,0,0,0,1,7,0,0,0,family)
         if not font:raise ValueError('device-font-unavailable')
         previous=gdi.SelectObject(dc,font)
         if not previous or previous==c.c_void_p(-1).value:raise ValueError('device-font-selection')
@@ -80,6 +90,15 @@ def installed_widths(family,em,characters,tables,font_width=0):
             buffer=c.create_string_buffer(len(expected))
             if gdi.GetFontData(dc,table,0,buffer,len(expected))!=len(expected) or buffer.raw!=expected:
                 raise ValueError('unverified-device-font')
+        if average:
+            class Metrics(c.Structure):
+                _fields_=([(name,w.LONG) for name in ('height','ascent','descent','internal_leading','external_leading','average','maximum','weight','overhang','aspect_x','aspect_y')]
+                    +[(name,w.WCHAR) for name in ('first','last','default','break_char')]
+                    +[(name,w.BYTE) for name in ('italic','underline','strike','pitch','charset')])
+            gdi.GetTextMetricsW.argtypes=[w.HDC,c.POINTER(Metrics)];gdi.GetTextMetricsW.restype=w.BOOL
+            metrics=Metrics()
+            if not gdi.GetTextMetricsW(dc,c.byref(metrics)) or not 0<metrics.average<=65535:raise ValueError('device-average-unavailable')
+            return int(metrics.average)
         result={}
         for character in set(characters):
             width=c.c_int()

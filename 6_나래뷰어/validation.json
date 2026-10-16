@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T21:15:25+09:00",
+  "date_kst": "2026-10-16T22:13:33+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "0d23be266a611381abe7e61fd556e73cde37ff62",
+  "base_commit": "d3239c07201fefda607a0020c918fcc97159305c",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -21,7 +21,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.16830439526394483,
+      "changed_fraction_max": 0.16748384721417764,
       "errors": [],
       "independent_identical_pages": 1
     },
@@ -36,7 +36,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.16830439526394483,
+      "changed_fraction_max": 0.16748384721417764,
       "errors": [],
       "independent_identical_pages": 1
     },
@@ -65,8 +65,8 @@
       "independent_pages": 7,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.054034941203410604,
-      "changed_fraction_max": 0.14713852108280912,
+      "changed_fraction_min": 0.05112654175478298,
+      "changed_fraction_max": 0.14708576354746158,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -81,7 +81,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.20567581280279457,
+      "changed_fraction_max": 0.20409084174086398,
       "errors": [],
       "independent_identical_pages": 2
     },
@@ -96,7 +96,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0006207429158977537,
-      "changed_fraction_max": 0.23060879950789567,
+      "changed_fraction_max": 0.23088381219215418,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -110,10 +110,10 @@
       "independent_pages": 4,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.003229434663721225,
-      "changed_fraction_max": 0.030582532990297104,
+      "changed_fraction_min": 0.0,
+      "changed_fraction_max": 0.019523655580849238,
       "errors": [],
-      "independent_identical_pages": 0
+      "independent_identical_pages": 1
     }
   ],
   "paired_report": {
@@ -169,11 +169,11 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 108,
+      "run": 110,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "106 historical final native appearance passes plus2 new justification methods. Fresh related15 are a module/subset union; not a fresh whole108 run. Existing native-context failure remains.",
+      "scope": "108 historical final native appearance passes plus2 new bold methods. Related13 is a module/subset union, not a fresh whole110 run. Existing native-context failure remains.",
       "whole_group_fresh_pass_claimed": false,
       "component_log_sha256": [
         "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
@@ -210,7 +210,8 @@
         "05b922929f85e7eb39efe5a30c9a7e0970a892816213d5d1f4122d53e6d693b8",
         "1274a51a66ed2c5b94f505e5bd2066ff624860691d52065a0e4863f74651fe11",
         "66def86637e01b96a892ed33dee560e5944ecd1aa5f336ea149272a50baccb01",
-        "b0977ed9321652fddd53f6e3c295154ee3bead3e3ba38b0839be3c0390edec7a"
+        "b0977ed9321652fddd53f6e3c295154ee3bead3e3ba38b0839be3c0390edec7a",
+        "d5f86fa13d45d43e2abdba4baaffc0c426d71998547c9699156000b3d71f942e"
       ]
     },
     "full_native_rerun": {
@@ -236,9 +237,9 @@
       "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 140,
+      "run": 142,
       "passed": 73,
-      "skipped": 67,
+      "skipped": 69,
       "failures": 0,
       "errors": 0,
       "log_sha256": "845086660acf2ab09f01a5b58169330161059dbdd80d85ada33e0e25d2d154c0"
@@ -1554,7 +1555,7 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "52bbbdec290189059a89402171f073276d8bdde1ecba059f76149b837602759c",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "2a926644ab598b2ae037c0af2e6f71a0350e53ff4e18afe56989ae64a5c7b534",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "f3722ce5d1097eae6dac827752416697eb5d29799e5493a1561aa0fd0d0bf381",
+    "2_나래스킬/narae-viewer/SKILL.md": "e48277e69289c9a2babb4eeaaec6d6064659f7ff33809334c1ab8c408e9866c7",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "fb40ee0ba3bd73dba0dbe1aef6db2768f5281d0f731d9d353002b8bf640eeac8",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
@@ -1567,7 +1568,7 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "5e2216bbf741981dd31bfa44663664a57a8ce539d8d39f502b5215de924e6e8f",
     "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "51e33fb62bd39e384b3cb0ab7b39ab46f934419a161e5283d59cbaa1f10a65e3",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "ae4c7a649e2b92dfeda022be6c5d9ed18816e894e20053f7e861c94a4a644d22",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "9a77f3fb37f686cbc4f49aacfe5b4ea8f775c71f21f70c8502b814d014012da0",
     "tests/test_pdf_native_text.py": "1a71fa6835520e9333f920914180835e7d3b5002802cfd76f351ab4821fe3631",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "669433dbcc221d5a7bd51c5ed02355d80401301d04923b3bc4ecee66a49eae89",
     "tests/test_text_decorations.py": "2b3fed445c5a53b5ef553dfef9ef5beedb086e2588959885b8c0420ba82162ac",
@@ -1575,11 +1576,11 @@
     "tests/test_inline_spacing.py": "61b3de9dddf1e7517475f0b5917dfb23b338b3211c8152c827573938eb6172f2",
     "tests/test_pdf_stretch.py": "dcf48403fa663ef49a46933d395ef3984e088fd9eabe1617bc9f0a4fad24e0c6",
     "1_나래엔진/narae-hangul/references/viewer.md": "1edca6d766bd089011070db30155e10cf0900471c89d9ceda1530d891f641add",
-    "6_나래뷰어/README.md": "0d109db7eb68a36fd98013b94999013adde95cd4d2b4189b2afdbf789be0dc13",
+    "6_나래뷰어/README.md": "249538887d9e05bdd47ddb0430dc62a364092172a25864734acdd4ca422d6344",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "478bd0411db359e3a73021da9a81d736b936f018a1d87efabb1505e3015f7450",
     "tests/test_pdf_table_frames.py": "1c0d7df362ab78952b2e33b9ab5c48aeb43d62b5ae6d783e08f2c9eeba548718",
     "5_유틸리티/hancom_rea_findings.md": "61d0dfd6fddcb81e52ec071608278c9eee0d888aeff4ca3dfccd41b2fb5ac3ef",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_device_metrics.py": "d34cf23187060a4b41590eb3906312192160bb3f7c0ebff8ab60ada8bd4acc87",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_device_metrics.py": "c2adda4585648a44eabb0527b57942182b6b5a8949fb9a65418c7516534496ed",
     "tests/test_pdf_device_metrics.py": "1a3ce42dccdcce868780a79c807211c6404f7cd28bf88763d04233bbcfce5680",
     "tests/test_pdf_mixed_table_frames.py": "f204eee622dcdb6e717c55623fe39bf9d8ca2c4b7383b56593376191ac4ef130",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_line_fit.py": "ebc814887576280b490c6bd55e10477e97dfebb1a7f8b59239956d24bbd92590",
@@ -1592,7 +1593,8 @@
     "tests/test_pdf_source_alpha.py": "81e8249d50adbe8a76c28cb9b609007dc70bc607f7d52ba81298b1c580ff262a",
     "tests/test_percent_line_spacing.py": "3ec8366e8acb85c440d11058aeae3286c0b0b4b6805665b57c2a78e6bd14c4ad",
     "tests/test_line_spacing_units.py": "8ef2ad9f03766338ad6cdd9feb9889c867fc2fc9ab24a60c44f66f6bcaa68217",
-    "tests/test_pdf_justification.py": "70e6761c662536d95ca474fefd9039e49164a70e0f8ca8c93c440d1b29c5d54e"
+    "tests/test_pdf_justification.py": "70e6761c662536d95ca474fefd9039e49164a70e0f8ca8c93c440d1b29c5d54e",
+    "tests/test_pdf_bold.py": "5baa7518f2d2c361e1758bc37c80ac5156baa1f4f8f7562c8fc1d5cb48120ceb"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -2873,7 +2875,7 @@
       "whole actual documents remain different"
     ]
   },
-  "current_validation_stage": "continued_pdf_justification",
+  "current_validation_stage": "native_pdf_bold",
   "pdf_cell_clipping": {
     "behavior": "Clip direct cell text and paragraph backgrounds at the prepared physical cell rectangle, including outline/bitmap/painter paths. Preserve original glyph CTMs; transform clip points into the current parent coordinate system. Invert the single-precision PDF device parent for physical grid fills/strokes.",
     "scope": "Prepared complete single-page inline body grids with SOLID/NONE cell borders; text clips use cell edges rather than padding/pen extents",
@@ -6843,6 +6845,277 @@
       "justify-normal-fonts-final.log": "195db838d4de6a036c657411a69b67ba41d01e34df17aae3972d230b26be3859",
       "justify-portable-final.log": "a7466f15a891e652d09f8ce22944a9ddf536891ecfa2e5f814e12fd9d1653146",
       "justify-portable-first.log": "6a0c02893c115bd4b9d2a106431159ea165f12eec5ea89cd152a74c1b5df8798"
+    }
+  },
+  "native_pdf_bold": {
+    "base_commit": "d3239c07201fefda607a0020c918fcc97159305c",
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "dpi": 96,
+    "pixel_tolerance": 0,
+    "rule": {
+      "ttf": "Use the selected bold face for ink and the normal family face for logical advances. Verified GDI font weight and average width include synthetic weight when computing stretch. Mixed bold words are centered per selected face before tracking.",
+      "synthetic_ttf": "Text rendering mode2 and stroke width2% of rounded printer em; stroke color follows fill color and resets between groups.",
+      "hft": "Base glyph program is filled/stroked with20 font-unit width. A verified local siblingB file supplies metrics when present; otherwise HFT stylebit2 supplies synthetic bold advances. Glyph and metric file hashes are both retained."
+    },
+    "fixture_scope": {
+      "conditions": 26,
+      "formats": 2,
+      "source_and_saved_comparisons_exact": 104,
+      "new_unique_pages_exact": 52,
+      "historical_unique_pages_exact": 2402,
+      "scope": "5 families,8/13/24pt, mixed plain/bold/color, and3 TTF families with95/105% stretch and negative/positive tracking. SaveAs retains native prefix caches; not all saved26 pages are claimed cached.",
+      "count_scope": "52 format/condition pairs; repeated saved/uncached comparisons are excluded from historical increment. No fresh whole2402 suite claimed.",
+      "preserved_reference_pages": 26,
+      "preserved_read_forms": 3,
+      "preserved_read_comparisons_exact": 78
+    },
+    "test_scope": {
+      "new_module_native_passed": 2,
+      "fresh_related_distinct_passed": 13,
+      "related_scope": "bold2 + justification3 + saved line-fit4 + device metrics4",
+      "portable_run": 142,
+      "portable_passed": 73,
+      "portable_skipped": 69
+    },
+    "evidence": {
+      "bold-frida-observed.json": {
+        "evidence_id": "ev_7eb9f60a7b38f76d6a137f81d7a0ef121f067617f22706f68349dda37db0ed17",
+        "sha256": "cd6c3049ff671f064e4aee1d1ce23fba4e54d418d8c67692f1f505f9af33ea44",
+        "messages": 14,
+        "untruncated": true
+      },
+      "bold-frida-modules.json": {
+        "evidence_id": "ev_5a189ba22f8a3ecbf53cf1d856ca281246a5b9c5066ce1988b548c50c581d726",
+        "sha256": "b4d49db3d41fbc50dfb73a7194110cb9115c19b0024bd92c7fc99c3dfd1ece47",
+        "messages": 1,
+        "untruncated": true
+      },
+      "pdf-native-text-matrix-emit.json": {
+        "evidence_id": "ev_132437193bbf04073322aa382c53719eef40a40344b5ce24f403fd653ba942ad",
+        "sha256": "9c73720baf0bee5e7b060e670ea2c06ada2508cd29d2717bc140c23f173439d6",
+        "messages": null,
+        "untruncated": null
+      },
+      "pdf-native-font-emulation-flags.json": {
+        "evidence_id": "ev_0cab8e699e7ce67fc252698e909145e0b43d8a1fdd8a4dcf055c7001c1e09c84",
+        "sha256": "8a820fd6f562c924a877dac2ac6f2bd9f6840326275c9db63e6fbec6a4a2b358",
+        "messages": null,
+        "untruncated": null
+      }
+    },
+    "observation": {
+      "hook_sha256": "9f21c1ff42712d615518b0e7b8cd2e625ce81c9ed46ea8387c29323299beb834",
+      "valid_draw_records": 36,
+      "attempted_font_width_export_records": 0,
+      "font_library_loaded": false,
+      "limitation": "The attempted HncFontLib export hook did not attach because the module was not loaded. Only HncBaseDraw draw positions/advances, existing static PDF emission evidence, original PDF and installed source/GDI data support the new rules.",
+      "observed_reference_repeat_pages_exact": 26,
+      "original_reference_unchanged": true,
+      "installed_binary_hashes_unchanged": true,
+      "all_sessions_closed": true,
+      "owned_analysis_tree_retired": true
+    },
+    "checks": [
+      {
+        "check": "line-fit",
+        "exit": 0,
+        "seconds": 35.36,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.58,
+          "used_percent": 64.9
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.88,
+          "used_percent": 63
+        }
+      },
+      {
+        "check": "justification",
+        "exit": 0,
+        "seconds": 32.98,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.86,
+          "used_percent": 63.1
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.86,
+          "used_percent": 63.2
+        }
+      },
+      {
+        "check": "device-metrics",
+        "exit": 0,
+        "seconds": 25.63,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.86,
+          "used_percent": 63.1
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.91,
+          "used_percent": 62.8
+        }
+      },
+      {
+        "check": "normal-fonts",
+        "exit": 0,
+        "seconds": 24.34,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.91,
+          "used_percent": 62.8
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.91,
+          "used_percent": 62.8
+        }
+      },
+      {
+        "check": "portable",
+        "exit": 0,
+        "seconds": 17.76,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.9,
+          "used_percent": 62.9
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.92,
+          "used_percent": 62.7
+        }
+      },
+      {
+        "check": "corpus",
+        "exit": 0,
+        "seconds": 79.66,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.92,
+          "used_percent": 62.7
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.91,
+          "used_percent": 62.8
+        }
+      },
+      {
+        "check": "installed-skill",
+        "exit": 0,
+        "seconds": 32.24,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 5.91,
+          "used_percent": 62.8
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 5.91,
+          "used_percent": 62.8
+        }
+      }
+    ],
+    "actual": {
+      "report-hwp": {
+        "before": 1142737,
+        "after": 1091838,
+        "exact": 1,
+        "reference_sha256": "59d00f031684f77c3c17323686df5ed18ceac1c800494fc3ad3ae45fd348c0a5",
+        "max_fraction": 0.16748384721417764
+      },
+      "report-hwpx": {
+        "before": 1142737,
+        "after": 1091838,
+        "exact": 1,
+        "reference_sha256": "81625234203ea5fce32ce098057125140a11f5c51c40dc9b461f16dbe8b1a9bd",
+        "max_fraction": 0.16748384721417764
+      },
+      "trip-hwpx": {
+        "before": 0,
+        "after": 0,
+        "exact": 2,
+        "reference_sha256": "e4bf914e2b4b9ea1d6410c37e69cd32a4a2c2ed404002d5d05e31c043608bcdf",
+        "max_fraction": 0.0
+      },
+      "form-hwp": {
+        "before": 609963,
+        "after": 591095,
+        "exact": 0,
+        "reference_sha256": "b2cc8c977f1d211cc755ca3742171c91ade919377937be0830fbfb9639d840cb",
+        "max_fraction": 0.14708576354746158
+      },
+      "guide-hwp": {
+        "before": 3807756,
+        "after": 3540298,
+        "exact": 2,
+        "reference_sha256": "4043d88876e1342b1873f83bf7960983f21504f576c0e7cb701b9f62fe35124d",
+        "max_fraction": 0.20409084174086398
+      },
+      "lesson-hwp": {
+        "before": 850220,
+        "after": 830949,
+        "exact": 0,
+        "reference_sha256": "3aed17b54f71f25cd6f795cfe03dd6db1e8810c3ed2d8dd5848aa80452e00832",
+        "max_fraction": 0.23088381219215418
+      },
+      "minutes-hwpx": {
+        "before": 63282,
+        "after": 43986,
+        "exact": 1,
+        "reference_sha256": "c6389ce79c6a1cebf148ef78f14dd94d3bb12839fb57bec6b6142e3b840fbed5",
+        "max_fraction": 0.019523655580849238
+      }
+    },
+    "actual_total_pixel_reduction": 426691,
+    "real_documents_exact": 1,
+    "real_pages_exact": 7,
+    "real_pages_checked": 124,
+    "independent_zero_difference_complete": false,
+    "preserved_failures": [
+      {
+        "log": "bold-native-first.log",
+        "issue": "Both initial methods failed on Arial8; retained fixed26-page reference for corrected normal/ink faces, HFT siblingB metrics and bold average-width selection."
+      },
+      {
+        "log": "bold-complete-first.log",
+        "issue": "Initial broader26 cases also exposed HFT style width and stretched bold mismatches; all original cases now exact in3 read forms."
+      }
+    ],
+    "limits": [
+      "Actual documents still have nonexact pages; aggregate improvement is not whole-document parity.",
+      "Bold bitmap glyphs, italic/underline/visible strike/script offsets and unsupported shaping combinations remain on diagnosed paths.",
+      "New bold full-page fixtures use single-line paragraphs; arbitrary uncached bold wrapping, document-specific metric state and complex mixed runs remain broader verification work.",
+      "Uncached consecutive blanks8345pixels, prior narrow-wrap24 pages and5pt stretch native-context67pixels remain; PNG source alpha also remains."
+    ],
+    "log_sha256": {
+      "bold-complete-fifth.log": "d9bfed14d29d07805d4b5e69d9bec19363ef30e25155536eb7ae4f95ebfc0317",
+      "bold-complete-first.log": "e806465be3507245f12f04c154f6e5365d3562ba67e47f7d5f61dad8dd848707",
+      "bold-complete-fourth.log": "266f147cb8219f8c341e75fca4439a5355af15952d04145c2aa7f52bb43d9210",
+      "bold-complete-second.log": "faa9b98e85fed70a6a383dfbf3428907f0e9429254036cb719d89ea48fa9d9b5",
+      "bold-complete-third.log": "c816768cdbce81d640f2afe6f8216c62534c596688500894b3f879634838ad47",
+      "bold-corpus-final.log": "5e965dda32b9b3ec0f9680b7fec993b001e658921fe4877d59e0d367c6babe1e",
+      "bold-corpus-recheck.log": "765c34a852006455905415b77a2c8dad24235d8565e76f3ac725df11f86d2c1e",
+      "bold-device-metrics-final.log": "b8124d9101d57a006def643230b634dcb138e11a17418d1089194dcd8ba8fe47",
+      "bold-installed-skill-final.log": "63a3673564e64beea127d3609c6ef6f44b58c3676c29a1b88299ea5dee1fc4f2",
+      "bold-justification-final.log": "6dd49e94085f637a62944c7feb89211fc60c02a2ec052f46f33d148713414aef",
+      "bold-line-fit-final.log": "7f4623766c62a5c56e3c02a998803d6e8c2b0a4e2732f1c2443c46644ba9e67c",
+      "bold-native-final.log": "d5f86fa13d45d43e2abdba4baaffc0c426d71998547c9699156000b3d71f942e",
+      "bold-native-first.log": "ad54307311be4db2e19a38ee3c28c3dbfedef06e4e790a330ab7d2b88f38e45d",
+      "bold-normal-fonts-final.log": "e64c696db0eae9a73fde919163df7101dea00dca9c2aa729119523bbfec627b8",
+      "bold-portable-final.log": "d89b7ebd63971383126c3832b5fa2dc31fccfcd6a9737e5b9f2a71246fe20081",
+      "bold-portable-recheck.log": "9b7d831184941da0056753e2066bf68099d64038940db3b70abd3caae9b09a67",
+      "bold-validation-update.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bold-widths-first.log": "15827553a48017597080575eb29f6af881f8684d83db98a9846b223e83369187"
     }
   }
 }

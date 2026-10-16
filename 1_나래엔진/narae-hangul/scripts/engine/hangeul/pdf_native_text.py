@@ -48,29 +48,33 @@ def _numbers(values):return ' '.join(f'{value:.15f}'.rstrip('0').rstrip('.') if 
 class PdfNativeText:
     def __init__(self,owner):
         self.owner=owner
-        self.hft_sources={};self.sfnt_sources={};self.fonts={};self.records={};self.path_records={};self.image_records={};self.image_payloads={};self.record_clips={}
+        self.hft_sources={};self.hft_bold_sources={};self.sfnt_sources={};self.fonts={};self.records={};self.path_records={};self.image_records={};self.image_payloads={};self.record_clips={}
         self.image_bytes=0
         self.collection_index=None
-        self.script_defaults={};self.requested_fonts={};self.hanja_fonts={}
-        self.source_bytes=0;self.characters=0;self.device_widths={}
+        self.script_defaults={};self.requested_fonts={};self.hanja_fonts={};self.normal_fonts={}
+        self.source_bytes=0;self.characters=0;self.device_widths={};self.device_averages={}
         self.precision=6
+        self.bold_records={}
         self.facts={'processed_lines':0,'legacy_lines':0,'glyphs':0,'fonts':[],
                     'legacy_reasons':{},'number_precision':6,'glyph_fallbacks':{},'suppressed_strike_glyphs':0,'stretched_glyphs':0,
                     'device_centered_lines':0,'device_centered_stretched_lines':0,'continuation_tracking_aligned_lines':0,'device_metric_fallbacks':{},'fitted_lines':0,
                     'condensed_word_gaps':0,'condensed_character_gaps':0,'cell_clipped_lines':0,'cell_clipped_painter_lines':0,'whole_document_parity_verified':False}
         self.facts.update(justified_lines=0,expanded_word_gaps=0,expanded_character_gaps=0)
+        self.facts.update(synthetic_bold_ttf_glyphs=0,synthetic_bold_hft_glyphs=0)
 
-    def _center_cached_line(self,command,text,parts,metrics):
-        # Saved single lines and justified paragraphs use device-centered
-        # widths. Tracking follows centering of untracked widths. A cache
-        # is never inferred from a page number.
+    def _center_cached_line(self,command,text,parts,metrics,bold=False):
+        # Saved single lines, justified paragraphs and bold text use device-
+        # centered widths. Tracking follows centering of untracked widths.
+        # A cache is never inferred from a page number.
         justified=command.source.style.align=='JUSTIFY'
-        if not command.source.line_segments and not justified:return parts,None
+        if not command.source.line_segments and not justified and not bold:return parts,None
         text=text.replace('\u200b','')
         reason=None
-        if len(command.source.line_segments)!=1 and not justified:reason='multiline-paragraph'
+        if len(command.source.line_segments)!=1 and not justified and not bold:reason='multiline-paragraph'
         elif len(metrics)!=len(text) or any(ord(c)>=65536 or c=='!' for c in text):reason='control-or-postprocessed-character'
-        elif len({item[:4]+(item[6],) for item in metrics})!=1:reason='mixed-font-metrics'
+        elif len({item[:4]+item[6:] for item in metrics})!=1:
+            if bold:return self._center_mixed_bold_line(text,parts,metrics)
+            reason='mixed-font-metrics'
         elif metrics:
             key,em,stretch,tracking,*_=metrics[0]
             if self.fonts[key]['kind']!='ttf':return parts,None
@@ -79,7 +83,7 @@ class PdfNativeText:
                 facts=self.facts['device_metric_fallbacks'];facts[reason]=facts.get(reason,0)+1
             return parts,None
         from .pdf_device_metrics import centered_advances,installed_widths,tracked_advances
-        key,em,*_=metrics[0];source=self.fonts[key];font_width=metrics[0][6];identity=(key,em,font_width)
+        key,em,*_=metrics[0];source=self.fonts[key];font_width,weight=metrics[0][6:];identity=(key,em,font_width,weight)
         widths=self.device_widths.setdefault(identity,{})
         missing=''.join(set(text)-widths.keys())
         try:
@@ -87,7 +91,7 @@ class PdfNativeText:
                 # Loaded fontTools tables may recompile timestamps or names;
                 # GDI identity must be checked against original source bytes.
                 tables={tag:source['source'].reader[tag] for tag in ('head','maxp','name')}
-                widths.update(installed_widths(source['family'],em,missing,tables,font_width))
+                widths.update(installed_widths(source['family'],em,missing,tables,font_width,weight))
             advances=[item[5] for item in metrics]
             # Each word's measurement run includes its trailing spaces.
             # Spaces flush the word's endpoint carry, then their paragraph
@@ -114,6 +118,41 @@ class PdfNativeText:
             if character!=' ':alignment=pen
         self.facts['device_centered_lines']+=1
         if font_width:self.facts['device_centered_stretched_lines']+=1
+        return result,alignment
+
+    def _center_mixed_bold_line(self,text,parts,metrics):
+        from .pdf_device_metrics import centered_advances,installed_widths
+        advances=[m[5] for m in metrics];first=0;adjusted=False
+        try:
+            while first<len(text):
+                if text[first]==' ':first+=1;continue
+                key,em,_,tracking,_,_,font_width,weight=metrics[first];source=self.fonts[key]
+                last=first+1
+                while last<len(text) and text[last]!=' ' and parts[last][6]==parts[first][6]:last+=1
+                while last<len(text) and text[last]==' ' and metrics[last][:4]+metrics[last][6:]==metrics[first][:4]+metrics[first][6:]:last+=1
+                if source['kind']=='ttf':
+                    widths=self.device_widths.setdefault((key,em,font_width,weight),{});segment=text[first:last]
+                    missing=''.join(set(segment)-widths.keys())
+                    if missing:
+                        tables={tag:source['source'].reader[tag] for tag in ('head','maxp','name')}
+                        widths.update(installed_widths(source['family'],em,missing,tables,font_width,weight))
+                    advances[first:last]=centered_advances(segment,advances[first:last],[widths[c] for c in segment]);adjusted=True
+                first=last
+        except (OSError,ValueError) as error:
+            reason=str(error) if isinstance(error,ValueError) else 'device-metrics-error'
+            facts=self.facts['device_metric_fallbacks'];facts[reason]=facts.get(reason,0)+1
+            return parts,None
+        if not adjusted:return parts,None
+        terminal=len(text.rstrip(' '))-1;pen=0;alignment=0;result=[]
+        for i,(c,part,advance,metric) in enumerate(zip(text,parts,advances,metrics)):
+            if c==' ':advance=metric[5]
+            numerator=math.trunc(advance/4)*metric[3]
+            tracking=(abs(numerator)+50)//100*4
+            if numerator<0:tracking=-tracking
+            if i!=terminal:advance+=tracking
+            result.append((pen,*part[1:]));pen+=advance
+            if c!=' ':alignment=pen
+        self.facts['device_centered_lines']+=1
         return result,alignment
 
     def _justify_line(self,command,text,parts,metrics,alignment):
@@ -191,7 +230,7 @@ class PdfNativeText:
             change=QColor(source.style.background).isValid() or any(QColor(run.style.background).isValid() for run in source.runs)
         if change:self.precision=3;self.facts['number_precision']=3
 
-    def _hft(self,family,character):
+    def _hft(self,family,character,bold=False):
         family=ALIASES.get(family,family)
         if family not in self.hft_sources:self.hft_sources[family]=self.owner._hft_resolver._sources(family)[0]
         sources=self.hft_sources[family]
@@ -206,15 +245,32 @@ class PdfNativeText:
             # files. Splitting Hangul/Latin/Hanja changes where text matrices
             # reset when that cache fills, causing small visible differences.
             key=('hft',fallback[0] if script_fallback else family)
+            if bold:key=(*key,'bold')
             record=self.fonts.get(key)
             if record is None:
                 if len(self.fonts)>=MAX_FONTS:raise ValueError('font-count-bounds')
                 record={'kind':'hft','family':family,'sha256':source.sha256,'source':source,'glyphs':{},
-                        'script_fallback':script_fallback,'source_hashes':set()}
+                        'script_fallback':script_fallback,'source_hashes':set(),'synthetic_bold':bold}
                 self.fonts[key]=record
             record['source_hashes'].add(source.sha256)
             record['glyphs'].setdefault(character,(glyph,math.trunc(source.advance(character,1000))))
-            return key,character,source.advance(character,1)
+            metrics_source=source
+            if bold:
+                # Native HFT printing strokes the base glyph, while a sibling
+                # B face, when present, supplies its layout widths.
+                if source.path not in self.hft_bold_sources:
+                    from .hft import HftFont
+                    path=source.path.with_stem(source.path.stem+'B')
+                    metrics_source=None
+                    if path.is_file() and _inside(path.resolve(),source.path.parent.resolve()):
+                        if self.source_bytes+path.stat().st_size>MAX_SOURCE_BYTES:raise ValueError('font-source-bounds')
+                        metrics_source=HftFont(path);self.source_bytes+=len(metrics_source.data)
+                    self.hft_bold_sources[source.path]=metrics_source
+                metrics_source=self.hft_bold_sources[source.path]
+                if metrics_source:
+                    record['source_hashes'].add(metrics_source.sha256)
+                    return key,character,metrics_source.advance(character,1)
+            return key,character,source.advance(character,1,2 if bold else 0)
         raise ValueError('unavailable-outline-glyph')
 
     def _sfnt_candidates(self,family):
@@ -270,7 +326,8 @@ class PdfNativeText:
                         source.close();raise ValueError('font-source-bounds')
                     checksum=hashlib.sha256(data).hexdigest();key=('ttf',checksum,face)
                     record={'kind':'ttf','family':raw.familyName(),'sha256':checksum,'data':data,
-                            'source':source,'glyphs':{},'no_subsetting':bool(flags&0x100),'face':face,'key':key}
+                            'source':source,'glyphs':{},'no_subsetting':bool(flags&0x100),'face':face,'key':key,
+                            'device_weight':source['OS/2'].usWeightClass if 'OS/2' in source and source['OS/2'].usWeightClass>=600 else 0}
                     self.fonts[key]=record;self.source_bytes+=len(data)
                     break
                 except (OSError,ValueError,KeyError,TTLibError,struct.error):continue
@@ -285,14 +342,14 @@ class PdfNativeText:
     def draw_line(self,painter,command,layout):
         """Preflight the whole line; unsupported lines retain the old painter."""
         from PySide6.QtCore import Qt,QRectF
-        from PySide6.QtGui import QImage,QPainter
+        from PySide6.QtGui import QImage,QPainter,QFont,QRawFont
         from fontTools.ttLib import TTLibError
         from .source_layout import (BITMAP_FONT_PROPERTY,OUTLINE_FONT_PROPERTY,FONT_FALLBACK_PROPERTY,_language_index,
             BITMAP_TRACKING_PROPERTY,BITMAP_SPACE_PROPERTY,SCRIPT_OFFSET_PROPERTY,
             SYNTHETIC_BOLD_PROPERTY,SYNTHETIC_ITALIC_PROPERTY,STRIKE_SHAPE_PROPERTY)
         from .formats import INVISIBLE_STRIKE_SHAPES
         from .pdf_device_metrics import logical_advances
-        formats=layout.formats()
+        formats=layout.formats();line_styles={};bold_ttf=0;bold_hft=0;bold_metrics=False
         if any(item.format.property(BITMAP_FONT_PROPERTY) for item in formats):return None
         def legacy(reason):
             self.facts['legacy_lines']+=1
@@ -316,8 +373,8 @@ class PdfNativeText:
             if fmt is None:return legacy('missing-format')
             font=fmt.font();size=font.pointSizeF();em=_round(size/.12)
             if not 0<em<=8192:return legacy('font-size-bounds')
-            if (font.bold() or font.italic() or font.underline() or font.strikeOut()
-                or fmt.property(SYNTHETIC_BOLD_PROPERTY) or fmt.property(SYNTHETIC_ITALIC_PROPERTY)
+            if (font.italic() or font.underline() or font.strikeOut()
+                or fmt.property(SYNTHETIC_ITALIC_PROPERTY)
                 or fmt.property(SCRIPT_OFFSET_PROPERTY)):
                 return legacy('style-or-script-offset')
             if font.kerning():return legacy('kerning')
@@ -330,7 +387,7 @@ class PdfNativeText:
             if position==terminal and not command.extra.get('justify_continuation'):tracking=1
             try:
                 family=fmt.property(OUTLINE_FONT_PROPERTY)
-                if family:key,glyph,advance=self._hft(family,character)
+                if family:key,glyph,advance=self._hft(family,character,bool(font.bold() or fmt.property(SYNTHETIC_BOLD_PROPERTY)))
                 else:
                     runs=layout.glyphRuns(start,units)
                     if len(runs)!=1 or len(runs[0].glyphIndexes())!=1:return legacy('complex-shaping')
@@ -341,14 +398,45 @@ class PdfNativeText:
             stretch=font.stretch();scale=float(stretch);device_font_width=0
             if not 1<=stretch<=500:return legacy('stretch-bounds')
             source=self.fonts[key]
+            bold_metrics=bold_metrics or font.bold() or bool(fmt.property(SYNTHETIC_BOLD_PROPERTY))
+            synthetic_bold=bool(fmt.property(SYNTHETIC_BOLD_PROPERTY)) and source['kind']=='ttf'
+            if synthetic_bold:bold_ttf+=1
+            if source.get('synthetic_bold'):bold_hft+=1
+            metrics_source=source
+            requested_bold=font.bold() or bool(fmt.property(SYNTHETIC_BOLD_PROPERTY))
+            weight=700 if requested_bold else source.get('device_weight',0)
+            if font.bold() and source['kind']=='ttf':
+                # The selected bold face supplies ink; the family's normal
+                # face supplies logical layout advances before GDI centering.
+                identity=(source['family'],font.key())
+                if identity not in self.normal_fonts:
+                    normal=QFont(font);normal.setFamily(source['family']);normal.setBold(False)
+                    self.normal_fonts[identity]=QRawFont.fromFont(normal)
+                raw=self.normal_fonts[identity];indices=raw.glyphIndexesForString(character)
+                if indices and indices[0]:
+                    try:
+                        normal_key,_,advance=self._sfnt(raw,character,indices[0]);metrics_source=self.fonts[normal_key]
+                    except (OSError,ValueError,HftError,UnicodeError,KeyError,struct.error,TTLibError):return legacy('unverified-normal-metrics')
+                else:return legacy('unverified-normal-metrics')
             if stretch!=100 and source['kind']=='ttf':
                 sfnt=source['source'];units=sfnt['head'].unitsPerEm
                 average=_round(sfnt['OS/2'].xAvgCharWidth*em/units) if 'OS/2' in sfnt else 0
+                if requested_bold:
+                    from .pdf_device_metrics import installed_average_width
+                    identity=(key,em,weight)
+                    try:
+                        if identity not in self.device_averages:
+                            tables={tag:sfnt.reader[tag] for tag in ('head','maxp','name')}
+                            self.device_averages[identity]=installed_average_width(source['family'],em,tables,weight)
+                        average=self.device_averages[identity]
+                    except (OSError,ValueError):return legacy('unverified-bold-average')
                 if average<=0:return legacy('unavailable-average-character-width')
                 f32=lambda value:struct.unpack('<f',struct.pack('<f',value))[0]
                 # The requested GDI width uses logical size before printer
                 # em rounding; its PDF ratio uses the rounded base average.
-                width=_round(sfnt['OS/2'].xAvgCharWidth/units*size/.12*stretch/100)
+                base=metrics_source['source']
+                if 'OS/2' not in base:return legacy('unavailable-normal-average')
+                width=_round(base['OS/2'].xAvgCharWidth/base['head'].unitsPerEm*size/.12*stretch/100)
                 # The cached device measurement must select the same integer
                 # LOGFONT width as PDF output, not an unstretched GDI face.
                 device_font_width=width
@@ -360,11 +448,12 @@ class PdfNativeText:
             delta,untracked_delta=logical_advances(advance,size,stretch,tracking,half_em)
             if self.fonts[key].get('script_fallback'):hft_fallback_mode=True
             rgb=(color.red(),color.green(),color.blue());fallback=fmt.property(FONT_FALLBACK_PROPERTY) or hft_fallback_mode
-            group_key=(key,em,rgb,_language_index(character)[0],tracking_percent,scale)
+            group_key=(key,em,rgb,_language_index(character)[0],tracking_percent,scale,synthetic_bold)
             if fallback or current_group!=group_key:group_number+=1
             current_group=group_key
             parts.append((pen,key,glyph,em,rgb,scale,group_number))
-            metrics.append((key,em,stretch,tracking_percent,delta,untracked_delta,device_font_width))
+            line_styles[group_number]=synthetic_bold
+            metrics.append((key,em,stretch,tracking_percent,delta,untracked_delta,device_font_width,weight))
             if stretch!=100:stretched+=1
             if fmt.property(STRIKE_SHAPE_PROPERTY) in INVISIBLE_STRIKE_SHAPES:suppressed_strike+=1
             if character.isspace() or fallback:current_group=None
@@ -376,7 +465,7 @@ class PdfNativeText:
                 alignment_pen=pen-terminal_tracking
         if not parts:
             self.facts['processed_lines']+=1;return True
-        parts,centered_alignment=self._center_cached_line(command,text,parts,metrics)
+        parts,centered_alignment=self._center_cached_line(command,text,parts,metrics,bold_metrics)
         if centered_alignment is not None:alignment_pen=centered_alignment
         expanded=False
         if justified:parts,expanded=self._justify_line(command,text,parts,metrics,alignment_pen)
@@ -402,6 +491,7 @@ class PdfNativeText:
             glyphs=[(key,glyph,em,x+_round((alignment+start)/12),y,color,scale,group) for start,key,glyph,em,color,scale,group in parts]
         marker=MARKER_PREFIX+len(self.records).to_bytes(6,'big')
         self.records[marker]=(glyphs,(self.owner._pdf_page_width,self.owner._pdf_page_height),self.precision)
+        self.bold_records[marker]=line_styles
         cell=command.extra.get('table_text_cell')
         if cell is not None and origin is not None and self.owner._active_pdf_grids.get(origin[0]):
             self.record_clips[marker]=(self.owner._active_pdf_grids[origin[0]],cell)
@@ -415,6 +505,7 @@ class PdfNativeText:
         self.characters+=len(parts);self.facts['processed_lines']+=1;self.facts['glyphs']+=len(parts)
         self.facts['suppressed_strike_glyphs']+=suppressed_strike
         self.facts['stretched_glyphs']+=stretched
+        self.facts['synthetic_bold_ttf_glyphs']+=bold_ttf;self.facts['synthetic_bold_hft_glyphs']+=bold_hft
         return True
 
     def draw_path(self,painter,program):
@@ -516,7 +607,10 @@ class PdfNativeText:
                         program=[f'{advance} 0 0 {bottom} 1000 1000 d1']
                         for op,*args in normalized_operations(glyph):
                             program.append(' '.join(map(str,args))+(' ' if args else '')+{'M':'m','L':'l','C':'c','Z':'h'}[op])
-                        program.append('f');glyph_name=name(f'/NaraeGlyph{code}')
+                        # Type3 rendering mode does not stroke glyph paths;
+                        # native HFT bold is filled/stroked inside the glyph.
+                        program.extend(['20 w','B'] if source.get('synthetic_bold') else ['f'])
+                        glyph_name=name(f'/NaraeGlyph{code}')
                         charprocs[glyph_name]=stream(('\n'.join(program)+'\n').encode('ascii'))
                         differences.append(glyph_name);widths.append(advance);locations[key,character]=(resource,code,2)
                     obj=DictionaryObject({name('/Type'):name('/Font'),name('/Subtype'):name('/Type3'),
@@ -567,7 +661,8 @@ class PdfNativeText:
             built[key]=created
             self.facts['fonts'].append({'family':source['family'],'kind':source['kind'],'source_sha256':source['sha256'],
                 'source_sha256s':sorted(source.get('source_hashes',{source['sha256']})),
-                'glyphs':len(items),'preserves_truetype_hinting':source['kind']=='ttf'})
+                'glyphs':len(items),'preserves_truetype_hinting':source['kind']=='ttf',
+                'synthetic_bold':source.get('synthetic_bold',False),'device_weight':source.get('device_weight',0)})
         seen=set()
         try:
             for page in writer.pages:
@@ -649,6 +744,9 @@ class PdfNativeText:
                             resource,_,_=locations[key,glyph]
                             program.extend([_numbers([v/255 for v in color])+' rg',f'{resource} {em} Tf',
                                 _numbers([round(scale,precision)])+' Tz',f'1 0 0 -1 {x} {y} Tm'])
+                            bold=self.bold_records.get(marker,{}).get(group[0][-1],False)
+                            program.append('2 Tr' if bold else '0 Tr')
+                            if bold:program.extend([_numbers([v/255 for v in color])+' RG',_numbers([em*.02])+' w'])
                             items=[]
                             for offset,item in enumerate(group):
                                 key,glyph,_,gx,_,_,_,_=item
