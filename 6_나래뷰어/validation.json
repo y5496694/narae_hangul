@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T22:13:33+09:00",
+  "date_kst": "2026-10-16T23:07:00+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "d3239c07201fefda607a0020c918fcc97159305c",
+  "base_commit": "9c0843e4e9175a7cbc61763f8373e74ab07ab786",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -111,9 +111,9 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.019523655580849238,
+      "changed_fraction_max": 0.00012684258498453193,
       "errors": [],
-      "independent_identical_pages": 1
+      "independent_identical_pages": 3
     }
   ],
   "paired_report": {
@@ -237,12 +237,13 @@
       "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 142,
-      "passed": 73,
+      "run": 146,
+      "passed": 77,
       "skipped": 69,
       "failures": 0,
       "errors": 0,
-      "log_sha256": "845086660acf2ab09f01a5b58169330161059dbdd80d85ada33e0e25d2d154c0"
+      "hancom_tests_enabled": false,
+      "log_sha256": "1ec133486c9c6ce57c98ee5721ac0c1ee0cc9f2efea10d8733b04d3fdfe6ac66"
     },
     "cold_bitmap_cache": {
       "concurrent_workers": 4,
@@ -722,6 +723,14 @@
         "passed": 1,
         "log_sha256": "9e728a0dac0215f7b0dbd2177cb9f5e81225bde3c1b85f8e8c6e5e36623c0e47"
       }
+    },
+    "previous_repository_portable_before_archive": {
+      "run": 142,
+      "passed": 73,
+      "skipped": 69,
+      "failures": 0,
+      "errors": 0,
+      "log_sha256": "845086660acf2ab09f01a5b58169330161059dbdd80d85ada33e0e25d2d154c0"
     }
   },
   "rea": {
@@ -1551,17 +1560,17 @@
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "85c0790a23c0f79f0816c48df56a586ae674efb9b86dcadbb9c1df620ba2a7a8",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "52bbbdec290189059a89402171f073276d8bdde1ecba059f76149b837602759c",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "2a926644ab598b2ae037c0af2e6f71a0350e53ff4e18afe56989ae64a5c7b534",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "b29a9475f48b89e9954c0186e93806405f7417960ec359bdbc5cac6567354784",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "af2750b3233df8381d424b1cbb17aebd48992db676c13351e1f4906739486a5f",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "29b0767e22fb72007c0fe4d90bc111ee428883f3f0b0525476d1a5d5df59aa0f",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "e48277e69289c9a2babb4eeaaec6d6064659f7ff33809334c1ab8c408e9866c7",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "fb40ee0ba3bd73dba0dbe1aef6db2768f5281d0f731d9d353002b8bf640eeac8",
+    "2_나래스킬/narae-viewer/SKILL.md": "fd22a15728684b9907d5db54d4fa5ec9862be132b7168bf75015a274000d9945",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "39d511aebf508388105c13369bd058037866c6d791ebfbb4be425ce30f2858f2",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "275925621e5437441b86f3e4b98d35c69a134409a33b6c050e021938026886b0",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft_cff.py": "92ae9becc22f113225c1040d6a93b9e50b1855565c63c907437ae192e32c1f64",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "2949349f60b7cf314968e7ea9a4667aaec699fd2c3f2e7823513dc8a9b65771d",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "d21afa3cddf8033f2e033d151a83f8d62ecaeda8de776bc8a01ce8d3592ca25b",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft_cff.py": "ecd7b82cd2d36ae98ef5865141e01eeb9d795c4464407245ebb8cef9668acb1d",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "3776ca2b1ef5e53022be0b08cc323a58a9d1940378713de3c93e5c777115a639",
     "tests/test_font_appearance.py": "88b723af638902942a8b7fc063e24a7bff48bb46febd8cf16a52168361b8d0af",
     "tests/test_bitmap_fonts.py": "8bccdb4a0d86a4cab327275d16380b0b01f99b32881bdc50adb3753b9a8c0faa",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap.py": "8ba39fefddd97e1b6450c5eef6124fa38448f7835d12525da5413db3208ee4a8",
@@ -1570,16 +1579,16 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "51e33fb62bd39e384b3cb0ab7b39ab46f934419a161e5283d59cbaa1f10a65e3",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "9a77f3fb37f686cbc4f49aacfe5b4ea8f775c71f21f70c8502b814d014012da0",
     "tests/test_pdf_native_text.py": "1a71fa6835520e9333f920914180835e7d3b5002802cfd76f351ab4821fe3631",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "669433dbcc221d5a7bd51c5ed02355d80401301d04923b3bc4ecee66a49eae89",
-    "tests/test_text_decorations.py": "2b3fed445c5a53b5ef553dfef9ef5beedb086e2588959885b8c0420ba82162ac",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwpx_native.py": "8c53e0c6bf57d02936e00a9220f2de43106a0c9083487ad63e3ce14c5759b0d7",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "58113860d93352524dbff5c435adb9e2a283c065cfb5f9018d6ac08bfb397bb5",
+    "tests/test_text_decorations.py": "307e07ed47e28627cf9e698e5b42cd2700f038004980739df96bd030477ca019",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwpx_native.py": "c747ac5508f74a725b5d3ebaef77955f402c7aa3d924fd23d7c25a5f6a7a98db",
     "tests/test_inline_spacing.py": "61b3de9dddf1e7517475f0b5917dfb23b338b3211c8152c827573938eb6172f2",
     "tests/test_pdf_stretch.py": "dcf48403fa663ef49a46933d395ef3984e088fd9eabe1617bc9f0a4fad24e0c6",
-    "1_나래엔진/narae-hangul/references/viewer.md": "1edca6d766bd089011070db30155e10cf0900471c89d9ceda1530d891f641add",
-    "6_나래뷰어/README.md": "249538887d9e05bdd47ddb0430dc62a364092172a25864734acdd4ca422d6344",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "478bd0411db359e3a73021da9a81d736b936f018a1d87efabb1505e3015f7450",
+    "1_나래엔진/narae-hangul/references/viewer.md": "95d8ade9279e4f407e4f2bb36bc30baea35a58baff2b5c989a1f4eb24d332b6b",
+    "6_나래뷰어/README.md": "002c2bcd64d299d3b6727b02524f94e54940140d2ad2ff5fcc7899335f81eeb1",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "a55ef002540ae906bbfa7a40f5792c5ab8142eb85691caa05d0971186dee03bb",
     "tests/test_pdf_table_frames.py": "1c0d7df362ab78952b2e33b9ab5c48aeb43d62b5ae6d783e08f2c9eeba548718",
-    "5_유틸리티/hancom_rea_findings.md": "61d0dfd6fddcb81e52ec071608278c9eee0d888aeff4ca3dfccd41b2fb5ac3ef",
+    "5_유틸리티/hancom_rea_findings.md": "cb4f54f507ed8620a28134cb6632b03699a77b5eba2c49da5c099de25328cfcd",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_device_metrics.py": "c2adda4585648a44eabb0527b57942182b6b5a8949fb9a65418c7516534496ed",
     "tests/test_pdf_device_metrics.py": "1a3ce42dccdcce868780a79c807211c6404f7cd28bf88763d04233bbcfce5680",
     "tests/test_pdf_mixed_table_frames.py": "f204eee622dcdb6e717c55623fe39bf9d8ca2c4b7383b56593376191ac4ef130",
@@ -1587,14 +1596,18 @@
     "tests/test_pdf_line_fit.py": "3d775fe5f7ad1aabbf0d1dd49cd19c9193a7038588a22fe138cce204fd1463e7",
     "tests/test_pdf_cached_tracking.py": "5c68ce6d0d0a22ae29cddf16888b3bcd341bb3251c6021f8456c5d0add613054",
     "tests/test_pdf_cell_clip.py": "160d7b8c5a2c7d2e4ade6c7a74f4c95fe56122a2eecc7f5a908528eb558d1c75",
-    "tests/test_hancom.py": "c3fcf73209b52ad3afe4f8d1f1f753b6b8ca11eceea5db714899299194ab5058",
+    "tests/test_hancom.py": "7e1ec19f2907fed6cf85a9bf82d1831922b46e94cae38d9106b7edbb5adb9064",
     "tests/test_pdf_cached_stretch.py": "98fbbf9ef44b6bf3273608c89510d6bed60c82f7287223e0cd46060bbd01005b",
     "tests/test_pdf_continued_alignment.py": "c965545541d4c6e213f6ef24204c5f9a3da31a69f0de2a5aefe4e0cd3de54b4d",
     "tests/test_pdf_source_alpha.py": "81e8249d50adbe8a76c28cb9b609007dc70bc607f7d52ba81298b1c580ff262a",
     "tests/test_percent_line_spacing.py": "3ec8366e8acb85c440d11058aeae3286c0b0b4b6805665b57c2a78e6bd14c4ad",
     "tests/test_line_spacing_units.py": "8ef2ad9f03766338ad6cdd9feb9889c867fc2fc9ab24a60c44f66f6bcaa68217",
     "tests/test_pdf_justification.py": "70e6761c662536d95ca474fefd9039e49164a70e0f8ca8c93c440d1b29c5d54e",
-    "tests/test_pdf_bold.py": "5baa7518f2d2c361e1758bc37c80ac5156baa1f4f8f7562c8fc1d5cb48120ceb"
+    "tests/test_pdf_bold.py": "5baa7518f2d2c361e1758bc37c80ac5156baa1f4f8f7562c8fc1d5cb48120ceb",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_gradients.py": "a38c09cffe7edd45b037d3a61fd0cb50430b40aa5ac09407ef4347d35b4c902c",
+    "tests/test_pdf_gradients.py": "b3164c4378398ce1e3b0c12fcbf4c76d4f9a7afbb48aab5d36b2dec5bd1d6c34",
+    "6_나래뷰어/STATUS.md": "29eaf1d20ac733af345c3669bae199045786a1278d28e58cb2ca7e16a1a2903c",
+    "2_나래스킬/narae-viewer/agents/openai.yaml": "1c4d2b2637965493ebc009e126ad81f0f10fa34d70e93f1503938d0fdb87f60c"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -2875,7 +2888,7 @@
       "whole actual documents remain different"
     ]
   },
-  "current_validation_stage": "native_pdf_bold",
+  "current_validation_stage": "unfinished_archive",
   "pdf_cell_clipping": {
     "behavior": "Clip direct cell text and paragraph backgrounds at the prepared physical cell rectangle, including outline/bitmap/painter paths. Preserve original glyph CTMs; transform clip points into the current parent coordinate system. Invert the single-precision PDF device parent for physical grid fills/strokes.",
     "scope": "Prepared complete single-page inline body grids with SOLID/NONE cell borders; text clips use cell edges rather than padding/pen extents",
@@ -7117,5 +7130,301 @@
       "bold-validation-update.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "bold-widths-first.log": "15827553a48017597080575eb29f6af881f8684d83db98a9846b223e83369187"
     }
+  },
+  "development_status": {
+    "status": "unfinished",
+    "production_ready": false,
+    "ordinary_document_use": false,
+    "development_stopped_by_user": true,
+    "resume_requires_user_request": true,
+    "skill_implicit_invocation": false,
+    "decision_date_kst": "2026-10-16T23:07:00+09:00",
+    "reason": "User requested preserving the unfinished viewer in Git without using it; no further zero-difference development."
+  },
+  "unfinished_archive": {
+    "whole_documents_exact": 1,
+    "whole_pages_exact": 9,
+    "documents_checked": 7,
+    "pages_checked": 124,
+    "all_source_hashes_preserved": true,
+    "all_page_counts_match": true,
+    "all_paper_sizes_match": true,
+    "fresh_hancom_execution_after_stop_request": false,
+    "real_document_pixels": {
+      "report-hwp": {
+        "before": 1091838,
+        "after": 1091838,
+        "delta": 0,
+        "exact": 1,
+        "reference_sha256": "59d00f031684f77c3c17323686df5ed18ceac1c800494fc3ad3ae45fd348c0a5",
+        "pages": [
+          54535,
+          56490,
+          57915,
+          36944,
+          0,
+          8230,
+          2209,
+          80441,
+          145350,
+          49297,
+          44778,
+          11913,
+          14143,
+          13448,
+          89813,
+          141353,
+          39745,
+          71187,
+          149206,
+          1109,
+          4231,
+          7232,
+          10788,
+          1481
+        ]
+      },
+      "report-hwpx": {
+        "before": 1091838,
+        "after": 1091838,
+        "delta": 0,
+        "exact": 1,
+        "reference_sha256": "81625234203ea5fce32ce098057125140a11f5c51c40dc9b461f16dbe8b1a9bd",
+        "pages": [
+          54535,
+          56490,
+          57915,
+          36944,
+          0,
+          8230,
+          2209,
+          80441,
+          145350,
+          49297,
+          44778,
+          11913,
+          14143,
+          13448,
+          89813,
+          141353,
+          39745,
+          71187,
+          149206,
+          1109,
+          4231,
+          7232,
+          10788,
+          1481
+        ]
+      },
+      "trip-hwpx": {
+        "before": 0,
+        "after": 0,
+        "delta": 0,
+        "exact": 2,
+        "reference_sha256": "e4bf914e2b4b9ea1d6410c37e69cd32a4a2c2ed404002d5d05e31c043608bcdf",
+        "pages": [
+          0,
+          0
+        ]
+      },
+      "form-hwp": {
+        "before": 591095,
+        "after": 591095,
+        "delta": 0,
+        "exact": 0,
+        "reference_sha256": "b2cc8c977f1d211cc755ca3742171c91ade919377937be0830fbfb9639d840cb",
+        "pages": [
+          45547,
+          131034,
+          46391,
+          69428,
+          89233,
+          80134,
+          129328
+        ]
+      },
+      "guide-hwp": {
+        "before": 3540298,
+        "after": 3540298,
+        "delta": 0,
+        "exact": 2,
+        "reference_sha256": "4043d88876e1342b1873f83bf7960983f21504f576c0e7cb701b9f62fe35124d",
+        "pages": [
+          8781,
+          0,
+          85684,
+          0,
+          67290,
+          69559,
+          83067,
+          107466,
+          122108,
+          79497,
+          63538,
+          96760,
+          55214,
+          98416,
+          78008,
+          78521,
+          60995,
+          89680,
+          89999,
+          93868,
+          81462,
+          117236,
+          53014,
+          93863,
+          54999,
+          83470,
+          95280,
+          52120,
+          59254,
+          84655,
+          181818,
+          70733,
+          14591,
+          84012,
+          83437,
+          130426,
+          76281,
+          72564,
+          56300,
+          30556,
+          30293,
+          54261,
+          30077,
+          18033,
+          27150,
+          19008,
+          19341,
+          54773,
+          42695,
+          14975,
+          66988,
+          54970,
+          40314,
+          62898
+        ]
+      },
+      "lesson-hwp": {
+        "before": 830949,
+        "after": 830949,
+        "delta": 0,
+        "exact": 0,
+        "reference_sha256": "3aed17b54f71f25cd6f795cfe03dd6db1e8810c3ed2d8dd5848aa80452e00832",
+        "pages": [
+          62458,
+          196701,
+          132314,
+          107154,
+          68390,
+          205687,
+          17260,
+          40432,
+          553
+        ]
+      },
+      "minutes-hwpx": {
+        "before": 43986,
+        "after": 113,
+        "delta": -43873,
+        "exact": 3,
+        "reference_sha256": "c6389ce79c6a1cebf148ef78f14dd94d3bb12839fb57bec6b6142e3b840fbed5",
+        "pages": [
+          0,
+          0,
+          0,
+          113
+        ]
+      }
+    },
+    "portable_test_scope": "Fresh 146 discovered; 77 passed, 69 native opt-in skipped. Historical synthetic/native counts are not a fresh whole-suite pass.",
+    "stored_native_table_regression": {
+      "pages": 208,
+      "all_match": true,
+      "fresh_native_export": false,
+      "groups": [
+        {
+          "group": "table-frame-matrix",
+          "format": "hwp",
+          "pages": 44,
+          "match": true,
+          "failures": [],
+          "source_sha256": "59ccec48797d3bb637683693a866a44f2578d1b2687053a032cf1c018708c9ec",
+          "reference_sha256": "505459ce1b279b23cb9cfac3023374071c087240316b648856e524c25692fb34"
+        },
+        {
+          "group": "table-frame-matrix",
+          "format": "hwpx",
+          "pages": 44,
+          "match": true,
+          "failures": [],
+          "source_sha256": "d69ef5fb556ee6e022d7b2b09b6b50f8b7ca168ba3627beb71fdae60571e0cc6",
+          "reference_sha256": "6d0134b342ba48cba9132875606d196bb31bd3bda1db096e1290cd47be51f7fc"
+        },
+        {
+          "group": "mixed-table-frames-expanded",
+          "format": "hwp",
+          "pages": 40,
+          "match": true,
+          "failures": [],
+          "source_sha256": "4f382070ccf078a068a36273485cb54b87582c9e80489e81c97eb4d7e56ae87c",
+          "reference_sha256": "0583049bc061efd860548cb717bb8946e2ef719605e42755bc20ee97a492c726"
+        },
+        {
+          "group": "mixed-table-frames-expanded",
+          "format": "hwpx",
+          "pages": 40,
+          "match": true,
+          "failures": [],
+          "source_sha256": "63ebb58eede25a64fb77995734cd63b57f29ce178d97d74bbbdbddefb559bc89",
+          "reference_sha256": "d0270416c5a53489063793197f0e6e1690fd493d963186873dc25e2b4857a977"
+        },
+        {
+          "group": "merged-table-frame-oracles",
+          "format": "hwp",
+          "pages": 20,
+          "match": true,
+          "failures": [],
+          "source_sha256": "0037b1177ec8bf200dcde4c1b19d25e9ae88ffa24861c0c20a8fee48d6310cbc",
+          "reference_sha256": "6fc963be4d1c60a687ab034ef459df9f1ac22571622916cfd5dc89f4d00084f7"
+        },
+        {
+          "group": "merged-table-frame-oracles",
+          "format": "hwpx",
+          "pages": 20,
+          "match": true,
+          "failures": [],
+          "source_sha256": "895ea6f2b2d487b1f7a58c169c0e6ffa19dc8ec6b9cf9c552fd418f12523564d",
+          "reference_sha256": "be6f68b45580604a6c51c7bfd409743b160aa2e14b468d2bbbe93c582dab0569"
+        }
+      ],
+      "log_sha256": "fd30c6a0ec3039ca8db0722cc8aebc4aa4c2676c340862a2641b5b2d38e76832"
+    }
+  },
+  "radial_gradient_snapshot": {
+    "status": "partial_unfinished",
+    "kind": "two-color opaque RADIAL in prepared inline table cells",
+    "diagnostic": "layout.pdf_gradients; processed/fallback counts never prove parity",
+    "native_hwpx_control_pages_checked": 48,
+    "native_hwpx_control_pages_exact": 48,
+    "hwp_read_against_same_hwpx_native_reference_pages_exact": 48,
+    "native_hwp_control_export_checked": false,
+    "complete_format_pair_portable_pages": 20,
+    "initial_failed_control_records_preserved": true,
+    "remaining": [
+      "Other gradient kinds, multicolor stops and alpha use unverified painter fallback",
+      "Narrow cells may be widened by Hancom",
+      "HFT bold tracking/rounding remains; minutes page 4 IV differs by 113 pixels"
+    ],
+    "rea_evidence_ids": [
+      "ev_b48696ca31cc53ceb7642920adc21d361f28dfaca365a64a0a357159f697b993",
+      "ev_72b66a6b050a31759b952b7bd0471d21a4e3f7c27f0c432d1a4dc73cc4281304",
+      "ev_05eed13606efae52297412128c63b41bf4a4ae0d7f5a88fd2df1c858a236cce2",
+      "ev_091f3a2f15ea89b09ef596f1a67c4bc81bf580d094999bd1a0913ea39d2f5505"
+    ],
+    "observer_source_sha256": "05219320c5826865e42814589f2e4966dbd623d0bb86bd553f0e797192965817",
+    "raw_evidence_and_documents_distributed": false
   }
 }

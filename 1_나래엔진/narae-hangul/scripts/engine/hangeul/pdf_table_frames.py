@@ -79,7 +79,7 @@ def prepare(table,cells,origin,page_size):
     xx=[round(f32(v*sx),3) if v is not None else None for v in xp]
     yy=[round(math.floor(ph)-f32(v*sy),3) if v is not None else None for v in yp]
     vertical=segments(vertical);horizontal=segments(horizontal,xp)
-    return {'x':xx,'y':yy,'x_pixels':xp,'scale_x':sx,'cols':table.cols,'rows':table.rows,
+    return {'x':xx,'y':yy,'x_pixels':xp,'y_pixels':yp,'scale_x':sx,'scale_y':sy,'page_height':math.floor(ph),'cols':table.cols,'rows':table.rows,
         'vertical':vertical,'horizontal':horizontal},None
 
 
@@ -119,14 +119,15 @@ def stroke_program(grid):
     f32=lambda v:struct.unpack('<f',struct.pack('<f',v))[0]
     x,y=grid['x'],grid['y'];vertical=grid['vertical'];horizontal=grid['horizontal']
     lines=[('v',*line) for line in vertical]+[('h',*line) for line in horizontal]
-    # Conflicting shared edges paint both pens: left then right cell, or
-    # upper then lower cell. Outer runs repeat right/down, left/up,
-    # bottom/right, top/left, without reversing each individual segment.
-    for kind,source,boundary in (('v',vertical,grid['cols']),('v',vertical,0),
-                                  ('h',horizontal,grid['rows']),('h',horizontal,0)):
-        selected=[line for line in source if line[0]==boundary]
-        if boundary==0:selected.reverse()
-        lines.extend((kind,*line) for line in selected)
+    # The repeat passes use the first/last visible run, including an inner
+    # edge when an outside edge is NONE. The descending last-boundary scan
+    # excludes the first run; a sole run receives no repeat. Preserve this
+    # asymmetric endpoint even when all visible horizontal runs share a row.
+    for kind,source in (('v',vertical),('h',horizontal)):
+        if len(source)<2:continue
+        last=source[-1][0];first=source[0][0]
+        lines.extend((kind,*line) for line in source[1:] if line[0]==last)
+        lines.extend((kind,*line) for line in reversed(source) if line[0]==first)
     if not lines:return None
     program=['0 J','0 j','[] 0 d'];previous=None
     for kind,boundary,first,last,pens,start,end in lines:

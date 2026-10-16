@@ -23,11 +23,48 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 
 from .cfb import CompoundFile, MAGIC, MAX_BYTES, MAX_FILE_BYTES, write_compound
-from .geometry import (PageLayout, Border, BorderFill, ObjectPosition, PictureGeometry, DocumentModel,
+from .geometry import (PageLayout, Border, BorderFill, GradientFill, ObjectPosition, PictureGeometry, DocumentModel,
     PAGE_PROPERTY, TABLE_PROPERTY, CELL_PROPERTY, PICTURE_PROPERTY, FONT_PROPERTY, borders_from_data,
-    position_from_data, picture_from_data)
+    position_from_data, picture_from_data, gradient_from_data)
 
 ATTRIBUTION = "본 제품은 한컴의 HWP 문서 파일(.hwp) 공개 문서를 참고하여 개발하였습니다."
+
+
+def _validate_gradient(g):
+    if g.kind not in ('LINEAR','RADIAL','CONICAL','SQUARE'):raise ValueError('Unsupported gradient kind')
+    if not 2<=len(g.colors)<=64:raise ValueError('Unsupported gradient color count')
+    if not 0<=g.step<=100 or not 0<=g.step_center<=100 or not 0<=g.alpha<=255:raise ValueError('Gradient step/opacity bounds')
+    if not all(isinstance(v,int) for v in (g.angle,g.center_x,g.center_y,g.step,g.step_center,g.alpha)):raise ValueError('Gradient values must be integers')
+    if not 0<=g.center_x<=100 or not 0<=g.center_y<=100:raise ValueError('Gradient center bounds')
+    if any(not re.fullmatch(r'#[0-9A-Fa-f]{6}',color) for color in g.colors):raise ValueError('Gradient color bounds')
+    if g.positions and (len(g.positions)!=len(g.colors) or any(not isinstance(v,int) or not 0<=v<=100 for v in g.positions)
+        or list(g.positions)!=sorted(g.positions)):raise ValueError('Gradient color position bounds')
+    if len(g.colors)>2 and not g.positions:raise ValueError('Multi-color gradients require positions')
+
+
+def _gradient_hwp(data,offset=32):
+    if len(data)<offset+4:return None
+    flags=struct.unpack_from('<I',data,offset)[0];offset+=4
+    if not flags&4:return None
+    if flags&1:offset+=12
+    for modern in (True,False):
+        try:
+            if modern:
+                kind,angle,cx,cy,step,count=struct.unpack_from('<B5i',data,offset);cursor=offset+21
+            else:
+                kind,angle,cx,cy,step,count=struct.unpack_from('<6h',data,offset);cursor=offset+12
+            if kind not in (1,2,3,4) or not 2<=count<=64 or not 0<=step<=100:continue
+            positions=()
+            if count>2:positions=struct.unpack_from('<'+str(count)+'i',data,cursor);cursor+=4*count
+            colors=tuple(_colorref(v) for v in struct.unpack_from('<'+str(count)+'I',data,cursor));cursor+=4*count
+            if flags&2:cursor+=6
+            extra=struct.unpack_from('<I',data,cursor)[0];cursor+=4
+            if extra>1024 or cursor+extra>len(data):continue
+            center=data[cursor] if extra else 50;cursor+=extra
+            alpha=data[cursor] if cursor<len(data) else 0
+            return GradientFill({1:'LINEAR',2:'RADIAL',3:'CONICAL',4:'SQUARE'}[kind],angle,cx,cy,step,colors,tuple(positions),center,alpha)
+        except (struct.error,IndexError):continue
+    return None
 STRIKE_SHAPES = ("SOLID", "DOT", "DASH", "DASH_DOT", "DASH_DOT_DOT", "LONG_DASH", "CIRCLE",
                  "DOUBLE_SLIM", "SLIM_THICK", "THICK_SLIM", "SLIM_THICK_SLIM", "WAVE", "DOUBLEWAVE",
                  "THICK3D", "THICKREV3D", "3D")
@@ -149,6 +186,7 @@ class Cell:
     header: bool = False
     padding_inherited: tuple = (False, False, False, False)
     native_flags: int = 0  # retain native list flags whose modern semantics vary
+    gradient: GradientFill | None = None
 
 
 @dataclass
@@ -173,6 +211,7 @@ class Table:
     anchor_text_start: int = 0
     scope: dict = field(default_factory=lambda: {"kind": "body"})
     anchor_style: TextStyle | None = None
+    gradient: GradientFill | None = None
 
 
 @dataclass
@@ -779,7 +818,15 @@ def _load_hwpx(path):
                 sides = tuple(Border(_attr(_child(e, n), "type", "NONE"), _border_width_pt(_attr(_child(e, n), "width")),
                     _attr(_child(e, n), "color", "#000000")) for n in ("leftBorder", "rightBorder", "topBorder", "bottomBorder"))
                 background = fill.get("faceColor", "") if fill is not None else ""
-                borders[e.get("id")] = BorderFill(sides, "" if background.lower()=="none" else background)
+                gradient=_desc(e,'gradation')
+                if gradient is not None:
+                    colors=tuple(_attr(c,'value') for c in gradient if _local(c)=='color')
+                    if not 2<=len(colors)<=64:raise ValueError('Unsupported gradient color count')
+                    gradient=GradientFill(_attr(gradient,'type','LINEAR'),_int(gradient.get('angle')),
+                        _int(gradient.get('centerX'),50),_int(gradient.get('centerY'),50),_int(gradient.get('step'),50),colors,
+                        tuple(_int(c.get('position')) for c in gradient if _local(c)=='color' and c.get('position') is not None),
+                        _int(gradient.get('stepCenter'),50),_int(gradient.get('alpha')))
+                borders[e.get("id")] = BorderFill(sides, "" if background.lower()=="none" else background,gradient)
         bindata = {}
         if "Contents/content.hpf" in names:
             package = _safe_xml(z.read("Contents/content.hpf"))
@@ -836,7 +883,7 @@ def _load_hwpx(path):
                 height=_num(_attr(_child(e, "sz"), "height")) / 100, borders=fill.borders, background=fill.background,
                 padding=tuple(_num(_attr(_child(e, "inMargin"), n)) / 100 for n in ("left", "right", "top", "bottom")),
                 cell_spacing=_num(e.get("cellSpacing")) / 100, page_break=e.get("pageBreak", "CELL"), repeat_header=e.get("repeatHeader") == "1",
-                position=_position_xml(e))
+                position=_position_xml(e),gradient=fill.gradient)
             if owner is not None:
                 t.anchor_segments, t.source_para_id, t.source_index = owner.line_segments, owner.source_id, owner.source_index
                 t.scope = dict(owner.scope)
@@ -853,7 +900,7 @@ def _load_hwpx(path):
                         fill.background, height=_num(_attr(size, "height")) / 100,
                         padding=tuple(t.padding[i] if inherited[i] else raw_margins[i] / 100 for i in range(4)),
                         borders=fill.borders, vertical_align=_attr(sub, "vertAlign", "CENTER"), header=tc.get("header") == "1", padding_inherited=inherited,
-                        native_flags={"BREAK":0,"SQUEEZE":8,"KEEP":16}.get(_attr(sub,"lineWrap","BREAK"),0)))
+                        native_flags={"BREAK":0,"SQUEEZE":8,"KEEP":16}.get(_attr(sub,"lineWrap","BREAK"),0),gradient=fill.gradient))
             _table_grid(t)
             return t
         def drawing(e, owner):
@@ -1249,7 +1296,7 @@ def _load_hwp(path):
                 if len(d) >= offset + 6:
                     style, width, rgb = struct.unpack_from("<BBI", d, offset)
                     sides.append(Border(_BORDER_STYLES[min(style, len(_BORDER_STYLES) - 1)], _BORDER_WIDTHS[min(width, 15)] * 72 / 25.4, _colorref(rgb)))
-            borders[len(borders) + 1] = BorderFill(tuple(sides) if len(sides) == 4 else (Border(),) * 4, color)
+            borders[len(borders) + 1] = BorderFill(tuple(sides) if len(sides) == 4 else (Border(),) * 4, color,_gradient_hwp(d))
         elif r.tag == 18 and len(d) >= 6:
             prop, = struct.unpack_from("<H", d)
             if prop & 15 == 1:
@@ -1377,7 +1424,7 @@ def _load_hwp(path):
                 table = Table(rows, cols, width=width / 100, height=height / 100, borders=fill.borders, background=fill.background,
                     padding=tuple(v / 100 for v in struct.unpack_from("<4H", desc.data, 10)) if len(desc.data) >= 18 else (3, 3, 1.5, 1.5),
                     cell_spacing=struct.unpack_from("<H", desc.data, 8)[0] / 100 if len(desc.data) >= 10 else 0,
-                    page_break={0: "NONE", 1: "TABLE", 2: "CELL"}.get(prop & 3, "CELL"), repeat_header=bool(prop & 4), position=_position_hwp(ctrl.data))
+                    page_break={0: "NONE", 1: "TABLE", 2: "CELL"}.get(prop & 3, "CELL"), repeat_header=bool(prop & 4), position=_position_hwp(ctrl.data),gradient=fill.gradient)
                 table.anchor_segments, table.source_para_id, table.source_index = p.line_segments, p.source_id, p.source_index
                 anchor_shape = next((cid for pos,cid in reversed(shapes) if pos <= anchor_start),shapes[0][1])
                 table.anchor_style = chars.get(anchor_shape,TextStyle())
@@ -1401,7 +1448,7 @@ def _load_hwp(path):
                         current = Cell(row, col, max(1, rs), max(1, cs), width=width / 100, background=fill.background, height=height / 100,
                             padding=tuple(table.padding[i] if inherited[i] else raw_margins[i] / 100 for i in range(4)), borders=fill.borders,
                             vertical_align={0: "TOP", 1: "CENTER", 2: "BOTTOM"}.get((common >> 5) & 3, "CENTER"), padding_inherited=inherited,
-                            native_flags=common)
+                            native_flags=common,gradient=fill.gradient)
                         table.cells.append(current)
                         cell_scope = {"kind": "cell", "table_source_index": table.source_index, "table_source_para_id": table.source_para_id,
                             "row": row, "col": col, "row_span": rs, "col_span": cs, "width_pt": width / 100, "height_pt": height / 100,
@@ -1693,6 +1740,7 @@ def _qt_blocks(document_or_html):
                 g = dict(tf.property(TABLE_PROPERTY) or {})
                 if "position" in g:
                     g["position"] = position_from_data(g["position"])
+                if "gradient" in g:g["gradient"]=gradient_from_data(g["gradient"])
                 if "borders" in g:
                     g["borders"] = borders_from_data(g["borders"])
                 if g.get("anchor_style") is not None:
@@ -1731,6 +1779,7 @@ def _qt_blocks(document_or_html):
                         cg = dict(cformat.property(CELL_PROPERTY) or {})
                         for key in ("row", "col", "row_span", "col_span", "blocks", "width", "background"):
                             cg.pop(key, None)
+                        if "gradient" in cg:cg["gradient"]=gradient_from_data(cg["gradient"])
                         if "borders" in cg:
                             cg["borders"] = borders_from_data(cg["borders"])
                         if "padding" in cg:
@@ -1802,7 +1851,7 @@ def _border_fills(blocks):
                 values.append(fill)
         if isinstance(block, (Table, Drawing)):
             for obj in [block] + (block.cells if isinstance(block, Table) else []):
-                fill = BorderFill(tuple(obj.borders), obj.background)
+                fill = BorderFill(tuple(obj.borders), obj.background,getattr(obj,'gradient',None))
                 if fill not in values:
                     values.append(fill)
     return values
@@ -1906,6 +1955,7 @@ def _block_from_data(data):
             paragraph_style["border_offsets"] = tuple(paragraph_style["border_offsets"])
         return Paragraph(runs=runs, style=ParaStyle(**paragraph_style), default_style=TextStyle(**default), end_style=end, **data)
     data["position"] = position_from_data(data.get("position"))
+    if 'gradient' in data:data['gradient']=gradient_from_data(data['gradient'])
     if data.get("anchor_style") is not None:
         data["anchor_style"] = _text_style_from_data(data["anchor_style"])
     data["borders"] = borders_from_data(data.get("borders", ())) or (Border(),) * 4
@@ -1914,6 +1964,7 @@ def _block_from_data(data):
         for c in data.pop("cells", []):
             c = dict(c)
             c["borders"] = borders_from_data(c.get("borders", ())) or (Border(),) * 4
+            if 'gradient' in c:c['gradient']=gradient_from_data(c['gradient'])
             c["blocks"] = [_block_from_data(b) for b in c.get("blocks", [])]
             cells.append(Cell(**c))
         return Table(cells=cells, **data)
@@ -1988,9 +2039,17 @@ def save_hwpx(document_or_html, path) -> list[str]:
         for n, border in zip(("leftBorder", "rightBorder", "topBorder", "bottomBorder"), fill.borders):
             _element(bf, "hh", n, type=border.style, width=_BORDER_WIDTH_LABELS[_border_width_index(border.width_pt)], color=border.color)
         _element(bf, "hh", "diagonal", type="NONE", width="0.1 mm", color="#000000")
-        if fill.background:
+        if fill.background or fill.gradient:
             brush = _element(bf, "hc", "fillBrush")
-            _element(brush, "hc", "winBrush", faceColor=fill.background, hatchColor="#000000", alpha=0)
+            if fill.background:_element(brush, "hc", "winBrush", faceColor=fill.background, hatchColor="#000000", alpha=0)
+            if fill.gradient:
+                g=fill.gradient;_validate_gradient(g)
+                node=_element(brush,'hc','gradation',type=g.kind,angle=g.angle,centerX=g.center_x,centerY=g.center_y,
+                    step=g.step,colorNum=len(g.colors),stepCenter=g.step_center,alpha=g.alpha)
+                for j,color in enumerate(g.colors):
+                    attrs={'value':color}
+                    if g.positions:attrs['position']=g.positions[j]
+                    _element(node,'hc','color',**attrs)
     charprops = _element(refs, "hh", "charProperties", itemCnt=len(chars))
     for i, s in enumerate(chars):
         cp = _element(charprops, "hh", "charPr", id=i, height=round(s.size * 100), textColor=s.color,
@@ -2061,7 +2120,7 @@ def save_hwpx(document_or_html, path) -> list[str]:
         _table_grid(table)
         table=_compact_table_axes(table)
         run = _element(anchor if anchor is not None else new_p(parent, ParaStyle(),table.anchor_style), "hp", "run", charPrIDRef=chars.index(table.anchor_style or default_style or TextStyle()))
-        tbl = _element(run, "hp", "tbl", id=counter[0], zOrder=table.position.z_order, numberingType="TABLE", textWrap=table.position.wrap, textFlow=table.position.text_flow, lock=0, dropcapstyle="None", pageBreak=table.page_break, repeatHeader=int(table.repeat_header), rowCnt=table.rows, colCnt=table.cols, cellSpacing=round(table.cell_spacing * 100), borderFillIDRef=border_fills.index(BorderFill(tuple(table.borders), table.background)) + 1, noAdjust=0)
+        tbl = _element(run, "hp", "tbl", id=counter[0], zOrder=table.position.z_order, numberingType="TABLE", textWrap=table.position.wrap, textFlow=table.position.text_flow, lock=0, dropcapstyle="None", pageBreak=table.page_break, repeatHeader=int(table.repeat_header), rowCnt=table.rows, colCnt=table.cols, cellSpacing=round(table.cell_spacing * 100), borderFillIDRef=border_fills.index(BorderFill(tuple(table.borders), table.background, table.gradient)) + 1, noAdjust=0)
         width = round(table.width * 100)
         _element(tbl, "hp", "sz", width=width, widthRelTo="ABSOLUTE", height=round(table.height * 100), heightRelTo="ABSOLUTE", protect=0)
         _write_position_xml(tbl, table.position)
@@ -2069,7 +2128,7 @@ def save_hwpx(document_or_html, path) -> list[str]:
         for row in range(table.rows):
             tr = _element(tbl, "hp", "tr")
             for c in sorted((x for x in table.cells if x.row == row), key=lambda c: c.col):
-                bid = border_fills.index(BorderFill(tuple(c.borders), c.background)) + 1
+                bid = border_fills.index(BorderFill(tuple(c.borders), c.background, c.gradient)) + 1
                 tc = _element(tr, "hp", "tc", name="", header=int(c.header), hasMargin=int(not all(c.padding_inherited)), protect=0, editable=0, dirty=0, borderFillIDRef=bid)
                 sub = _element(tc, "hp", "subList", id="", textDirection="HORIZONTAL", lineWrap={0:"BREAK",1:"SQUEEZE",2:"KEEP"}.get((c.native_flags>>3)&3,"BREAK"), vertAlign=c.vertical_align, linkListIDRef=0, linkListNextIDRef=0, textWidth=0, textHeight=0, hasTextRef=0, hasNumRef=0)
                 write_blocks(sub, c.blocks or [Paragraph()])
@@ -2329,11 +2388,17 @@ def save_hwp(document_or_html, path) -> list[str]:
             thickness = _border_width_index(border.width_pt)
             bf.extend(struct.pack("<BBI", style, thickness, _rgb(border.color)))
         bf.extend(struct.pack("<BBI", 0, 0, 0))
-        if fill.background:
-            bf.extend(struct.pack("<IIIi", 1, _rgb(fill.background), 0xFFFFFFFF, -1))
-            bf.extend(struct.pack("<IB", 0, 0))
-        else:
-            bf.extend(struct.pack("<II", 0, 0))
+        bf.extend(struct.pack('<I',int(bool(fill.background)) | (4 if fill.gradient else 0)))
+        if fill.background:bf.extend(struct.pack('<IIi',_rgb(fill.background),0xFFFFFFFF,-1))
+        if fill.gradient:
+            g=fill.gradient;_validate_gradient(g)
+            bf.extend(struct.pack('<B5i',{'LINEAR':1,'RADIAL':2,'CONICAL':3,'SQUARE':4}[g.kind],
+                g.angle,g.center_x,g.center_y,g.step,len(g.colors)))
+            if len(g.colors)>2:bf.extend(struct.pack('<'+str(len(g.positions))+'i',*g.positions))
+            bf.extend(struct.pack('<'+str(len(g.colors))+'I',*map(_rgb,g.colors)))
+            bf.extend(struct.pack('<IBB',1,g.step_center,g.alpha))
+        elif fill.background:bf.extend(struct.pack('<IB',0,0))
+        else:bf.extend(struct.pack('<I',0))
         docinfo.extend(_record(20, 1, bytes(bf)))
     for s in chars:
         flags = int(s.italic) | (int(s.bold) << 1) | (int(s.underline) << 2) | (int(s.strike) << 18) | (int(s.superscript) << 15) | (int(s.subscript) << 16)
@@ -2549,11 +2614,11 @@ def save_hwp(document_or_html, path) -> list[str]:
         row_sizes = [sum(1 for c in t.cells if c.row == row) for row in range(t.rows)]
         tableflags = {"NONE": 0, "TABLE": 1, "CELL": 2}.get(t.page_break, 2) | int(t.repeat_header) << 2
         tabledata = struct.pack("<I3H4H", tableflags, t.rows, t.cols, round(t.cell_spacing * 100), *(round(v * 100) for v in t.padding))
-        tabledata += struct.pack("<%dH" % t.rows, *row_sizes) + struct.pack("<HH", border_fills.index(BorderFill(tuple(t.borders), t.background)) + 1, 0)
+        tabledata += struct.pack("<%dH" % t.rows, *row_sizes) + struct.pack("<HH", border_fills.index(BorderFill(tuple(t.borders), t.background, t.gradient)) + 1, 0)
         body.extend(_record(77, level + 2, tabledata))
         for c in sorted(t.cells, key=lambda c: (c.row, c.col)):
             cell_blocks = c.blocks or [Paragraph()]
-            bid = border_fills.index(BorderFill(tuple(c.borders), c.background)) + 1
+            bid = border_fills.index(BorderFill(tuple(c.borders), c.background, c.gradient)) + 1
             flags = c.native_flags & ~((3 << 5) | (1 << 16))
             flags |= {"TOP": 0, "CENTER": 1, "BOTTOM": 2}.get(c.vertical_align, 1) << 5
             flags |= int(not all(c.padding_inherited)) << 16

@@ -41,9 +41,23 @@ class Border:
 
 
 @dataclass(frozen=True)
+class GradientFill:
+    kind: str = 'LINEAR'
+    angle: int = 0
+    center_x: int = 50
+    center_y: int = 50
+    step: int = 50
+    colors: tuple = ('#000000','#FFFFFF')
+    positions: tuple = ()
+    step_center: int = 50
+    alpha: int = 0
+
+
+@dataclass(frozen=True)
 class BorderFill:
     borders: tuple = field(default_factory=lambda: (Border(),) * 4)
     background: str = ""
+    gradient: GradientFill | None = None
 
 
 @dataclass
@@ -104,6 +118,14 @@ class DocumentModel:
 
 def borders_from_data(data):
     return tuple(Border(**b) if isinstance(b, dict) else b for b in data)
+
+
+def gradient_from_data(data):
+    if data is None or isinstance(data,GradientFill):return data
+    data=dict(data)
+    for key in ('colors','positions'):
+        if key in data:data[key]=tuple(data[key])
+    return GradientFill(**data)
 
 
 def position_from_data(data):

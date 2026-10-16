@@ -205,6 +205,7 @@ class SourceLayout:
                                'expanded_character_gaps':0,'whole_document_parity_verified':False}
         self._pdf_native_writer=None
         self._pdf_table_frames={'processed_grids':0,'legacy_grids':0,'legacy_reasons':{},'whole_document_parity_verified':False}
+        self._pdf_gradients={'processed_radial_fills':0,'fallback_fills':0,'fallback_reasons':{},'whole_document_parity_verified':False}
         self._pdf_native_text={'processed_lines':0,'legacy_lines':0,'glyphs':0,'fonts':[],
                                'legacy_reasons':{},'cell_clipped_lines':0,'cell_clipped_painter_lines':0,'whole_document_parity_verified':False}
         self._bitmap_images={}
@@ -1485,7 +1486,18 @@ class SourceLayout:
             elif command.kind=='cell' and 'table_group' in command.extra:
                 group=command.extra['table_group']
                 grid=prepared.get(group)
-                if grid:
+                if command.source.gradient:
+                    from .pdf_gradients import cell_program,paint_fallback
+                    program,reason=cell_program(grid,command.source) if grid else (None,'unsupported-grid')
+                    if self._pdf_native_writer is not None and program:
+                        self._pdf_native_writer.draw_path(painter,program)
+                        self._pdf_gradients['processed_radial_fills']+=1
+                    else:
+                        paint_fallback(painter,QRectF(*(v/.75 for v in command.rect)),command.source.gradient)
+                        if self._pdf_native_writer is not None:
+                            self._pdf_gradients['fallback_fills']+=1
+                            reasons=self._pdf_gradients['fallback_reasons'];reasons[reason]=reasons.get(reason,0)+1
+                elif grid:
                     self._pdf_native_writer.draw_path(painter,fill_program(grid,command))
                 elif group not in tables:
                     tables.add(group)
@@ -1543,6 +1555,7 @@ class SourceLayout:
         self._pdf_source_alpha_done.clear();self._pdf_source_alpha_failed.clear()
         self._pdf_bitmap_text.update(processed_lines=0,legacy_lines=0,image_chunks=0,legacy_reasons={},remaining={},fitted_lines=0,condensed_word_gaps=0,condensed_character_gaps=0,justified_lines=0,expanded_word_gaps=0,expanded_character_gaps=0)
         self._pdf_table_frames.update(processed_grids=0,legacy_grids=0,legacy_reasons={})
+        self._pdf_gradients.update(processed_radial_fills=0,fallback_fills=0,fallback_reasons={})
         try:
             for index in range(len(self.pages)):
                 if index:
@@ -1599,6 +1612,7 @@ class SourceLayout:
                 'pdf_bitmap_text':self._pdf_bitmap_text,
                 'pdf_native_text':self._pdf_native_text,
                 'pdf_table_frames':self._pdf_table_frames,
+                'pdf_gradients':self._pdf_gradients,
                 'pdf_picture_alpha':'ordered-8x8-white-stencil-300dpi; document brush sequence',
                 'pdf_alpha_native_initial_phase_known':False,
                 'installed_sfnt_fonts':self._sfnt_resolver.fonts}

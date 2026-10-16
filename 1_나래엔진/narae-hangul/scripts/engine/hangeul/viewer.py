@@ -185,7 +185,7 @@ class Document:
             raise ValueError("읽는 동안 입력 문서가 변경되었습니다. 결과를 다시 생성하세요.")
 
     def report(self, selection="all", text=True):
-        result = {"success": True, "viewer_version": VERSION, "input": str(self.source),
+        result = {"success": True, "viewer_version": VERSION, "development_status": "unfinished", "production_ready": False, "input": str(self.source),
                   "input_sha256": self.before, "source_unchanged": True, "read_only": True,
                   "backend": self.backend, "uses_hancom_runtime": self.backend == "hancom",
                   "independent_parity_verified": False, "page_count": self.count,
@@ -338,7 +338,7 @@ def compare(document, reference, dpi=96, diff_dir=None, overwrite=False, protect
 
 
 def parser():
-    root = argparse.ArgumentParser(description="나래한글 뷰어: 읽기 전용 HWP/HWPX/PDF")
+    root = argparse.ArgumentParser(description="나래한글 뷰어 (미완성·실사용 비권장·보관): 읽기 전용 HWP/HWPX/PDF")
     commands = root.add_subparsers(dest="action", required=True)
     for action in ("read", "open", "export", "verify"):
         item = commands.add_parser(action)
