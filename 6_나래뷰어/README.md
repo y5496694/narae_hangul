@@ -37,3 +37,6 @@ python narae_viewer.py verify "보고서.hwpx" --hancom --result comparison.json
 
 
 저장된 줄의 초과 폭은 공백과 글자 사이의 순서로 압축하며 끝의 정수 나머지를 다시 정렬하지 않습니다. 셀의 BREAK/SQUEEZE/KEEP 값을 HWP/HWPX 양쪽에서 보존합니다. `layout.pdf_native_text`의 `fitted_lines`, `condensed_word_gaps`, `condensed_character_gaps`를 확인합니다. 새 합성 184쪽은 전체 일치했지만 별도 확장 검사 10쪽에는 장치 폭·셀 경계 차이가 남고, 실제 원본 전체 무차이는 아직 미달성입니다. 상세 수치는 [검증 기록](validation.md)을 확인합니다.
+
+
+캐시된 장평 100% 보통 TTF의 자간은 장치 폭 보정 뒤 독립 반올림하고, 저장된 폭을 정렬에서 다시 버리지 않습니다. 세 서체·크기·양/음수 자간·정렬·소수점 폭의 본문/셀·두 형식 156쪽이 추가로 전체 일치했습니다. 장평·혼합 측정·셀 경계와 한컴 자체의 인쇄 문맥 차이는 남은 범위이며 실제 전체 무차이로 해석하지 않습니다.

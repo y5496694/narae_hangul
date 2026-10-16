@@ -60,7 +60,7 @@ class PdfNativeText:
     def _center_cached_line(self,command,text,parts,metrics):
         # A saved, single-line paragraph uses device-centered widths. Uncached
         # paragraphs retain logical widths; a line cache is not a page-number
-        # heuristic. More complex font spans and tracking need their own layout.
+        # heuristic. Tracking follows device centering of untracked widths.
         if not command.source.line_segments:return parts,None
         text=text.replace('\u200b','')
         reason=None
@@ -70,12 +70,12 @@ class PdfNativeText:
         elif metrics:
             key,em,stretch,tracking,*_=metrics[0]
             if self.fonts[key]['kind']!='ttf':return parts,None
-            if stretch!=100 or tracking:reason='stretch-or-tracking'
+            if stretch!=100:reason='stretch'
         if reason or not metrics:
             if reason:
                 facts=self.facts['device_metric_fallbacks'];facts[reason]=facts.get(reason,0)+1
             return parts,None
-        from .pdf_device_metrics import centered_advances,installed_widths
+        from .pdf_device_metrics import centered_advances,installed_widths,tracked_advances
         key,em,*_=metrics[0];source=self.fonts[key];identity=(key,em)
         widths=self.device_widths.setdefault(identity,{})
         missing=''.join(set(text)-widths.keys())
@@ -85,7 +85,7 @@ class PdfNativeText:
                 # GDI identity must be checked against original source bytes.
                 tables={tag:source['source'].reader[tag] for tag in ('head','maxp','name')}
                 widths.update(installed_widths(source['family'],em,missing,tables))
-            advances=[item[4] for item in metrics]
+            advances=[item[5] for item in metrics]
             # Each word's measurement run includes its trailing spaces.
             # Spaces flush the word's endpoint carry, then their paragraph
             # width is restored by character postprocessing.
@@ -98,8 +98,9 @@ class PdfNativeText:
                 advances[first:last]=centered_advances(text[first:last],advances[first:last],
                     [widths[c] for c in text[first:last]])
                 first=last
-            advances=[item[4] if character==' ' else advance
+            advances=[item[5] if character==' ' else advance
                       for character,item,advance in zip(text,metrics,advances)]
+            advances=tracked_advances(text,advances,metrics[0][3])
         except (OSError,ValueError) as error:
             reason=str(error) if isinstance(error,ValueError) else 'device-metrics-error'
             facts=self.facts['device_metric_fallbacks'];facts[reason]=facts.get(reason,0)+1
@@ -356,7 +357,11 @@ class PdfNativeText:
         if centered_alignment is not None:alignment_pen=centered_alignment
         parts,fitted=self._fit_saved_line(command,text,parts,metrics,alignment_pen)
         factor={'CENTER':.5,'RIGHT':1}.get(command.source.style.align,0)
-        alignment=0 if fitted else (math.floor(command.rect[2]*100/4+1e-9)*4-alignment_pen)*factor
+        if command.source.line_segments:
+            # Saved frame widths already include paragraph margins; rounding
+            # them to four units again changes the native alignment offset.
+            alignment=0 if fitted else math.trunc((round(command.rect[2]*100)-alignment_pen)*factor)
+        else:alignment=(math.floor(command.rect[2]*100/4+1e-9)*4-alignment_pen)*factor
         x=printer_pixel(command.rect[0]);line=command.extra['line'];offset=line.get('y_pt',0)
         y=_round((printer_pixel(command.rect[1]-offset)*12+_round(offset*100)+_round(line['baseline_pt']*100))/12)
         origin=command.extra.get('table_text_origin')

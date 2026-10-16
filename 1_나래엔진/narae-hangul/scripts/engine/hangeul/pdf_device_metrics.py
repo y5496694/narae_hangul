@@ -28,6 +28,18 @@ def centered_advances(text,logical,device):
     return result
 
 
+def tracked_advances(text,advances,spacing):
+    """Apply tracking after device centering, with signed nearest rounding."""
+    if len(text)!=len(advances):raise ValueError('tracking-width-count')
+    terminal=len(text.rstrip(' '))-1;result=[]
+    for i,advance in enumerate(advances):
+        numerator=math.trunc(advance/4)*spacing
+        tracking=(abs(numerator)+50)//100*4
+        if numerator<0:tracking=-tracking
+        result.append(advance+(tracking if i!=terminal else 0))
+    return result
+
+
 def installed_widths(family,em,characters,tables):
     """Return widths in 1/100 point units after verifying the selected face."""
     if sys.platform!='win32':raise ValueError('device-metrics-platform')
