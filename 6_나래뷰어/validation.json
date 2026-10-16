@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T18:29:03+09:00",
+  "date_kst": "2026-10-16T19:30:47+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "3dbbe1372329f6c8343a3147104107739171b648",
+  "base_commit": "b9dddb9f01908f50b4cb04bc0c57ece1942ffbac",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -51,7 +51,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.002136118931199684,
+      "changed_fraction_max": 4.490003008302016e-06,
       "errors": [],
       "independent_identical_pages": 1
     },
@@ -169,11 +169,11 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 97,
+      "run": 99,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "94 distinct historical final passes through 3dbbe13 plus 2 cached-stretch and 1 continued-alignment tests. Current seven related groups passed 19 tests; this is not a fresh full 97-test run. A separate fresh uncached stretch run failed with 67 pixels and remains unresolved.",
+      "scope": "97 historical native appearance final passes plus 2 new source-alpha tests. Current three related groups passed 14 tests, including portable tests. Separate fresh 5pt native context failure is retained; no fresh whole 99-test pass claimed.",
       "whole_group_fresh_pass_claimed": false,
       "component_log_sha256": [
         "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
@@ -205,7 +205,8 @@
         "b49a481a23fe14d9dfee9e1280bd266be1a46ca57f09dae357bc92d0dd5249ff",
         "aaa1939eb36a189c22b7e85bbd1d4cf2448445f67b1c85b0612e27f201edc535",
         "e1ac6fd8ce597ba1a3e394868e3e6acd7f4473f9d5747326d6f265e782900fac",
-        "9e728a0dac0215f7b0dbd2177cb9f5e81225bde3c1b85f8e8c6e5e36623c0e47"
+        "9e728a0dac0215f7b0dbd2177cb9f5e81225bde3c1b85f8e8c6e5e36623c0e47",
+        "8f55f00153f036d69e106fed78e5b73f0f3ee3e218c3f613f0e43770b380b695"
       ]
     },
     "full_native_rerun": {
@@ -231,9 +232,9 @@
       "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 122,
-      "passed": 66,
-      "skipped": 56,
+      "run": 127,
+      "passed": 69,
+      "skipped": 58,
       "failures": 0,
       "errors": 0,
       "log_sha256": "845086660acf2ab09f01a5b58169330161059dbdd80d85ada33e0e25d2d154c0"
@@ -1545,11 +1546,11 @@
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "0e113da5ccd80af8fcade552b2061e023714e33b0b6d7cde4fe580b184c97c69",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "31252a2500c0aaa37f162bfbfeb6600e41969d55bfd62a5a7ba613606ebea972",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "52bbbdec290189059a89402171f073276d8bdde1ecba059f76149b837602759c",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "2a926644ab598b2ae037c0af2e6f71a0350e53ff4e18afe56989ae64a5c7b534",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "2a26e98e3081b9b7b0c3d6ca57ba2e448b983c2dba92457bafa3a12c9770c63a",
+    "2_나래스킬/narae-viewer/SKILL.md": "4ee85ed828827522c79319c0da28783aa3d624067ba914eaa6355964cc70cf2e",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "29a855dd7961ac405322d02afc33496066fccdc160992c62406f9fea1cb6063a",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
@@ -1558,22 +1559,22 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "2949349f60b7cf314968e7ea9a4667aaec699fd2c3f2e7823513dc8a9b65771d",
     "tests/test_font_appearance.py": "88b723af638902942a8b7fc063e24a7bff48bb46febd8cf16a52168361b8d0af",
     "tests/test_bitmap_fonts.py": "8bccdb4a0d86a4cab327275d16380b0b01f99b32881bdc50adb3753b9a8c0faa",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap.py": "826f68d3246fa10c9eb0ca6b854feca847b7a90d4dd9a176289c59b0f48d20fd",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap.py": "8ba39fefddd97e1b6450c5eef6124fa38448f7835d12525da5413db3208ee4a8",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "5e2216bbf741981dd31bfa44663664a57a8ce539d8d39f502b5215de924e6e8f",
     "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "7c0c085dc6005b94c5bf6de0b52463164814c9964051b61640ca25e2fdd93824",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "36fde4610e0120f13872eb961197cea7d8b7e723683bca87a8cff008531bf583",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "4afd6277d0b921fe468e4dc99272eea3bf10eb4fc39b6e53f81262151215e8d2",
     "tests/test_pdf_native_text.py": "1a71fa6835520e9333f920914180835e7d3b5002802cfd76f351ab4821fe3631",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "89e08126b83cc8cdd630c35afd58db02318de1dc41b820d45175cf9de4b85194",
     "tests/test_text_decorations.py": "2b3fed445c5a53b5ef553dfef9ef5beedb086e2588959885b8c0420ba82162ac",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwpx_native.py": "564aa217a166bdcd5ed814a4c6405159b947aa8a17acb81a3ad773a159b2eec1",
     "tests/test_inline_spacing.py": "61b3de9dddf1e7517475f0b5917dfb23b338b3211c8152c827573938eb6172f2",
     "tests/test_pdf_stretch.py": "dcf48403fa663ef49a46933d395ef3984e088fd9eabe1617bc9f0a4fad24e0c6",
-    "1_나래엔진/narae-hangul/references/viewer.md": "450e6ce63f3506e74a56067e9c89e4db8fe778c506956b45392ace619438958e",
-    "6_나래뷰어/README.md": "5dfdfc3aa2455faa7a240a25c9ddebd2bc6899836d7706366ee0c68683e30668",
+    "1_나래엔진/narae-hangul/references/viewer.md": "0ddb14cd51c4da3ef8c0e4e280605fc91732a9090e348847a9ebda7e2b98cef6",
+    "6_나래뷰어/README.md": "d6eb610ee23fca98b789d422e971f9cdcfb1296ad00f28903f7fd23eea4cf13a",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "478bd0411db359e3a73021da9a81d736b936f018a1d87efabb1505e3015f7450",
     "tests/test_pdf_table_frames.py": "1c0d7df362ab78952b2e33b9ab5c48aeb43d62b5ae6d783e08f2c9eeba548718",
-    "5_유틸리티/hancom_rea_findings.md": "c8ba9252136568240915372879c6eb569e255c376a96eb8fae4b528216364bcb",
+    "5_유틸리티/hancom_rea_findings.md": "9b6387f1cd768ef32512b99c86c9ce2c9806b210c7f2a40f32fb33f2b8335e68",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_device_metrics.py": "d34cf23187060a4b41590eb3906312192160bb3f7c0ebff8ab60ada8bd4acc87",
     "tests/test_pdf_device_metrics.py": "1a3ce42dccdcce868780a79c807211c6404f7cd28bf88763d04233bbcfce5680",
     "tests/test_pdf_mixed_table_frames.py": "f204eee622dcdb6e717c55623fe39bf9d8ca2c4b7383b56593376191ac4ef130",
@@ -1583,7 +1584,8 @@
     "tests/test_pdf_cell_clip.py": "160d7b8c5a2c7d2e4ade6c7a74f4c95fe56122a2eecc7f5a908528eb558d1c75",
     "tests/test_hancom.py": "c3fcf73209b52ad3afe4f8d1f1f753b6b8ca11eceea5db714899299194ab5058",
     "tests/test_pdf_cached_stretch.py": "98fbbf9ef44b6bf3273608c89510d6bed60c82f7287223e0cd46060bbd01005b",
-    "tests/test_pdf_continued_alignment.py": "c965545541d4c6e213f6ef24204c5f9a3da31a69f0de2a5aefe4e0cd3de54b4d"
+    "tests/test_pdf_continued_alignment.py": "c965545541d4c6e213f6ef24204c5f9a3da31a69f0de2a5aefe4e0cd3de54b4d",
+    "tests/test_pdf_source_alpha.py": "81e8249d50adbe8a76c28cb9b609007dc70bc607f7d52ba81298b1c580ff262a"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -2864,7 +2866,7 @@
       "whole actual documents remain different"
     ]
   },
-  "current_validation_stage": "cached_stretch_and_continued_alignment",
+  "current_validation_stage": "transparent_gif_source_alpha",
   "pdf_cell_clipping": {
     "behavior": "Clip direct cell text and paragraph backgrounds at the prepared physical cell rectangle, including outline/bitmap/painter paths. Preserve original glyph CTMs; transform clip points into the current parent coordinate system. Invert the single-precision PDF device parent for physical grid fills/strokes.",
     "scope": "Prepared complete single-page inline body grids with SOLID/NONE cell borders; text clips use cell edges rather than padding/pen extents",
@@ -4017,5 +4019,1010 @@
       "Source image alpha and native print stipple brush phase",
       "Whole actual documents remain nonidentical"
     ]
+  },
+  "transparent_gif_source_alpha": {
+    "base_commit": "b9dddb9f01908f50b4cb04bc0c57ece1942ffbac",
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "dpi": 96,
+    "pixel_tolerance": 0,
+    "whole_page_parity_verified_for_fixture_only": true,
+    "fixtures": {
+      "transparent_gif_pages": 18,
+      "small_inline_baseline_pages": 48,
+      "new_total_pages": 66,
+      "historical_cumulative_pages_exact": 1934,
+      "historical_count_is_not_a_fresh_whole_suite_pass": true
+    },
+    "algorithm": {
+      "source": "Actual GIF bytes, first frame, original pixel dimensions; no native runtime/reference pixels used",
+      "alpha": "Inverse binary source alpha in 1-bit ImageMask; transparent RGB becomes white",
+      "palette": "After white matte, <=255 colors preserved; 256 colors use bottom-up RGB555 dither",
+      "jpeg": "Automatic quality per placement, without opaque-pixel quality-cache reuse",
+      "coordinates": "85% picture baseline for short inline pictures; printer rounds paragraph origin before relative offset"
+    },
+    "limits": [
+      "PNG alpha remains a separate 96dpi path, not implemented here",
+      "picture alpha/effects/rotation/crop combinations retain explicit fallback",
+      "actual trip page1 still has 4 pixels at a cell glyph boundary",
+      "fresh 5pt stretched native output context discrepancy remains unresolved",
+      "separate narrow frame/word wrapping 24 pages remain different"
+    ],
+    "rea": [
+      {
+        "evidence_id": "ev_1650d07c76b68140b2bc3d358fc19a6e232d1c4e617fcad7362455e6f6b5416e",
+        "record_sha256": "f4b544c3eca0eccfe9e9f71526ee8ca9ef15f8d6d0d6a965e496ec5d737bef02",
+        "messages": 23,
+        "messages_truncated": false,
+        "scope": "Corrected arg5 BITMAPINFO hook; GIF original-size ARGB, 1-bit mask and 24-bit color"
+      },
+      {
+        "evidence_id": "ev_c790c1b6a09d88ae88c43b341afa34341cc8cbcf2c61e0b26e9d2b16bbf7ddda",
+        "record_sha256": "7b0c0081aba751098b203739884b056e1d5e27dc4d2e89baaf88fedc396d862e",
+        "messages": 43,
+        "messages_truncated": false,
+        "scope": "PNG exploration: initial GetDIBits rows excluded because arg4 was misread; other API observations only"
+      }
+    ],
+    "corrected_hook_sha256": "e59107d231bd0a6d496b92748ea0c3bdbd0bcca0414bbcfe42d56f6fb264d644",
+    "fixed_reference_checks": [
+      {
+        "scope": "source-alpha-gif-oracles",
+        "format": "hwp",
+        "pages": 6,
+        "exact": 6,
+        "reference_sha256": "267f7c0f41c2596c6fa4edf9277dc3953992a608e10ea6673e0728b11c7703d0",
+        "remaining": []
+      },
+      {
+        "scope": "source-alpha-gif-oracles",
+        "format": "hwpx",
+        "pages": 6,
+        "exact": 6,
+        "reference_sha256": "2495fb9940037a1dd81bb0aed8da706b4201d73a884463bf6c5314e4620658b1",
+        "remaining": []
+      },
+      {
+        "scope": "source-alpha-gif-extra",
+        "format": "hwp",
+        "pages": 3,
+        "exact": 3,
+        "reference_sha256": "2a5de1c9308893133217fd56038d07866a1b9bf675455a6315f3a5d161080678",
+        "remaining": []
+      },
+      {
+        "scope": "source-alpha-gif-extra",
+        "format": "hwpx",
+        "pages": 3,
+        "exact": 3,
+        "reference_sha256": "91851e62784fa4d426ff09d39af1cf126a844de3f9f3e3df6fc057c45fafa684",
+        "remaining": []
+      }
+    ],
+    "fresh_related_tests": {
+      "run": 14,
+      "groups": 3,
+      "failures": 0,
+      "scope": "source-alpha 5, existing opaque bitmap 6, inline spacing 3; includes portable tests"
+    },
+    "checks": [
+      {
+        "check": "opaque-bitmaps",
+        "exit": 0,
+        "seconds": 22.27,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 6.26,
+          "used_percent": 60.6
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 6.23,
+          "used_percent": 60.8
+        }
+      },
+      {
+        "check": "inline-spacing",
+        "exit": 0,
+        "seconds": 12.32,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 6.22,
+          "used_percent": 60.9
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 6.2,
+          "used_percent": 61
+        }
+      },
+      {
+        "check": "normal-fonts",
+        "exit": 0,
+        "seconds": 24.42,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 6.2,
+          "used_percent": 61
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 6.2,
+          "used_percent": 61
+        }
+      },
+      {
+        "check": "portable",
+        "exit": 0,
+        "seconds": 14.74,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 6.21,
+          "used_percent": 60.9
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 6.26,
+          "used_percent": 60.6
+        }
+      },
+      {
+        "check": "corpus",
+        "exit": 0,
+        "seconds": 126.52,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 6.26,
+          "used_percent": 60.6
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 6.33,
+          "used_percent": 60.2
+        }
+      },
+      {
+        "check": "installed-skill",
+        "exit": 0,
+        "seconds": 64.41,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 6.32,
+          "used_percent": 60.2
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 6.32,
+          "used_percent": 60.3
+        }
+      }
+    ],
+    "real_documents": {
+      "report-hwp": {
+        "before": 1755338,
+        "after": 1755338,
+        "exact": 1,
+        "max_fraction": 0.18037913585402102,
+        "reference_sha256": "59d00f031684f77c3c17323686df5ed18ceac1c800494fc3ad3ae45fd348c0a5",
+        "pages": [
+          {
+            "page": 1,
+            "changed_pixels": 62060,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 2,
+            "changed_pixels": 117790,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 3,
+            "changed_pixels": 122242,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 4,
+            "changed_pixels": 52771,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 5,
+            "changed_pixels": 0,
+            "match": true,
+            "size_match": true
+          },
+          {
+            "page": 6,
+            "changed_pixels": 86582,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 7,
+            "changed_pixels": 122048,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 8,
+            "changed_pixels": 132621,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 9,
+            "changed_pixels": 147139,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 10,
+            "changed_pixels": 61233,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 11,
+            "changed_pixels": 45536,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 12,
+            "changed_pixels": 12510,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 13,
+            "changed_pixels": 14545,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 14,
+            "changed_pixels": 19112,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 15,
+            "changed_pixels": 135149,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 16,
+            "changed_pixels": 160694,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 17,
+            "changed_pixels": 91996,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 18,
+            "changed_pixels": 123192,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 19,
+            "changed_pixels": 149937,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 20,
+            "changed_pixels": 1458,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 21,
+            "changed_pixels": 48113,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 22,
+            "changed_pixels": 15455,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 23,
+            "changed_pixels": 10788,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 24,
+            "changed_pixels": 22367,
+            "match": false,
+            "size_match": true
+          }
+        ]
+      },
+      "report-hwpx": {
+        "before": 1755338,
+        "after": 1755338,
+        "exact": 1,
+        "max_fraction": 0.18037913585402102,
+        "reference_sha256": "81625234203ea5fce32ce098057125140a11f5c51c40dc9b461f16dbe8b1a9bd",
+        "pages": [
+          {
+            "page": 1,
+            "changed_pixels": 62060,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 2,
+            "changed_pixels": 117790,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 3,
+            "changed_pixels": 122242,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 4,
+            "changed_pixels": 52771,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 5,
+            "changed_pixels": 0,
+            "match": true,
+            "size_match": true
+          },
+          {
+            "page": 6,
+            "changed_pixels": 86582,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 7,
+            "changed_pixels": 122048,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 8,
+            "changed_pixels": 132621,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 9,
+            "changed_pixels": 147139,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 10,
+            "changed_pixels": 61233,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 11,
+            "changed_pixels": 45536,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 12,
+            "changed_pixels": 12510,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 13,
+            "changed_pixels": 14545,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 14,
+            "changed_pixels": 19112,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 15,
+            "changed_pixels": 135149,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 16,
+            "changed_pixels": 160694,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 17,
+            "changed_pixels": 91996,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 18,
+            "changed_pixels": 123192,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 19,
+            "changed_pixels": 149937,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 20,
+            "changed_pixels": 1458,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 21,
+            "changed_pixels": 48113,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 22,
+            "changed_pixels": 15455,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 23,
+            "changed_pixels": 10788,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 24,
+            "changed_pixels": 22367,
+            "match": false,
+            "size_match": true
+          }
+        ]
+      },
+      "trip-hwpx": {
+        "before": 1903,
+        "after": 4,
+        "exact": 1,
+        "max_fraction": 4.490003008302016e-06,
+        "reference_sha256": "e4bf914e2b4b9ea1d6410c37e69cd32a4a2c2ed404002d5d05e31c043608bcdf",
+        "pages": [
+          {
+            "page": 1,
+            "changed_pixels": 4,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 2,
+            "changed_pixels": 0,
+            "match": true,
+            "size_match": true
+          }
+        ]
+      },
+      "form-hwp": {
+        "before": 609370,
+        "after": 609370,
+        "exact": 0,
+        "max_fraction": 0.14713852108280912,
+        "reference_sha256": "b2cc8c977f1d211cc755ca3742171c91ade919377937be0830fbfb9639d840cb",
+        "pages": [
+          {
+            "page": 1,
+            "changed_pixels": 53392,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 2,
+            "changed_pixels": 131081,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 3,
+            "changed_pixels": 48138,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 4,
+            "changed_pixels": 69433,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 5,
+            "changed_pixels": 91000,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 6,
+            "changed_pixels": 87339,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 7,
+            "changed_pixels": 128987,
+            "match": false,
+            "size_match": true
+          }
+        ]
+      },
+      "guide-hwp": {
+        "before": 3889470,
+        "after": 3876487,
+        "exact": 2,
+        "max_fraction": 0.20485189725077116,
+        "reference_sha256": "4043d88876e1342b1873f83bf7960983f21504f576c0e7cb701b9f62fe35124d",
+        "pages": [
+          {
+            "page": 1,
+            "changed_pixels": 9821,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 2,
+            "changed_pixels": 0,
+            "match": true,
+            "size_match": true
+          },
+          {
+            "page": 3,
+            "changed_pixels": 85690,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 4,
+            "changed_pixels": 0,
+            "match": true,
+            "size_match": true
+          },
+          {
+            "page": 5,
+            "changed_pixels": 76551,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 6,
+            "changed_pixels": 78579,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 7,
+            "changed_pixels": 93809,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 8,
+            "changed_pixels": 113708,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 9,
+            "changed_pixels": 128188,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 10,
+            "changed_pixels": 83870,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 11,
+            "changed_pixels": 66966,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 12,
+            "changed_pixels": 101031,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 13,
+            "changed_pixels": 58251,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 14,
+            "changed_pixels": 99018,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 15,
+            "changed_pixels": 84093,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 16,
+            "changed_pixels": 82915,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 17,
+            "changed_pixels": 62682,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 18,
+            "changed_pixels": 88817,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 19,
+            "changed_pixels": 92768,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 20,
+            "changed_pixels": 95779,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 21,
+            "changed_pixels": 84347,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 22,
+            "changed_pixels": 118921,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 23,
+            "changed_pixels": 54635,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 24,
+            "changed_pixels": 98166,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 25,
+            "changed_pixels": 57782,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 26,
+            "changed_pixels": 84422,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 27,
+            "changed_pixels": 97261,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 28,
+            "changed_pixels": 53249,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 29,
+            "changed_pixels": 65672,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 30,
+            "changed_pixels": 87176,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 31,
+            "changed_pixels": 182496,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 32,
+            "changed_pixels": 86547,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 33,
+            "changed_pixels": 39520,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 34,
+            "changed_pixels": 90144,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 35,
+            "changed_pixels": 89335,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 36,
+            "changed_pixels": 133278,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 37,
+            "changed_pixels": 75477,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 38,
+            "changed_pixels": 88174,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 39,
+            "changed_pixels": 66567,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 40,
+            "changed_pixels": 39830,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 41,
+            "changed_pixels": 35986,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 42,
+            "changed_pixels": 63377,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 43,
+            "changed_pixels": 42407,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 44,
+            "changed_pixels": 30344,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 45,
+            "changed_pixels": 32998,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 46,
+            "changed_pixels": 27950,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 47,
+            "changed_pixels": 23062,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 48,
+            "changed_pixels": 72554,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 49,
+            "changed_pixels": 57010,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 50,
+            "changed_pixels": 30681,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 51,
+            "changed_pixels": 78559,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 52,
+            "changed_pixels": 63746,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 53,
+            "changed_pixels": 45584,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 54,
+            "changed_pixels": 76694,
+            "match": false,
+            "size_match": true
+          }
+        ]
+      },
+      "lesson-hwp": {
+        "before": 869824,
+        "after": 869202,
+        "exact": 0,
+        "max_fraction": 0.22941782620994355,
+        "reference_sha256": "3aed17b54f71f25cd6f795cfe03dd6db1e8810c3ed2d8dd5848aa80452e00832",
+        "pages": [
+          {
+            "page": 1,
+            "changed_pixels": 75917,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 2,
+            "changed_pixels": 195675,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 3,
+            "changed_pixels": 132107,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 4,
+            "changed_pixels": 129680,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 5,
+            "changed_pixels": 68581,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 6,
+            "changed_pixels": 204381,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 7,
+            "changed_pixels": 21906,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 8,
+            "changed_pixels": 40402,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 9,
+            "changed_pixels": 553,
+            "match": false,
+            "size_match": true
+          }
+        ]
+      },
+      "minutes-hwpx": {
+        "before": 172806,
+        "after": 172806,
+        "exact": 0,
+        "max_fraction": 0.11340625098218816,
+        "reference_sha256": "c6389ce79c6a1cebf148ef78f14dd94d3bb12839fb57bec6b6142e3b840fbed5",
+        "pages": [
+          {
+            "page": 1,
+            "changed_pixels": 2877,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 2,
+            "changed_pixels": 27245,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 3,
+            "changed_pixels": 101030,
+            "match": false,
+            "size_match": true
+          },
+          {
+            "page": 4,
+            "changed_pixels": 41654,
+            "match": false,
+            "size_match": true
+          }
+        ]
+      }
+    },
+    "independent_all_documents_match": false,
+    "process_cleanup": {
+      "native_batches_serial": true,
+      "hwp_processes_after_each_batch": 0,
+      "initial_problem_owned_hwp_processes": 143,
+      "initial_cleanup_recorded_in_previous_commit": true
+    },
+    "log_sha256": {
+      "source-alpha-corpus-final.log": "5f114bef7365a03dc3e1d3306d380566247cc25e4a13081c32848f5319be1792",
+      "source-alpha-inline-spacing-final.log": "ce621a04c5e9c849ef8635c3be32755b1eb4a16e6dc797f7f96888556e8ff389",
+      "source-alpha-installed-skill-final.log": "63a3673564e64beea127d3609c6ef6f44b58c3676c29a1b88299ea5dee1fc4f2",
+      "source-alpha-native-final.log": "8f55f00153f036d69e106fed78e5b73f0f3ee3e218c3f613f0e43770b380b695",
+      "source-alpha-normal-fonts-final.log": "58ac66437a446dafe5e8b1a6a6ebc9bc073f5745dd62777358fb7bd37a4b67eb",
+      "source-alpha-opaque-bitmaps-final.log": "883871944deca26f100af5476e75443799317e3f1ca5b7e87050ad0ead1f6e6f",
+      "source-alpha-portable-final.log": "0a664504c0418a7a7eb82044072aa40775685463c653297915cf55fc69771caa"
+    }
   }
 }

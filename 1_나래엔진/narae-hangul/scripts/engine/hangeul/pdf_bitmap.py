@@ -12,6 +12,7 @@ import os
 import struct
 import subprocess
 import tempfile
+import zlib
 
 
 MAX_PIXELS = 16_000_000
@@ -141,6 +142,47 @@ def jpeg_quality(width_pt,bitmap_width,page_width_pt):
     f32=lambda value:struct.unpack('<f',struct.pack('<f',value))[0]
     points=f32(f32(draw_pixels)*f32(math.floor(page_width_pt)/paper_pixels))
     return max(35,min(75,int(f32(f32(points/bitmap_width)*100))))
+
+
+def prepare_alpha_gif(encoded,width_pt,page_width_pt):
+    """First-frame transparent GIF color and hard mask, from source alone."""
+    from PIL import Image
+    if not 0<len(encoded)<=MAX_ENCODED_BYTES:raise BitmapBackendError('encoded bitmap bounds')
+    with Image.open(BytesIO(encoded)) as original:
+        if original.format!='GIF':raise BitmapBackendError('source alpha format requires another native path')
+        if original.width*original.height>MAX_PIXELS:raise BitmapBackendError('source bitmap bounds')
+        rgba=original.convert('RGBA')
+    width,height=rgba.size;alpha=rgba.getchannel('A');histogram=alpha.histogram()
+    if any(histogram[1:255]):raise BitmapBackendError('nonbinary GIF alpha')
+    facts={'source_format':'GIF','source_mode':'P','source_size':[width,height],
+           'bitmap_size':[width,height],'sampling':'original transparent GIF pixels; no resampling',
+           'source_frame_index':0,'bitmap_dpi':None,'source_alpha_mask_bits':1,
+           'source_alpha_matte_rgb':[255,255,255],'jpeg_quality_reused':False,
+           'whole_page_parity_verified':False}
+    if histogram[0]==width*height:
+        facts.update(source_alpha_omitted=True,color_count=0,jpeg_quality=None)
+        return None,facts
+    if not histogram[0]:raise BitmapBackendError('source image has no transparency')
+    # The mask and RGB are separate: transparent palette entries become white
+    # before color classification/encoding. GIF alpha bypasses image resizing.
+    rgb=Image.new('RGB',rgba.size,'white');rgb.paste(rgba.convert('RGB'),mask=alpha)
+    colors=rgb.getcolors(256);palette=colors is not None and len(colors)<=255
+    if not palette:rgb=rgb555_dither(rgb)
+    colors=rgb.getcolors(1025);count=len(colors) if colors is not None else 1026
+    quality=None
+    if width*height*3>=4000 and count>=32:
+        quality=jpeg_quality(width_pt,width,page_width_pt)
+        if count>1024 and quality>70:quality=int(quality*.7)
+    if quality is None:color=zlib.compress(rgb.tobytes());encoding='FlateDecode'
+    else:
+        output=BytesIO();rgb.save(output,format='JPEG',quality=quality,subsampling=2,optimize=False,progressive=False)
+        color=output.getvalue();encoding='DCTDecode'
+    mask=alpha.point(lambda value:255-value).convert('1',dither=Image.Dither.NONE).tobytes()
+    mask=zlib.compress(mask)
+    if len(color)>MAX_ENCODED_BYTES or len(mask)>MAX_ENCODED_BYTES:raise BitmapBackendError('prepared bitmap bounds')
+    facts.update(color_count=count if colors is not None else '>1025',jpeg_quality=quality,
+        color_quantization='original GIF colors with white matte' if palette else 'RGB555 bottom-up 4x4 ordered dither')
+    return {'width':width,'height':height,'color':color,'filter':encoding,'mask':mask},facts
 
 
 def prepare_bitmap(encoded,width_pt,height_pt,page_width_pt,quality_cache=None):

@@ -189,6 +189,8 @@ class SourceLayout:
         self._script_offsets={}
         self._drawing_limitations={}
         self._image_limitations=[]
+        self._image_limitation_runs={}
+        self._pdf_source_alpha_done=set();self._pdf_source_alpha_failed=set()
         self._pdf_picture_alpha=False
         self._pdf_alpha_sequence=0
         self._pdf_page_width=self.width
@@ -244,8 +246,8 @@ class SourceLayout:
                                 unsupported.append('alpha:printer-coordinate-rounding')
                             if picture.effect not in ('','REAL_PIC','GRAY_SCALE','BLACK_WHITE'):unsupported.append('effect:'+picture.effect)
                             if unsupported:
-                                self._image_limitations.append({'source_index':block.source_index,
-                                    'source_start':run.source_start,'unsupported':unsupported})
+                                record={'source_index':block.source_index,'source_start':run.source_start,'unsupported':unsupported}
+                                self._image_limitations.append(record);self._image_limitation_runs[id(record)]=id(run)
                         if run.image and run.picture.position.inline:
                             self._inline_objects.setdefault(key,[]).append((run.source_start or 0,run.width*.75,run.picture.position,run.style))
                         styles={self._style_for_character(run.style,c) for c in run.text} or {
@@ -682,11 +684,18 @@ class SourceLayout:
     def _picture(self,run,line,origin,page,align=None,paragraph=None):
         width,height=run.width*.75,run.height*.75
         x,y=self._position(run.picture.position,line,origin,width,height,page,align)
+        baseline_shift=0.
         if run.picture.position.inline and paragraph is not None:
             inline_x=self._inline_x(paragraph,run.source_start or 0,page)
             if inline_x is not None:x=inline_x+run.picture.position.out_margin[0]
+            # Inline pictures have an 85% baseline like declared-size text.
+            # A picture shorter than its anchor line sits below the line top.
+            baseline_shift=max(0,line.get('baseline_pt',0)-height*.85)
+            y+=baseline_shift
         self._add(page,Command('image',(x,y,width,height),run,
-                               {'object_wrap':run.picture.position.wrap,'object_z_order':run.picture.position.z_order}))
+                               {'object_wrap':run.picture.position.wrap,'object_z_order':run.picture.position.z_order,
+                                'source_index':getattr(paragraph,'source_index',-1),
+                                'inline_baseline_origin':origin[1] if baseline_shift else None}))
 
     def _inline_x(self,paragraph,start,page):
         if paragraph is None or not 0<=page<len(self.pages):return None
@@ -1322,6 +1331,14 @@ class SourceLayout:
 
     def _draw_image(self,painter,command):
         run=command.source;picture=run.picture
+        frame_rect=command.rect
+        anchor_y=command.extra.get('inline_baseline_origin')
+        if anchor_y is not None:
+            # The printer rounds the paragraph origin before adding the
+            # inline baseline offset, rather than rounding their sum.
+            from .pdf_bitmap import printer_pixel
+            x,y,w,h=frame_rect
+            frame_rect=(x,printer_pixel(anchor_y)*.12+y-anchor_y,w,h)
         image=QImage.fromData(run.image)
         if image.isNull():return
         # Hancom's PDF printer emits the opaque source plus a white ordered
@@ -1348,9 +1365,28 @@ class SourceLayout:
             if picture.effect not in ('','REAL_PIC') or picture.brightness or picture.contrast:unsupported.append('picture effects')
             if picture.rotation or picture.flip_h or picture.flip_v:unsupported.append('rotation or reflection')
             if source!=QRectF(0,0,image.width(),image.height()):unsupported.append('source crop')
-            record={'source_index':getattr(command.source,'source_index',-1),'source_start':run.source_start,
+            record={'source_index':command.extra.get('source_index',-1),'source_start':run.source_start,
                     'source_sha256':key[0].hex(),'rect_pt':list(command.rect),
                     'page_size_pt':[self._pdf_page_width,self._pdf_page_height]}
+            if unsupported==['source alpha'] and self._pdf_native_writer is not None:
+                from .pdf_bitmap import prepare_alpha_gif,image_frame
+                try:
+                    alpha_key=('source-alpha',)+key
+                    if alpha_key not in self._pdf_bitmap_cache:
+                        payload,facts=prepare_alpha_gif(run.image,command.rect[2],self._pdf_page_width)
+                        size=len(payload['color'])+len(payload['mask']) if payload else 0
+                        if self._pdf_bitmap_bytes+size>64*1024*1024:
+                            self._pdf_bitmap_cache.clear();self._pdf_bitmap_bytes=0
+                        self._pdf_bitmap_cache[alpha_key]=(payload,facts);self._pdf_bitmap_bytes+=size
+                    payload,facts=self._pdf_bitmap_cache[alpha_key]
+                    frame=image_frame(frame_rect,(self._pdf_page_width,self._pdf_page_height))
+                    if payload:self._pdf_native_writer.draw_alpha_bitmap(painter,payload,frame)
+                    record.update(status='prepared',**facts,image_matrix_pt=frame['matrix'],clip_pt=frame['clip'])
+                    if record not in self._pdf_bitmaps:self._pdf_bitmaps.append(record)
+                    self._pdf_source_alpha_done.add(id(run))
+                    return
+                except (BitmapBackendError,OSError,ValueError) as error:
+                    unsupported.append(str(error))
             if not unsupported:
                 try:
                     if key not in self._pdf_bitmap_cache:
@@ -1368,6 +1404,7 @@ class SourceLayout:
                 except (BitmapBackendError,OSError,ValueError) as error:
                     unsupported.append(str(error))
             if unsupported:
+                if not image_is_opaque(image):self._pdf_source_alpha_failed.add(id(run))
                 record.update(status='source-path',remaining=unsupported)
                 warning='일부 PDF 그림은 기존 표시 경로를 사용했습니다. layout.pdf_bitmaps의 remaining을 확인하세요.'
                 if warning not in self.warnings:self.warnings.append(warning)
@@ -1376,7 +1413,7 @@ class SourceLayout:
         clip=None
         if prepared:
             from .pdf_bitmap import image_frame
-            frame=image_frame(command.rect,(self._pdf_page_width,self._pdf_page_height))
+            frame=image_frame(frame_rect,(self._pdf_page_width,self._pdf_page_height))
             target=QRectF(*(v/.75 for v in frame['rect']))
             clip=QRectF(*(v/.75 for v in frame['clip']))
             record['image_matrix_pt']=frame['matrix'];record['clip_pt']=frame['clip']
@@ -1492,6 +1529,7 @@ class SourceLayout:
         self._pdf_alpha_sequence=0
         self._pdf_bitmap_cache.clear();self._pdf_bitmap_bytes=0
         self._pdf_bitmap_qualities.clear();self._pdf_bitmaps.clear()
+        self._pdf_source_alpha_done.clear();self._pdf_source_alpha_failed.clear()
         self._pdf_bitmap_text.update(processed_lines=0,legacy_lines=0,image_chunks=0,legacy_reasons={},remaining={},fitted_lines=0,condensed_word_gaps=0,condensed_character_gaps=0)
         self._pdf_table_frames.update(processed_grids=0,legacy_grids=0,legacy_reasons={})
         try:
@@ -1517,6 +1555,15 @@ class SourceLayout:
             add_source_text(printer.outputFileName(),self)
 
     def geometry_report(self):
+        limits=[]
+        for record in self._image_limitations:
+            run=self._image_limitation_runs[id(record)]
+            handled=run in self._pdf_source_alpha_done and run not in self._pdf_source_alpha_failed
+            remaining=[reason for reason in record['unsupported'] if not (handled and reason=='alpha:source-bitmap-alpha')]
+            if remaining:limits.append({**record,'unsupported':remaining})
+        warnings=self.warnings
+        if not limits:
+            warnings=[w for w in warnings if not w.startswith('그림 효과의 남은 차이는 layout.image_limitations')]
         return {'pages':len(self.pages),'page_pt':[self.width,self.height],
                 'pages_pt':[list(self.page_size(index)) for index in range(len(self.pages))],
                 'uses_hancom_runtime':False,'uses_reference_pdf':False,'mode':'source cached line geometry; retained for compatible text edits',
@@ -1527,7 +1574,7 @@ class SourceLayout:
                 'synthetic_text_paragraphs':len(self._synthetic_text_paragraphs),
                 'recomputed_object_paragraphs':len(self._reflowed_object_paragraphs),
                 'objects':[[{'kind':c.kind,'rect_pt':list(c.rect),'source_index':getattr(c.source,'source_index',None)} for c in commands] for commands in self.pages],
-                'warnings':self.warnings,'font_substitutions':self.font_substitutions,
+                'warnings':warnings,'font_substitutions':self.font_substitutions,
                 'glyph_substitutions':self.glyph_substitutions,'hft_fonts':self._hft_resolver.fonts,
                 'font_fallback_config':self._default_font_config,
                 'hft_kind_substitutions':self._hft_kind_substitutions,
@@ -1536,7 +1583,7 @@ class SourceLayout:
                 'script_baseline_offsets':[{'source_font':name,'language':language,'offset':offset}
                                             for (name,language),offset in self._script_offsets.items()],
                 'drawing_limitations':list(dict.fromkeys(self._drawing_limitations.values())),
-                'image_limitations':self._image_limitations,
+                'image_limitations':limits,
                 'pdf_bitmaps':self._pdf_bitmaps,
                 'pdf_bitmap_text':self._pdf_bitmap_text,
                 'pdf_native_text':self._pdf_native_text,

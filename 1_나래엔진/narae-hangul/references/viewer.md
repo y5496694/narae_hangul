@@ -75,3 +75,6 @@ HWP/HWPX 각각 101쪽에서 보통 TTF/TTC/HFT, 작은 글자, 색상·자간·
 
 
 장평의 캐시된 TTF 장치 측정은 정수 LOGFONT 폭을 사용하며 `device_centered_stretched_lines`로 처리 수를 기록한다. 이어지는 줄의 끝 자간을 정렬에서 제외한 수는 `continuation_tracking_aligned_lines`, 숨은 앞 제어 슬롯과 양수 끝 자간을 처리한 수는 `nonbreaking_control_prefixes`, `positive_tracking_wrap_lines`다. 혼합/여러 줄 장치 측정·HFT/비트맵의 추가 줄바꿈·좁은 폭 표본과 새 한컴 출력 상태 차이는 남아 있으므로 최신 `6_나래뷰어/validation.json`의 범위를 확인한다.
+
+
+투명 GIF의 PDF는 원래 픽셀 크기의 첫 프레임을 흰 바탕 RGB와 역 알파 1비트 마스크로 출력합니다. 흰 바탕 적용 뒤 255색 이하는 유지하고 256색은 RGB555 변환하며, 같은 이미지도 배치 크기별 JPEG 품질을 고릅니다. 작은 인라인 그림의 기준선과 문단 원점 반올림을 반영한 두 형식 66쪽이 새로 전체 일치했습니다. PNG 원본 알파와 그림 효과·회전·잘라내기의 결합 경로는 추가 검증 범위입니다. `layout.pdf_bitmaps`의 `source_alpha_mask_bits`, `source_frame_index`, `source_alpha_omitted`, `remaining`과 최신 전체 쪽 비교를 함께 확인합니다.

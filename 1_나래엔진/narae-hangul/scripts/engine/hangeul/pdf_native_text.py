@@ -25,6 +25,7 @@ MAX_CHARACTERS=1_000_000
 MAX_LINES=100_000
 MARKER_PREFIX=b'NARAE\x02'
 PATH_MARKER_PREFIX=b'NARAE\x03'
+IMAGE_MARKER_PREFIX=b'NARAE\x04'
 
 
 def _round(value):return math.floor(value+.5+1e-9)
@@ -47,7 +48,8 @@ def _numbers(values):return ' '.join(f'{value:.15f}'.rstrip('0').rstrip('.') if 
 class PdfNativeText:
     def __init__(self,owner):
         self.owner=owner
-        self.hft_sources={};self.sfnt_sources={};self.fonts={};self.records={};self.path_records={};self.record_clips={}
+        self.hft_sources={};self.sfnt_sources={};self.fonts={};self.records={};self.path_records={};self.image_records={};self.image_payloads={};self.record_clips={}
+        self.image_bytes=0
         self.collection_index=None
         self.script_defaults={};self.requested_fonts={};self.hanja_fonts={}
         self.source_bytes=0;self.characters=0;self.device_widths={}
@@ -405,12 +407,32 @@ class PdfNativeText:
             painter.drawImage(QRectF(-100,-100,1,1),image)
         finally:painter.restore()
 
+    def draw_alpha_bitmap(self,painter,payload,frame):
+        """Keep source-alpha masks separate from RGB without Qt flattening."""
+        from PySide6.QtCore import QRectF
+        from PySide6.QtGui import QImage,QPainter
+        if len(self.image_records)>=4096:raise ValueError('PDF source-alpha image count bounds')
+        identity=(payload['width'],payload['height'],payload['filter'],
+                  hashlib.sha256(payload['color']).digest(),hashlib.sha256(payload['mask']).digest())
+        if identity not in self.image_payloads:
+            size=len(payload['color'])+len(payload['mask'])
+            if self.image_bytes+size>64*1024*1024:raise ValueError('PDF source-alpha image bytes bounds')
+            self.image_payloads[identity]=payload;self.image_bytes+=size
+        marker=IMAGE_MARKER_PREFIX+len(self.image_records).to_bytes(6,'big')
+        self.image_records[marker]=(identity,frame)
+        token=QImage(marker,4,1,12,QImage.Format.Format_RGB888).copy()
+        painter.save()
+        try:
+            painter.setRenderHint(QPainter.RenderHint.LosslessImageRendering,True)
+            painter.drawImage(QRectF(-100,-100,1,1),token)
+        finally:painter.restore()
+
     def finish(self,path):
         """Replace every placement token once, then atomically save the PDF."""
-        if not self.records and not self.path_records:return
+        if not self.records and not self.path_records and not self.image_records:return
         from pypdf import PdfReader,PdfWriter
         from pypdf.generic import (ArrayObject,DictionaryObject,DecodedStreamObject,
-                                  NameObject,NumberObject,FloatObject,ContentStream,TextStringObject)
+                                  NameObject,NumberObject,FloatObject,ContentStream,TextStringObject,BooleanObject)
         from fontTools.ttLib import TTFont
         from fontTools.subset import Subsetter,Options
         class MatrixFloat(FloatObject):
@@ -430,6 +452,21 @@ class PdfNativeText:
         array=lambda values:ArrayObject([FloatObject(value) for value in values])
         def stream(data):
             obj=DecodedStreamObject();obj.set_data(data);return writer._add_object(obj.flate_encode())
+        images={}
+        def build_image(identity):
+            if identity in images:return images[identity]
+            payload=self.image_payloads[identity];width,height=payload['width'],payload['height']
+            mask=DecodedStreamObject();mask.set_data(payload['mask'])
+            mask.update({name('/Type'):name('/XObject'),name('/Subtype'):name('/Image'),
+                         name('/Width'):num(width),name('/Height'):num(height),name('/ImageMask'):BooleanObject(True),
+                         name('/BitsPerComponent'):num(1),name('/Filter'):name('/FlateDecode')})
+            bitmap=DecodedStreamObject();bitmap.set_data(payload['color'])
+            bitmap.update({name('/Type'):name('/XObject'),name('/Subtype'):name('/Image'),
+                           name('/Width'):num(width),name('/Height'):num(height),name('/BitsPerComponent'):num(8),
+                           name('/ColorSpace'):name('/DeviceRGB'),name('/Filter'):name('/'+payload['filter']),
+                           name('/Mask'):writer._add_object(mask)})
+            value=(name('/NaraeSourceAlpha'+str(len(images))),writer._add_object(bitmap));images[identity]=value
+            return value
         def empty_cmap(codes,digits):
             maximum='FF' if digits==2 else 'FFFF'
             lines=['/CIDInit /ProcSet findresource begin','12 dict begin','begincmap',
@@ -522,7 +559,8 @@ class PdfNativeText:
                         if obj.get('/Subtype')!='/Image' or obj.get('/Width')!=4 or obj.get('/Height')!=1:continue
                         marker=obj.get_data();record=self.records.get(marker)
                         path_program=self.path_records.get(marker)
-                        if record is None and path_program is None:continue
+                        image_record=self.image_records.get(marker)
+                        if record is None and path_program is None and image_record is None:continue
                         # A document image can contain the same twelve bytes.
                         # Only the off-paper RGB token belongs to this writer.
                         xs=[ctm[4],ctm[0]+ctm[4],ctm[2]+ctm[4],ctm[0]+ctm[2]+ctm[4]]
@@ -532,6 +570,22 @@ class PdfNativeText:
                         seen.add(marker);start,parent=stack[-1]
                         if i+1>=len(ops) or ops[i+1][1]!=b'Q' or any(op not in (b'cm',b'gs') for _,op in ops[start+1:i]):
                             raise ValueError('Unexpected PDF text placement block')
+                        if image_record is not None:
+                            identity,frame=image_record;resource,reference=build_image(identity)
+                            resources['/XObject'].get_object()[resource]=reference
+                            del resources['/XObject'].get_object()[values[0]]
+                            device_parent=tuple(struct.unpack('<f',struct.pack('<f',v))[0] for v in parent)
+                            x,y,width,height=frame['clip'];bottom=math.floor(float(page.mediabox.height))-y-height
+                            program=('q\n'+_numbers(_inverse(device_parent))+' cm\n'+
+                                     _numbers((x,bottom,width,height))+' re W n\n'+
+                                     _numbers(frame['matrix'])+' cm\n'+str(resource)+' Do\nQ\n')
+                            replacement=DecodedStreamObject();replacement.set_data(program.encode('ascii'))
+                            chunk=ContentStream(replacement,writer).operations
+                            for values,operator in chunk:
+                                if operator==b'cm':
+                                    for index,value in enumerate(values):values[index]=MatrixFloat(value)
+                            replacements[start]=(i+2,chunk)
+                            continue
                         if path_program is not None:
                             replacement=DecodedStreamObject()
                             # PDF device matrices use single precision. Invert
@@ -605,7 +659,7 @@ class PdfNativeText:
                     if index in replacements:index,chunk=replacements[index];new.extend(chunk)
                     else:new.append(ops[index]);index+=1
                 content.operations=new;page[name('/Contents')]=stream(content.get_data())
-            if len(seen)!=len(self.records)+len(self.path_records):raise ValueError('Missing PDF text placement token')
+            if len(seen)!=len(self.records)+len(self.path_records)+len(self.image_records):raise ValueError('Missing PDF text placement token')
             writer.compress_identical_objects(remove_duplicates=False,remove_unreferenced=True)
             fd,filename=tempfile.mkstemp(prefix='.narae-font-',suffix='.pdf',dir=path.parent)
             os.close(fd);temporary=Path(filename)
