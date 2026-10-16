@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T09:28:24+09:00",
+  "date_kst": "2026-10-16T09:46:42+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "c4ad1460e6b0ead94f7d13814ead8f948470e4fa",
+  "base_commit": "6b57ff09db1c443e1ee9710fff7b1c893f02a61a",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -81,7 +81,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.23325790128279386,
+      "changed_fraction_max": 0.21660223512349752,
       "errors": [],
       "independent_identical_pages": 2
     },
@@ -95,8 +95,8 @@
       "independent_pages": 9,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.00798659285101721,
-      "changed_fraction_max": 0.2500033675022562,
+      "changed_fraction_min": 0.007534225047930782,
+      "changed_fraction_max": 0.23519533758087618,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -169,19 +169,18 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 58,
+      "run": 61,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "58 distinct final passes across interrupted 29-pass run and two bounded recovery batches",
+      "scope": "58 font/viewer/picture final passes at 6b57ff0 plus 3 fresh legacy-decoration tests",
       "whole_group_fresh_pass_claimed": false,
       "component_log_sha256": [
         "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
         "5f38f29c9c8335f0844afb24b4cfe768297b574ae58dee894851a72139956e9e",
-        "6c6a3acf8e3c20713c4ab941922969c8d52bc5cde8984f98f679e66e97096b58"
-      ],
-      "interrupted_run": "Windows commit-memory exhaustion; only completed individual passes are counted",
-      "log_sha256": "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2"
+        "6c6a3acf8e3c20713c4ab941922969c8d52bc5cde8984f98f679e66e97096b58",
+        "e71b434868f4e6ea83bab58e152867da3d6d3e501001d2bd63084920f71d6923"
+      ]
     },
     "full_native_rerun": {
       "complete": true,
@@ -206,12 +205,12 @@
       "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 79,
-      "passed": 46,
+      "run": 82,
+      "passed": 48,
       "failures": 0,
       "errors": 0,
-      "skipped": 33,
-      "log_sha256": "ff8cf0cdc5aa919e3b84417951bbb9349362d436b330dbdb99a2ee9acec810e6"
+      "skipped": 34,
+      "log_sha256": "fb069e8fc7c1121238347a06b9e859bada5581dde1498f5109e52fd4b2874e1a"
     },
     "cold_bitmap_cache": {
       "concurrent_workers": 4,
@@ -274,6 +273,29 @@
         "855a7f7c25c182b62106349f2df3bbab80f4aef7a52d891b08c60a554170af15"
       ],
       "fresh_native_backend_test_passed": true
+    },
+    "normal_font_related_validation": {
+      "run": 58,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "58 distinct final passes across interrupted 29-pass run and two bounded recovery batches",
+      "whole_group_fresh_pass_claimed": false,
+      "component_log_sha256": [
+        "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
+        "5f38f29c9c8335f0844afb24b4cfe768297b574ae58dee894851a72139956e9e",
+        "6c6a3acf8e3c20713c4ab941922969c8d52bc5cde8984f98f679e66e97096b58"
+      ],
+      "interrupted_run": "Windows commit-memory exhaustion; only completed individual passes are counted",
+      "log_sha256": "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2"
+    },
+    "legacy_decoration": {
+      "run": 3,
+      "passed": 3,
+      "log_sha256": "e71b434868f4e6ea83bab58e152867da3d6d3e501001d2bd63084920f71d6923",
+      "native_scope": "Legacy HWP, modern HWP and regenerated HWPX render identically within native outputs; independent outputs also equal each other",
+      "independent_native_styled_text_pixel_parity_claimed": false,
+      "preserved_edit_cases": 3
     }
   },
   "rea": {
@@ -959,8 +981,8 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "9100636ad934c0effa8c48672d4869f6592e9726990664c6bdd53a80de13b8ce",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ce85282e3baef73c3c4668410ea8d6e6ed9ff963df212fd97c8907be817bc7b6",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "270181bcb7246667d8274b12d46f748e07efb93bb271c20f7ae2d5b383a6e4c9",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "9ddea78197436c54cf2fdbfca98a3910e56868b64908461d894308f496f2b4ef",
+    "2_나래스킬/narae-viewer/SKILL.md": "fd826ca432c5fb06bec92eec0fdfb318ea7c62126af68f9b52562f76da8840d5",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "e10e35615cfdb88e0a7f81cd56fbe6d879fbee55a2bbad8b31ba184db832176f",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "d21afa3cddf8033f2e033d151a83f8d62ecaeda8de776bc8a01ce8d3592ca25b",
@@ -973,7 +995,9 @@
     "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "24929db32de1b04976a3c9bfce1543dca725138ca767a187697cfc262ae3e66f",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "487c63e2970d11256ef2e365c30bd18443f9079f597d39d55f1a0b827a1903d2",
-    "tests/test_pdf_native_text.py": "2b676982c806ea299f1eb9aed5585c384cdbfa6093af1fdfef8f6fb44bc39773"
+    "tests/test_pdf_native_text.py": "2b676982c806ea299f1eb9aed5585c384cdbfa6093af1fdfef8f6fb44bc39773",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "3bc1d2bd7b8c0d0e2ffcd804a83dde3416b85c426a027f8751659812851434e5",
+    "tests/test_text_decorations.py": "aa343516d1037c1dc47a37bc22396269f077337b44b6855983dbdbafdb11fc78"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -1444,5 +1468,19 @@
       "native transparency phase and unsupported image paths",
       "Hancom layouts populated by a pre-print PageCount query have different advances in five sampled pages"
     ]
+  },
+  "legacy_character_decorations": {
+    "hwp_underline_enum": {
+      "0": "none",
+      "1": "bottom",
+      "2": "legacy strikeout",
+      "3": "top"
+    },
+    "renderer_scope": "Legacy middle line no longer enables both underline and strike; full styled-text placement remains unresolved",
+    "preserved_edits": "Normalize legacy middle line to the modern strike flag when underline/strike changes; retain original flags for other edits",
+    "native_xml_local_report_sha256": "4896c125a0bd05ae53733eb06b89c5cd79bee497aa02a2a0df7f5c4cda0f8ea1",
+    "enum_oracle_log_sha256": "f35077e96a045122af56490c1de508615e5b109efd94bf3d98c1849335402b6b",
+    "shape_analysis_next": "Native strike shape codes 13..15 emit no visible line; independent rendering still treats them as solid and needs preserved shape metadata",
+    "shape_oracle_log_sha256": "4f05d12930c664684ade3c4599c14a6d03b57abcc8494ea5c40a4d7c5c39a3ad"
   }
 }

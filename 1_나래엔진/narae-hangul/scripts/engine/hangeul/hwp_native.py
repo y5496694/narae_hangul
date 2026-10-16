@@ -190,6 +190,11 @@ class _DocInfoEditor:
             raise ValueError("원본 HWP 글자 모양을 확인할 수 없습니다.")
         data = bytearray(self.chars[ident])
         flags, = struct.unpack_from("<I", data, 46)
+        # Legacy underline enum 2 is a middle line. When its decorations
+        # change, represent that strike separately before changing underline.
+        # Other edits keep the original compatible record untouched.
+        if (flags >> 2) & 3 == 2 and (old.underline != new.underline or old.strike != new.strike):
+            flags = (flags & ~12) | (1 << 18)
         for attribute, mask, enabled in (("italic", 1, 1), ("bold", 2, 2), ("underline", 12, 4),
             ("strike", 7 << 18, 1 << 18), ("superscript", 1 << 15, 1 << 15), ("subscript", 1 << 16, 1 << 16),
             ("use_font_space", 1 << 25, 1 << 25), ("use_kerning", 1 << 30, 1 << 30)):

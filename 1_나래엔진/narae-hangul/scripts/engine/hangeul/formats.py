@@ -1129,8 +1129,9 @@ def _load_hwp(path):
             fid, = struct.unpack_from("<H", d)
             size, prop = struct.unpack_from("<iI", d, 42)
             color, _, shade = struct.unpack_from("<III", d, 52)
+            underline_type = (prop >> 2) & 3
             chars[len(chars)] = TextStyle(fonts[fid] if fid < min(font_count or len(fonts), len(fonts)) else "맑은 고딕",
-                max(1, size / 100), bool(prop & 2), bool(prop & 1), bool(prop & 12), bool(prop & (7 << 18)),
+                max(1, size / 100), bool(prop & 2), bool(prop & 1), underline_type in (1, 3), bool(prop & (7 << 18)) or underline_type == 2,
                 _colorref(color), "" if shade == 0xFFFFFFFF else _colorref(shade), bool(prop & (1 << 15)), bool(prop & (1 << 16)), d[14], struct.unpack_from("<b", d, 21)[0],
                 tuple(fonts[index] if index < len(fonts) else "맑은 고딕" for index in
                     (sum(font_counts[:lang]) + struct.unpack_from("<H", d, lang * 2)[0] for lang in range(7))),
