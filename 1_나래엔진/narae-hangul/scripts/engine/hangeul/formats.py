@@ -703,11 +703,10 @@ def _load_hwpx(path):
                             return value
                     return _desc(e, name)
                 margin = native_property("margin")
-                # Paragraph margins use twice the native HWPUNIT measure. The
-                # HwpUnitChar case carries already-halved compatibility values.
+                # The versioned default uses twice the point measure. Direct
+                # properties and the HwpUnitChar compatibility case use 100/pt.
                 in_default = any(margin is x for default in e.iter() if _local(default) == "default" for x in default.iter())
-                in_case = not in_default and any(margin is x for case in e.iter() if _local(case) == "case" for x in case.iter())
-                margin_divisor = 100 if in_case else 200
+                margin_divisor = 200 if in_default else 100
                 vals = {n: _num(_attr(_child(margin, n), "value")) / margin_divisor if margin is not None else 0 for n in ("left", "right", "intent", "prev", "next")}
                 line = native_property("lineSpacing")
                 line_type = _attr(line, "type", "PERCENT")
@@ -1949,7 +1948,7 @@ def save_hwpx(document_or_html, path) -> list[str]:
         _element(pp, "hh", "autoSpacing", eAsianEng=int(s.auto_spacing_eng), eAsianNum=int(s.auto_spacing_num))
         margin = _element(pp, "hh", "margin")
         for name, value in (("intent", s.indent), ("left", s.left), ("right", s.right), ("prev", s.before), ("next", s.after)):
-            _element(margin, "hc", name, value=round(value * 200), unit="HWPUNIT")
+            _element(margin, "hc", name, value=round(value * 100), unit="HWPUNIT")
         _element(pp, "hh", "lineSpacing", type=s.line_type, value=round(s.line if s.line_type == "PERCENT" else s.line * 100), unit="HWPUNIT")
         _element(pp,"hh","border",borderFillIDRef=border_fills.index(BorderFill(tuple(s.borders),s.background))+1,
             **{"offset"+k:round(v*100) for k,v in zip(("Left","Right","Top","Bottom"),s.border_offsets)},

@@ -585,6 +585,16 @@ class SourceLayout:
                     current=max(current,anchor_page+extra)
                     begin=command_counts[current] if current<len(command_counts) else 0
                     physical_end=max((command.rect[1]+command.rect[3] for command in self.pages[current][begin:]),default=y)
+                    if block.position.inline:
+                        # The grown inline object occupies the anchor line;
+                        # its paragraph spacing still follows that line.
+                        spacing=line.get('spacing_pt',0)
+                        if (block.position.affect_line_spacing and anchor and
+                            anchor.style.line_type=='PERCENT' and anchor.style.line>=100):
+                            base=continuation_y if current>page else origin_y
+                            height=max(line.get('height_pt',0),physical_end+block.position.out_margin[3]-base-line['y_pt'])
+                            spacing=height*(anchor.style.line/100-1)+anchor.style.after
+                        physical_end+=spacing
                     base_y=continuation_y if current>page else origin_y
                     if current>anchor_page:previous_end=0.;local_offset=0.
                     previous_end=max(previous_end,physical_end+block.position.out_margin[3]-base_y)

@@ -115,7 +115,9 @@ def _alter(raw, changes, toggles=None):
             values = dict(attrs)
             parent = nodes[node["parent_index"]] if "parent_index" in node else None
             case = None
+            in_default = False
             while parent:
+                if parent["name"] == "default":in_default = True
                 if parent["name"] == "case":
                     case = parent
                     break
@@ -128,6 +130,8 @@ def _alter(raw, changes, toggles=None):
                     values["value"] = round(values["value"] / 2)
                 if path[0] == "lineSpacing":
                     values["unit"] = "CHAR" if values.get("type") != "PERCENT" else "HWPUNIT"
+            elif path and path[0] == "margin" and "value" in values and not in_default:
+                values["value"] = round(values["value"] / 2)
             elif path and path[0] == "lineSpacing" and "value" in values:
                 values["unit"] = "HWPUNIT"
             edits.append((node["begin"], node["content"], _attributes(raw[node["begin"]:node["content"]], values)))
