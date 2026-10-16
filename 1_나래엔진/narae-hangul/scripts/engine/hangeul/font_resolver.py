@@ -39,6 +39,7 @@ FONT_PAIRS.update({'HCI Poppy':('HMEPO.HFT',),'HCI Hollyhock':('HMEHL.HFT',)})
 FONT_PAIRS.update({'명조':('HGMJ.HFT','ENMJ.HFT'),'고딕':('HGGT.HFT','ENGT.HFT')})
 BITMAP_FAMILIES=frozenset(('명조','고딕'))
 LATIN_ONLY = frozenset(('HCI Poppy','HCI Hollyhock'))
+HFT_HANGUL_FALLBACKS={'한양신명조':('휴먼명조','HMKSM.HFT'),'한양중고딕':('휴먼고딕','HMKMG.HFT')}
 SCRIPT_FONTS = {'한양신명조':{'Hanja':'HJSMJ.HFT','Japanese':'JPSMJ.HFT','Other':'FLSMJ.HFT','Symbol':'SPSMJ.HFT'},
                 '한양중고딕':{'Hanja':'HJJGT.HFT','Japanese':'JPJGT.HFT','Symbol':'SPJGT.HFT'}}
 SCRIPT_FONTS.update({'명조':{'Hanja':'HJMJ.HFT','Japanese':'JPMJ.HFT','Other':'FLMJ.HFT','Symbol':'SPMJ.HFT'},
@@ -80,7 +81,7 @@ def _font_map(path):
         elif section.startswith('Font Definition - ') and "=" in line:
             name,value=line.split("=",1)
             name=name.strip()
-            if name in FONT_PAIRS:
+            if name in FONT_PAIRS or name in {value[0] for value in HFT_HANGUL_FALLBACKS.values()}:
                 filename=value.split(",",1)[0].strip()
                 # Configurations cannot redirect a known family to other paths.
                 if not filename or Path(filename).name!=filename or any(c in filename for c in ("/","\\",":")):
@@ -107,8 +108,10 @@ def _installed_sfnt_directories():
     return list(dict.fromkeys(directories))
 
 
-def installed_default_fonts():
-    """Read the installed Korean Hancom fallback order, when available."""
+def installed_default_fonts(script='Hangul'):
+    """Read one installed Korean Hancom script fallback order, when available."""
+    if script not in ('Hangul','Latin','Hanja','Japanese','Other','Symbol','User'):
+        raise ValueError('Unsupported font fallback script')
     for directory in _installed_directories():
         base=directory.parent.parent
         binary=base if base.name.lower()=='bin' else base/'Bin'
@@ -120,13 +123,13 @@ def installed_default_fonts():
             for line in data[2:].decode('utf-16le').splitlines():
                 line=line.strip()
                 if line.startswith('['):section=line
-                elif section=='[Default Fonts KOR]' and line.startswith('Hangul='):
+                elif section=='[Default Fonts KOR]' and line.startswith(script+'='):
                     values=line.split('=',1)[1].split(',')
                     families=tuple(values[i].strip() for i in range(0,len(values)-1,2)
                                    if values[i+1].strip()=='T' and values[i].strip())
                     break
             if families:return families,{'path':str(config),'sha256':hashlib.sha256(data).hexdigest(),
-                                         'section':'Default Fonts KOR','script':'Hangul'}
+                                         'section':'Default Fonts KOR','script':script}
         except (OSError,ValueError,UnicodeError):continue
     return (),None
 
@@ -358,6 +361,12 @@ class InstalledHftResolver:
                     if not _inside(path,directory) or not path.is_file():continue
                     font=HftFont(path)
                     if (font.outline_count or family in BITMAP_FAMILIES and font.bitmap_count) and font.unicode_tables:fonts.append(font)
+                fallback=HFT_HANGUL_FALLBACKS.get(family)
+                if fallback and selected is not None:
+                    fallback_family,name=fallback
+                    if mapping.get('Font Definition - Hangul',{}).get(fallback_family)==name:
+                        path=(directory/name).resolve(strict=True)
+                        if _inside(path,directory):fonts.append(HftFont(path))
                 return fonts,config_info,directory
             except (OSError,ValueError,UnicodeError) as error:
                 errors.append(str(error))

@@ -24,6 +24,8 @@ BITMAP_FONT_PROPERTY=0x108003
 SYNTHETIC_ITALIC_PROPERTY=0x108004
 BITMAP_TRACKING_PROPERTY=0x108005
 BITMAP_SPACE_PROPERTY=0x108006
+OUTLINE_FONT_PROPERTY=0x108007
+FONT_FALLBACK_PROPERTY=0x108008
 TEXT_DPI=600
 TEXT_UNIT_PT=72/TEXT_DPI
 TEXT_TO_VIEW=96/TEXT_DPI
@@ -195,6 +197,9 @@ class SourceLayout:
         self._pdf_bitmaps=[]
         self._pdf_bitmap_text={'processed_lines':0,'legacy_lines':0,'image_chunks':0,
                                'legacy_reasons':{},'remaining':{},'whole_document_parity_verified':False}
+        self._pdf_native_writer=None
+        self._pdf_native_text={'processed_lines':0,'legacy_lines':0,'glyphs':0,'fonts':[],
+                               'legacy_reasons':{},'whole_document_parity_verified':False}
         self._bitmap_images={}
         self._bitmap_image_bytes=0
         self._metrics_device=QImage(1,1,QImage.Format.Format_RGB32)
@@ -342,6 +347,17 @@ class SourceLayout:
         available=max(1,width-paragraph.style.left-paragraph.style.right)
         seed=Command('text',(0,0,available,1),paragraph,{'text':text,'start':0,'line':{'baseline_pt':0}})
         layout=self._text_layout(seed)
+        # Qt rounds a point-sized face to an integer printer em (8pt ->
+        # 67px). Native line breaking uses logical point advances before
+        # that raster rounding, so sixty 8pt syllables fit a 481.9pt line.
+        formats=layout.formats()
+        for item in formats:
+            font=item.format.font();pixels=math.floor(font.pointSizeF()/TEXT_UNIT_PT+.5)
+            if pixels>0 and font.pointSizeF()>0 and font.letterSpacingType()==QFont.SpacingType.PercentageSpacing:
+                font.setLetterSpacing(QFont.SpacingType.PercentageSpacing,
+                                      font.letterSpacing()*font.pointSizeF()/TEXT_UNIT_PT/pixels)
+                item.format.setFont(font)
+        layout.setFormats(formats)
         option=layout.textOption();option.setWrapMode(QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere)
         layout.setTextOption(option);layout.clearLayout();layout.beginLayout()
         lines=[];y=(0 if paragraph.style.page_break else start_y)+paragraph.style.before
@@ -732,9 +748,12 @@ class SourceLayout:
 
     def _char_format(self,style,fallback=False):
         fmt=QTextCharFormat();fmt.setFont(self._font(style,fallback));fmt.setForeground(QColor(style.color))
+        fmt.setProperty(BITMAP_TRACKING_PROPERTY,style.letter_spacing)
+        if fallback:fmt.setProperty(FONT_FALLBACK_PROPERTY,style.font)
         if not fallback and style.font in BITMAP_FAMILIES and style.font in self._source_fonts:
             fmt.setProperty(BITMAP_FONT_PROPERTY,style.font)
-            fmt.setProperty(BITMAP_TRACKING_PROPERTY,style.letter_spacing)
+        elif not fallback and style.font in self._source_fonts:
+            fmt.setProperty(OUTLINE_FONT_PROPERTY,style.font)
         if self._synthetic_bold(style,fallback):fmt.setProperty(SYNTHETIC_BOLD_PROPERTY,style.size*.02/TEXT_UNIT_PT)
         if self._synthetic_italic(style,fallback):fmt.setProperty(SYNTHETIC_ITALIC_PROPERTY,.333333)
         return fmt
@@ -975,6 +994,7 @@ class SourceLayout:
             left,right,top,bottom=paragraph.style.border_offsets
             painter.fillRect(QRectF((x-left)/.75,(y-top)/.75,(width+left+right)/.75,(height+top+bottom)/.75),QColor(paragraph.style.background))
         layout=self._text_layout(command)
+        if self._pdf_native_writer is not None and self._pdf_native_writer.draw_line(painter,command,layout):return
         if self._pdf_picture_alpha:
             from .pdf_bitmap_text import draw_line
             bitmap_text=draw_line(self,painter,command,layout)
@@ -1289,6 +1309,7 @@ class SourceLayout:
         commands=[command for _,command in sorted(enumerate(self.pages[index]),key=order)]
         tables=set()
         for command in commands:
+            if self._pdf_native_writer is not None:self._pdf_native_writer.observe_command(command)
             if command.kind=='text':self._draw_text(painter,command)
             elif command.kind=='image':self._draw_image(painter,command)
             # A Drawing uses one path renderer in both formats. Previously a
@@ -1339,6 +1360,12 @@ class SourceLayout:
         previous_width=self._pdf_page_width
         previous_height=self._pdf_page_height
         self._pdf_picture_alpha=printer.outputFormat()==printer.OutputFormat.PdfFormat
+        previous_native_writer=self._pdf_native_writer
+        native_writer=None
+        if self._pdf_picture_alpha:
+            from .pdf_native_text import PdfNativeText
+            native_writer=PdfNativeText(self);self._pdf_native_writer=native_writer
+            self._pdf_native_text=native_writer.facts
         self._pdf_alpha_sequence=0
         self._pdf_bitmap_cache.clear();self._pdf_bitmap_bytes=0
         self._pdf_bitmap_qualities.clear();self._pdf_bitmaps.clear()
@@ -1357,8 +1384,11 @@ class SourceLayout:
             self._pdf_picture_alpha=previous_alpha
             self._pdf_page_width=previous_width
             self._pdf_page_height=previous_height
+            self._pdf_native_writer=previous_native_writer
+            if native_writer:native_writer.close()
             if not painter.end():raise OSError('PDF/인쇄를 완료하지 못했습니다.')
         if printer.outputFormat()==printer.OutputFormat.PdfFormat:
+            native_writer.finish(printer.outputFileName())
             from .pdf_text import add_source_text
             add_source_text(printer.outputFileName(),self)
 
@@ -1383,6 +1413,7 @@ class SourceLayout:
                 'image_limitations':self._image_limitations,
                 'pdf_bitmaps':self._pdf_bitmaps,
                 'pdf_bitmap_text':self._pdf_bitmap_text,
+                'pdf_native_text':self._pdf_native_text,
                 'pdf_picture_alpha':'ordered-8x8-white-stencil-300dpi; document brush sequence',
                 'pdf_alpha_native_initial_phase_known':False,
                 'installed_sfnt_fonts':self._sfnt_resolver.fonts}

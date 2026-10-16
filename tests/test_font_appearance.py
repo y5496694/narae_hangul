@@ -96,6 +96,12 @@ class FontAppearanceTests(unittest.TestCase):
                 layout=SourceLayout(load_document(source).model)
                 with Document(source,'hancom') as native,Document(source) as own:
                     reference,actual=PdfReader(native.pdf_path),PdfReader(own.pdf_path)
+                    # Keep the unslanted legacy paths as the reference for
+                    # synthetic shear. Production normal text now uses source
+                    # Type3/TrueType fonts, covered by complete-page tests.
+                    from hangeul.pdf_native_text import PdfNativeText
+                    with patch.object(PdfNativeText,'draw_line',return_value=False),Document(source) as legacy:
+                        legacy_reader=PdfReader(legacy.pdf_path)
                     self.assertEqual(10,native.count);self.assertEqual(native.count,own.count)
                     for i,family in enumerate(families):
                         normal=ContentStream(actual.pages[i*2].get_contents(),actual).operations
@@ -134,7 +140,8 @@ class FontAppearanceTests(unittest.TestCase):
                         run=layout._text_layout(command).glyphRuns()[0]
                         baseline=command.rect[1]/TEXT_UNIT_PT+run.positions()[0].y()
                         paths=lambda ops:[(op,tuple(map(float,vals))) for vals,op in ops if op in (b'm',b'l',b'c')]
-                        before,after=paths(normal),paths(italic)
+                        before=paths(ContentStream(legacy_reader.pages[i*2].get_contents(),legacy_reader).operations)
+                        after=paths(italic)
                         self.assertEqual(len(before),len(after))
                         for (op,points),(slanted_op,slanted) in zip(before,after):
                             self.assertEqual(op,slanted_op)

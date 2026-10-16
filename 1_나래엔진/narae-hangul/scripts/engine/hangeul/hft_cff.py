@@ -21,7 +21,9 @@ def normalized_operations(glyph, quantization="native-pdf"):
     """Return upward-y coordinates in 1000/em, preserving cubic segments."""
     if glyph.kind != "outline":
         raise HftError("CFF conversion requires a supported outline glyph")
-    shift = glyph.provenance.get("baseline_shift_em", 0) * glyph.units_per_em
+    # The contour decoder rounds the baseline in source font units before
+    # converting coordinates. This matters for Human's 512-unit outlines.
+    shift = math.floor(glyph.provenance.get("baseline_shift_em", 0) * glyph.units_per_em+.5)
     result = []
     for op, *values in glyph.operations:
         points = [(value - (shift if index % 2 else 0)) * 1000 / glyph.units_per_em

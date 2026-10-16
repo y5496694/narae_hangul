@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T07:11:25+09:00",
+  "date_kst": "2026-10-16T09:28:24+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "bd6f3ef0c45f7362ceda865d2b16861607496c33",
+  "base_commit": "c4ad1460e6b0ead94f7d13814ead8f948470e4fa",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -20,10 +20,10 @@
       "independent_pages": 24,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.012109538113390536,
-      "changed_fraction_max": 0.2357846504757158,
+      "changed_fraction_min": 0.0,
+      "changed_fraction_max": 0.1806182285142131,
       "errors": [],
-      "independent_identical_pages": 0
+      "independent_identical_pages": 1
     },
     {
       "id": "report-hwpx",
@@ -35,10 +35,10 @@
       "independent_pages": 24,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.012109538113390536,
-      "changed_fraction_max": 0.2357846504757158,
+      "changed_fraction_min": 0.0,
+      "changed_fraction_max": 0.1806182285142131,
       "errors": [],
-      "independent_identical_pages": 0
+      "independent_identical_pages": 1
     },
     {
       "id": "trip-hwpx",
@@ -50,8 +50,8 @@
       "independent_pages": 2,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.019472020546253768,
-      "changed_fraction_max": 0.0584620841695964,
+      "changed_fraction_min": 0.020216238544879826,
+      "changed_fraction_max": 0.052100872407584514,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -66,7 +66,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.054034941203410604,
-      "changed_fraction_max": 0.15504541638042899,
+      "changed_fraction_max": 0.15644068481525883,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -111,7 +111,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.012246483205143748,
-      "changed_fraction_max": 0.12270953721538994,
+      "changed_fraction_max": 0.11367901866494251,
       "errors": [],
       "independent_identical_pages": 0
     }
@@ -169,30 +169,49 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 53,
+      "run": 58,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "53 distinct final passing tests: bitmap-font 3, related initial run 49 passes, one corrected italic representation assertion rerun passed",
-      "log_sha256": "6ad965b6e98ebd6137d9f9bc4dc2bdae00779663ec8dee9fe7d1d716c2313cd2",
+      "scope": "58 distinct final passes across interrupted 29-pass run and two bounded recovery batches",
+      "whole_group_fresh_pass_claimed": false,
       "component_log_sha256": [
-        "11f7af71553f125c6bee12cc3763d3ad3676ffc433393a0eec13a2db390783e7",
-        "e1b8e40e78e44a18f9b2f628b76b64dff72b96e0571ba5d5bedcfc2f6c401e0d",
-        "febf2eb8ddc44000c57c857f373d2df661e7a03e0174ad2d5a0a46fae90c28dc"
+        "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
+        "5f38f29c9c8335f0844afb24b4cfe768297b574ae58dee894851a72139956e9e",
+        "6c6a3acf8e3c20713c4ab941922969c8d52bc5cde8984f98f679e66e97096b58"
       ],
-      "initial_obsolete_representation_assertion_failures": 1,
-      "corrected_assertion_rerun_passed": true
+      "interrupted_run": "Windows commit-memory exhaustion; only completed individual passes are counted",
+      "log_sha256": "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2"
     },
     "full_native_rerun": {
-      "complete": false,
-      "reason": "An earlier full-suite attempt encountered COM server launch errors and was interrupted; do not count it as passed."
+      "complete": true,
+      "run": 78,
+      "passed": 76,
+      "failures": 1,
+      "errors": 1,
+      "all_passed": false,
+      "log_sha256": "b180f3dd45a0a58026850d56142d59f6b95a2527234ab46d4f745283e945fb6b",
+      "failure": "Early native PageCount query changed five TTF advances; print-first reference export fixes the font test.",
+      "error": "Native image-edit saved-content verification failed; a fresh isolated retry after empty-server cleanup passed without changing editing code.",
+      "font_recheck": {
+        "run": 4,
+        "passed": 4,
+        "log_sha256": "c55d6237006c8c20cb79da196bde46cbd0f79b9eb93617c178f789b3c0c0a7c1"
+      },
+      "image_recheck": {
+        "run": 1,
+        "passed": 1,
+        "log_sha256": "9064dc8394acc33d353c3001525d4635f38633d275058eca0ef435e99b1c511d"
+      },
+      "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 74,
+      "run": 79,
+      "passed": 46,
       "failures": 0,
       "errors": 0,
-      "skipped": 31,
-      "log_sha256": "5d75f0c47d574bbdb182c361ceb23b8e712560a2d0ad94c483af7e8a81cfd2ff"
+      "skipped": 33,
+      "log_sha256": "ff8cf0cdc5aa919e3b84417951bbb9349362d436b330dbdb99a2ee9acec810e6"
     },
     "cold_bitmap_cache": {
       "concurrent_workers": 4,
@@ -231,6 +250,30 @@
       "pair_match": true,
       "read_document_pages": 29,
       "log_sha256": "63a3673564e64beea127d3609c6ef6f44b58c3676c29a1b88299ea5dee1fc4f2"
+    },
+    "previous_full_native_rerun": {
+      "complete": false,
+      "reason": "An earlier full-suite attempt encountered COM server launch errors and was interrupted; do not count it as passed."
+    },
+    "normal_pdf_font_whole_pages": {
+      "run": 202,
+      "passed": 202,
+      "pages_per_format": 101,
+      "formats": [
+        "hwp",
+        "hwpx"
+      ],
+      "families": 11,
+      "dpi": 96,
+      "rgb_tolerance": 0,
+      "alignment": false,
+      "resizing": false,
+      "scope": "TTF/TTC/HFT normal faces, sizes, color, tracking, alignment, spaces, mixed scripts/faces, composed Hangul, Type3 256-code boundary",
+      "local_report_sha256s": [
+        "fdd97f64cedd91e1513a3b3d372696f9ff3c949e80faf9920b4fc1c769d22322",
+        "855a7f7c25c182b62106349f2df3bbab80f4aef7a52d891b08c60a554170af15"
+      ],
+      "fresh_native_backend_test_passed": true
     }
   },
   "rea": {
@@ -692,6 +735,142 @@
         "parameters": {
           "session_id": "2c7c405c-eafa-4c95-a204-0af62bf4cbd4"
         }
+      },
+      {
+        "query": "native-font-pdf-float-writer-recovered",
+        "evidence_id": "ev_b828b5a081d379189f3c975f7035663b73ef9c3fe3519bf52d703c232ff698a5",
+        "record_sha256": "857f903c2e21027b7288c5529664d07a95f8c9fe843357ef6ee566032ff67e8f",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10030320"
+        }
+      },
+      {
+        "query": "native-font-pdf-double-writer",
+        "evidence_id": "ev_f3d8f9eceba9b7ff95697c6d03a9af3376fd59b7d30262f83eb8a0c7967fa7c8",
+        "record_sha256": "cc63fc287086d4add7c69ad54b802a0f49f183f35d3400ca35e9167f864da976",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10030170"
+        }
+      },
+      {
+        "query": "native-font-pdf-path-coordinates",
+        "evidence_id": "ev_8b75ec0b38c570085be096793831bef9c0b8cc77103fd32bff9978f1208cef80",
+        "record_sha256": "8e8e2b14eed6a1dbaec142ac515be0458a0cedb304ea77757667b31fd7a283c4",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10022850"
+        }
+      },
+      {
+        "query": "native-font-pdf-setprecision-manipulator",
+        "evidence_id": "ev_0803ae0cbe29587feb241a1db10c29e8b9cf7a1bc785df1ca64a21967ed0809b",
+        "record_sha256": "28a2c867e546e9f7977714182f053f8d80dde971b4d2b1c3226f7c17782325b3",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100bc209"
+        }
+      },
+      {
+        "query": "native-font-pdf-precision-setter",
+        "evidence_id": "ev_8c907678ce5239518eef27630a266840521632b7a27e135e7287a630cfddcc18",
+        "record_sha256": "f79b03453e443381843f6397782ef183174aaa179232a90a3dbac94353b862cc",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100bc223"
+        }
+      },
+      {
+        "query": "native-font-rectangle-number-state",
+        "evidence_id": "ev_87e85a5cd54ae287c7f98ecf5be6666b95db66f485df4e233c1675d27cdd2166",
+        "record_sha256": "3ba056183899b11e03efdc8320906deaf34edf4825c5648fd0260a00cd368cf2",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10012050"
+        }
+      },
+      {
+        "query": "outline-native-width-record",
+        "evidence_id": "ev_a87479fda1b6518d0eabb1459e8016c3e219003b2d7cfc740819325e3cab9930",
+        "record_sha256": "2b911de00665ee477c1d741b029d1930483d5d8127599f5de496faa8cfeba5ab",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1001f0f0"
+        }
+      },
+      {
+        "query": "outline-native-logical-width",
+        "evidence_id": "ev_4350b96f5cff984f22a7a486c069d5e1746f55dae01937d46cda472e6ae9dcac",
+        "record_sha256": "d26a916f1b5d4cc1029bfdd1e1ce57e5e625e30f0d0bc40059cd03e1114dd2e2",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x1001f2a0"
+        }
+      },
+      {
+        "query": "outline-width-leaf-frida-observed",
+        "evidence_id": "ev_ff816d29afa58c4353d1aff1f10fe641f7c781a4fe0a20b587ad342d4912a09c",
+        "record_sha256": "c3227ab091ee27476bda7ba4624d4008bb01da0ed775270766273028a9e882ef",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "d6caa1b7-91a1-4fb0-8eec-5febcb3414c1"
+        }
+      },
+      {
+        "query": "composite-outline-map-select",
+        "evidence_id": "ev_4944c54d94e79d9dcf516f0fe42bef2733fda65200d684a6fd0e9f8123db3a36",
+        "record_sha256": "8eea2bb42bb72f02c57ddbd6441ab809e150342bda8deab478c703813c91228c",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100ac080"
+        }
+      },
+      {
+        "query": "composite-outline-map-loader",
+        "evidence_id": "ev_aeb51710576d2f8ac6fa57085fc94c30442c8fd7dde4bc6e955ea72edfe967fe",
+        "record_sha256": "cbc0ec03dcdabc614c1860a5b22677a55b1d322ea89bb1a099b8973c148bb1e7",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100ab9a0"
+        }
+      },
+      {
+        "query": "composite-outline-field-tables",
+        "evidence_id": "ev_ddeeae517fbbf8ee7f7bfef8314269f7e7b8d5e4d6d28cc2a981dba30251b2e7",
+        "record_sha256": "f8ba6e645d9089300400501214200031ee634a64c4e94629b45b3f6fe229fad0",
+        "operation": "read_bytes",
+        "parameters": {
+          "address": "0x100c6e20",
+          "length": 96
+        }
+      },
+      {
+        "query": "composite-outline-program-reader",
+        "evidence_id": "ev_15a42595eb8938eef592e70fbb9e2d38d86f4a663f8909ca325f73e08d32b1bd",
+        "record_sha256": "5153fbc98752759f933186f02aa27f751329d7e9c8d58ade4abca65efcd91a24",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x10029c50"
+        }
+      },
+      {
+        "query": "composite-outline-dispatch",
+        "evidence_id": "ev_4529ff65da5ea48ed7ebfbeb5b56a9daf33522916ff7c0bbe9cdbdc590414b52",
+        "record_sha256": "eeb20462ac72964df5ec4b6de109b17713e0fa0f38106d5c7a17800433586fcf",
+        "operation": "procedure_pseudo_code",
+        "parameters": {
+          "procedure": "0x100ad2c0"
+        }
+      },
+      {
+        "query": "composite-indices-frida-observed",
+        "evidence_id": "ev_f8e2cbe069b64f5469036dfdd93995d3a73b00b9b520a9d1a160dba84b991da1",
+        "record_sha256": "67edf030467479e8252c729a473ebd62f482d43e1bfdf5a3f963510311dd4d87",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "f896cccd-a8a7-41d3-8791-65e12d6b5d29"
+        }
       }
     ],
     "sessions_closed": true,
@@ -768,26 +947,33 @@
       "static_snapshot_saved": true,
       "raw_decompilation_distributed": false,
       "captured_buffers_distributed": false
+    },
+    "normal_pdf_fonts": {
+      "sessions_closed": true,
+      "snapshot_sha256": "f75cf22e1b679b1ea19a94216f35110d783e5e38a8160d5c80095e0ce0f693d3",
+      "raw_decompilation_distributed": false
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "64fc38600286f4767142098f0b75564888cac584682b0390f483e91b6d3ed39d",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "aaae813c439dd364b316c7a82af2706065764a23620930c46792c95236aa0182",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "c2f1f7f0e61c596fe392f567b82bd4be0c4c60b54f3f6c4a520327d390da8576",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "9100636ad934c0effa8c48672d4869f6592e9726990664c6bdd53a80de13b8ce",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ce85282e3baef73c3c4668410ea8d6e6ed9ff963df212fd97c8907be817bc7b6",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "74a90da08fee6d06f1e491125ca5fe51829e1d6bf33f38b0e230e7e3de049137",
+    "2_나래스킬/narae-viewer/SKILL.md": "270181bcb7246667d8274b12d46f748e07efb93bb271c20f7ae2d5b383a6e4c9",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "9ddea78197436c54cf2fdbfca98a3910e56868b64908461d894308f496f2b4ef",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "9d9b1a59cc209dc9299f4aed6bb4a5750349bfb27f76e5c9bd5711bec3373203",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft_cff.py": "9e2df4fb3baadc44f4a5402077f21a0d38f91bec828610e4a1115fd5edd161cc",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "7d1e2ffce04580344fb6210bc3a2c77b9a6b95aeaf19a623fdbc56984a7795ee",
-    "tests/test_font_appearance.py": "db8d636a0d1cf2f973bce8eb85fc205ebc0b3a5c2ec3bf6397252732bdccc600",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "d21afa3cddf8033f2e033d151a83f8d62ecaeda8de776bc8a01ce8d3592ca25b",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft_cff.py": "ecd7b82cd2d36ae98ef5865141e01eeb9d795c4464407245ebb8cef9668acb1d",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/font_resolver.py": "3776ca2b1ef5e53022be0b08cc323a58a9d1940378713de3c93e5c777115a639",
+    "tests/test_font_appearance.py": "88b723af638902942a8b7fc063e24a7bff48bb46febd8cf16a52168361b8d0af",
     "tests/test_bitmap_fonts.py": "8bccdb4a0d86a4cab327275d16380b0b01f99b32881bdc50adb3753b9a8c0faa",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap.py": "826f68d3246fa10c9eb0ca6b854feca847b7a90d4dd9a176289c59b0f48d20fd",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "5e2216bbf741981dd31bfa44663664a57a8ce539d8d39f502b5215de924e6e8f",
     "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "24929db32de1b04976a3c9bfce1543dca725138ca767a187697cfc262ae3e66f"
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "24929db32de1b04976a3c9bfce1543dca725138ca767a187697cfc262ae3e66f",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "487c63e2970d11256ef2e365c30bd18443f9079f597d39d55f1a0b827a1903d2",
+    "tests/test_pdf_native_text.py": "2b676982c806ea299f1eb9aed5585c384cdbfa6093af1fdfef8f6fb44bc39773"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -1219,5 +1405,44 @@
     "native_captured_pre_pdf_bitmap_samples": 8,
     "all_captured_format_samples_equal": true,
     "format_probe_report_sha256": "17b57d1b5b059da2b38fdcae90831d87086643466d878f909dfe0c3a9ad6d2ae"
+  },
+  "native_pdf_text": {
+    "backend": "Source HFT Type3 and verified installed TrueType/TTC, independent of Hancom",
+    "truetype": "Preserve original hint programs, glyph bounds and head flags; regenerate subset CID map",
+    "hft": "Share one face cache across script files; native source-unit baseline rounding and Human outline composition",
+    "hft_missing_hangul": {
+      "한양신명조": "휴먼명조",
+      "한양중고딕": "휴먼고딕"
+    },
+    "hanja_fallback": "Installed FontDB Default Fonts KOR / Hanja order",
+    "placement": "4 HWPUNIT advances/tracking, cumulative 600dpi positions, paragraph-origin line baselines",
+    "uncached_line_break": "Logical em advances before printer-em rounding",
+    "pdf_precision": "Default 6 decimals; polygon or filled-cell paths leave 3 decimals through later pages",
+    "type3_tj": "One-decimal correction and per-glyph fallback transitions",
+    "source_text": "Visible font Unicode maps are empty; existing exact semantic layer remains authoritative",
+    "placement_integrity": "Only off-paper RGB tokens are replaced; missing or duplicate tokens preserve original PDF",
+    "native_reference_pagination": "PrintToPDFEx before first PageCount; before-count value remains null",
+    "precount_ab": {
+      "pages": 101,
+      "early_count_exact": 96,
+      "print_first_exact": 101,
+      "log_sha256": "22b85500673478e8a894d51559019c326db24eedab5cd847444f9abc33d1c2da"
+    },
+    "precision_fixture": {
+      "pages_checked": 4,
+      "pages_exact": 2,
+      "remaining": "First-page table flow/edges: 2902 changed pixels per format; text-only second pages match."
+    },
+    "fonts_distributed": false,
+    "reference_glyphs_used_by_renderer": false,
+    "whole_document_equivalence_verified": false,
+    "remaining": [
+      "styles and script offsets",
+      "justified continuation lines",
+      "inline object spaces",
+      "table/drawing geometry",
+      "native transparency phase and unsupported image paths",
+      "Hancom layouts populated by a pre-print PageCount query have different advances in five sampled pages"
+    ]
   }
 }
