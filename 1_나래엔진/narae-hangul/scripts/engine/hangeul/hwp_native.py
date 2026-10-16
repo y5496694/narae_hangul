@@ -154,7 +154,7 @@ class _DocInfoEditor:
         def missing_flags(value):
             if isinstance(value, dict):
                 if "font" in value and "bold" in value:
-                    self.unmodeled_character_fields.update(key for key in ("use_font_space", "use_kerning") if key not in value)
+                    self.unmodeled_character_fields.update(key for key in ("use_font_space", "use_kerning", "strike_shape", "strike_color") if key not in value)
                 for child in value.values():
                     missing_flags(child)
             elif isinstance(value, (list, tuple)):
@@ -190,6 +190,14 @@ class _DocInfoEditor:
             raise ValueError("원본 HWP 글자 모양을 확인할 수 없습니다.")
         data = bytearray(self.chars[ident])
         flags, = struct.unpack_from("<I", data, 46)
+        # Legacy underline enum 2 is a middle line. When its decorations
+        # change, represent that strike separately before changing underline.
+        # Other edits keep the original compatible record untouched.
+        normalize_legacy = ((flags >> 2) & 3) == 2 and (old.underline != new.underline or old.strike != new.strike
+            or old.strike_shape != new.strike_shape and "strike_shape" not in self.unmodeled_character_fields
+            or old.strike_color != new.strike_color and "strike_color" not in self.unmodeled_character_fields)
+        if normalize_legacy:
+            flags = (flags & ~12) | (1 << 18)
         for attribute, mask, enabled in (("italic", 1, 1), ("bold", 2, 2), ("underline", 12, 4),
             ("strike", 7 << 18, 1 << 18), ("superscript", 1 << 15, 1 << 15), ("subscript", 1 << 16, 1 << 16),
             ("use_font_space", 1 << 25, 1 << 25), ("use_kerning", 1 << 30, 1 << 30)):
@@ -197,6 +205,15 @@ class _DocInfoEditor:
                 continue  # old sessions never exposed these native flags
             if getattr(old, attribute) != getattr(new, attribute):
                 flags = (flags & ~mask) | (enabled if getattr(new, attribute) else 0)
+        if (normalize_legacy or not old.strike and new.strike or
+            old.strike_shape != new.strike_shape and "strike_shape" not in self.unmodeled_character_fields):
+            from .formats import STRIKE_SHAPES
+            if new.strike_shape not in STRIKE_SHAPES:raise ValueError("지원하지 않는 취소선 모양입니다.")
+            flags = (flags & ~(15 << 26)) | (STRIKE_SHAPES.index(new.strike_shape) << 26)
+        if (normalize_legacy or not old.strike and new.strike or
+            old.strike_color != new.strike_color and "strike_color" not in self.unmodeled_character_fields):
+            if len(data)<74:data.extend(bytes(74-len(data)))
+            struct.pack_into("<I",data,70,self._color(new.strike_color or new.color))
         struct.pack_into("<I", data, 46, flags)
         if old.size != new.size:
             if not math.isfinite(new.size) or not 0 < new.size <= 4096:
@@ -282,7 +299,7 @@ class _DocInfoEditor:
                 raise ValueError("HWP 줄 간격이 허용 범위를 벗어났습니다.")
             kind = options.index(new.line_type)
             flags = (flags & ~3) | kind
-            line = round(new.line if kind == 0 else new.line * 100)
+            line = round(new.line) if kind == 0 else round(new.line * 100)*2
             struct.pack_into("<i", data, 24, line)
             if len(data) >= 54:
                 prop3, = struct.unpack_from("<I", data, 46)

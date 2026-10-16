@@ -1,4 +1,6 @@
 interface:
-  display_name: "나래한글 뷰어"
-  short_description: "HWP·HWPX 읽기 전용 보기와 PDF·이미지 출력, 쪽별 비교 검증"
-  default_prompt: "$narae-viewer로 한글 문서를 읽고 쪽수와 내용을 확인한 뒤 필요하면 기준 출력과 비교해줘."
+  display_name: "나래한글 뷰어 (미완성·보관)"
+  short_description: "미완성 실험용 소스 보관: 일반 문서 읽기·검증에는 사용 비권장"
+  default_prompt: "$narae-viewer의 미완성 소스를 점검하고 남은 차이를 확인해줘. 일반 문서의 정확성 판정에는 사용하지 마."
+policy:
+  allow_implicit_invocation: false

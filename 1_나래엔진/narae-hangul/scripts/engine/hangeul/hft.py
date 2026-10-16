@@ -271,7 +271,13 @@ class HftFont:
                 except HftError:continue
                 if index is None:continue
                 if isinstance(index,tuple):
-                    if g['kind'] or not index or any(not 0<=i<record['count'] for i in index):continue
+                    if not index or any(not 0<=i<record['count'] for i in index):continue
+                    if g['kind']:
+                        parts=[self._outline(g,record,i,character) for i in index]
+                        return Glyph(character,parts[0].units_per_em,'outline',record['bounds'],
+                                     tuple(op for p in parts for op in p.operations),
+                                     dict(parts[0].provenance,component_indices=index,
+                                          composition='same-origin outline components'))
                     parts=[self._bitmap(g,record,i,character) for i in index]
                     return Glyph(character,parts[0].units_per_em,'bitmap-composite',parts[0].bounds,
                                  tuple(op for p in parts for op in p.operations),

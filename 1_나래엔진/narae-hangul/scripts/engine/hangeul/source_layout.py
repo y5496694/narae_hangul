@@ -11,10 +11,10 @@ import math
 import unicodedata
 from PySide6.QtCore import Qt, QPointF, QRectF, QSizeF, Signal
 from PySide6.QtGui import (QColor, QFont, QFontDatabase, QFontMetricsF, QImage, QPainter, QPen, QTextLayout,
-                          QTextCharFormat, QTextOption, QTransform, QPageSize, QPageLayout)
+                          QTextCharFormat, QTextOption, QTransform, QPageSize, QPageLayout, QRawFont)
 from PySide6.QtGui import QPainterPath
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem
-from .formats import Paragraph, Table, Drawing, _table_grid
+from .formats import Paragraph, Table, Drawing, _table_grid,INVISIBLE_STRIKE_SHAPES
 from .font_resolver import InstalledHftResolver,InstalledSfntResolver,installed_default_fonts,BITMAP_FAMILIES
 from .picture_effects import apply_tone,pdf_alpha_tile,image_is_opaque
 
@@ -24,6 +24,10 @@ BITMAP_FONT_PROPERTY=0x108003
 SYNTHETIC_ITALIC_PROPERTY=0x108004
 BITMAP_TRACKING_PROPERTY=0x108005
 BITMAP_SPACE_PROPERTY=0x108006
+OUTLINE_FONT_PROPERTY=0x108007
+FONT_FALLBACK_PROPERTY=0x108008
+STRIKE_SHAPE_PROPERTY=0x108009
+STRIKE_COLOR_PROPERTY=0x10800a
 TEXT_DPI=600
 TEXT_UNIT_PT=72/TEXT_DPI
 TEXT_TO_VIEW=96/TEXT_DPI
@@ -185,6 +189,8 @@ class SourceLayout:
         self._script_offsets={}
         self._drawing_limitations={}
         self._image_limitations=[]
+        self._image_limitation_runs={}
+        self._pdf_source_alpha_done=set();self._pdf_source_alpha_failed=set()
         self._pdf_picture_alpha=False
         self._pdf_alpha_sequence=0
         self._pdf_page_width=self.width
@@ -194,12 +200,22 @@ class SourceLayout:
         self._pdf_bitmap_bytes=0
         self._pdf_bitmaps=[]
         self._pdf_bitmap_text={'processed_lines':0,'legacy_lines':0,'image_chunks':0,
-                               'legacy_reasons':{},'remaining':{},'whole_document_parity_verified':False}
+                               'legacy_reasons':{},'remaining':{},'fitted_lines':0,'condensed_word_gaps':0,
+                               'condensed_character_gaps':0,'justified_lines':0,'expanded_word_gaps':0,
+                               'expanded_character_gaps':0,'whole_document_parity_verified':False}
+        self._pdf_native_writer=None
+        self._pdf_table_frames={'processed_grids':0,'legacy_grids':0,'legacy_reasons':{},'whole_document_parity_verified':False}
+        self._pdf_gradients={'processed_radial_fills':0,'fallback_fills':0,'fallback_reasons':{},'whole_document_parity_verified':False}
+        self._pdf_native_text={'processed_lines':0,'legacy_lines':0,'glyphs':0,'fonts':[],
+                               'legacy_reasons':{},'cell_clipped_lines':0,'cell_clipped_painter_lines':0,'whole_document_parity_verified':False}
         self._bitmap_images={}
         self._bitmap_image_bytes=0
         self._metrics_device=QImage(1,1,QImage.Format.Format_RGB32)
         self._metrics_device.setDotsPerMeterX(round(TEXT_DPI/0.0254))
         self._metrics_device.setDotsPerMeterY(round(TEXT_DPI/0.0254))
+        self._terminal_wrap_fonts={}
+        self._positive_tracking_wrap_lines=0
+        self._nonbreaking_control_prefixes=0
         self._paragraph_pages={}
         self._paragraph_entries={}
         self._paragraphs={}
@@ -232,8 +248,8 @@ class SourceLayout:
                                 unsupported.append('alpha:printer-coordinate-rounding')
                             if picture.effect not in ('','REAL_PIC','GRAY_SCALE','BLACK_WHITE'):unsupported.append('effect:'+picture.effect)
                             if unsupported:
-                                self._image_limitations.append({'source_index':block.source_index,
-                                    'source_start':run.source_start,'unsupported':unsupported})
+                                record={'source_index':block.source_index,'source_start':run.source_start,'unsupported':unsupported}
+                                self._image_limitations.append(record);self._image_limitation_runs[id(record)]=id(run)
                         if run.image and run.picture.position.inline:
                             self._inline_objects.setdefault(key,[]).append((run.source_start or 0,run.width*.75,run.picture.position,run.style))
                         styles={self._style_for_character(run.style,c) for c in run.text} or {
@@ -331,6 +347,38 @@ class SourceLayout:
         self._ensure_page(page)
         self.pages[page].append(command)
 
+    def _terminal_tracking_width(self,layout,line):
+        """Positive trailing tracking takes no room after a wrapped glyph."""
+        import struct
+        from .pdf_device_metrics import logical_advances
+        text=_utf16_slice(layout.text(),line.textStart(),line.textStart()+line.textLength()).rstrip('\u200b\u2060 \u2028')
+        if (not text or ord(text[-1])>=65536 or text[-1]=='\u2000'
+            or unicodedata.category(text[-1]) in {'Cc','Cf'}):return 0
+        position=line.textStart()+len(text.encode('utf-16le'))//2-1
+        # Keep FormatRange wrappers alive while reading their Qt formats.
+        formats=layout.formats()
+        fmt=next((f.format for f in formats if f.start<=position<f.start+f.length),None)
+        if fmt is None:return 0
+        spacing=fmt.property(BITMAP_TRACKING_PROPERTY) or 0
+        if spacing<=0 or fmt.property(OUTLINE_FONT_PROPERTY) or fmt.property(BITMAP_FONT_PROPERTY):return 0
+        font=fmt.font();character=text[-1];advance=0
+        if character!='!':
+            key=font.key();entry=self._terminal_wrap_fonts.get(key)
+            if entry is None:
+                raw=QRawFont.fromFont(font)
+                if not raw.isValid():return 0
+                head=bytes(raw.fontTable('head'));hhea=bytes(raw.fontTable('hhea'));hmtx=bytes(raw.fontTable('hmtx'))
+                if len(head)<20 or len(hhea)<36:return 0
+                units=struct.unpack_from('>H',head,18)[0];count=struct.unpack_from('>H',hhea,34)[0]
+                if not units or not count or len(hmtx)<count*4:return 0
+                entry=(raw,units,count,hmtx)
+                if len(self._terminal_wrap_fonts)<64:self._terminal_wrap_fonts[key]=entry
+            raw,units,count,hmtx=entry;glyphs=raw.glyphIndexesForString(character)
+            if not glyphs or not glyphs[0]:return 0
+            advance=struct.unpack_from('>H',hmtx,min(glyphs[0],count-1)*4)[0]/units
+        tracked,untracked=logical_advances(advance,font.pointSizeF(),font.stretch(),1+spacing/100,character=='!')
+        return max(0,tracked-untracked)/100/TEXT_UNIT_PT
+
     def _segments_for(self,paragraph,width,start_y=0):
         if paragraph.line_segments:return paragraph.line_segments
         text=self._paragraph_text(paragraph)
@@ -339,9 +387,26 @@ class SourceLayout:
         if not text:text='\u200b'
         self._reflowed_paragraphs.add(id(paragraph))
         text=text.replace('\r','\u200b').replace('\n','\u2028').replace('\x0b','\u2028').replace('\ufffc','\u200b')
+        # Section-control slots must retain their UTF-16 offsets without
+        # becoming a legal empty-line break before the first visible word.
+        leading=len(text)-len(text.lstrip('\u200b'))
+        if leading:
+            text='\u2060'*leading+text[leading:]
+            self._nonbreaking_control_prefixes+=1
         available=max(1,width-paragraph.style.left-paragraph.style.right)
         seed=Command('text',(0,0,available,1),paragraph,{'text':text,'start':0,'line':{'baseline_pt':0}})
         layout=self._text_layout(seed)
+        # Qt rounds a point-sized face to an integer printer em (8pt ->
+        # 67px). Native line breaking uses logical point advances before
+        # that raster rounding, so sixty 8pt syllables fit a 481.9pt line.
+        formats=layout.formats()
+        for item in formats:
+            font=item.format.font();pixels=math.floor(font.pointSizeF()/TEXT_UNIT_PT+.5)
+            if pixels>0 and font.pointSizeF()>0 and font.letterSpacingType()==QFont.SpacingType.PercentageSpacing:
+                font.setLetterSpacing(QFont.SpacingType.PercentageSpacing,
+                                      font.letterSpacing()*font.pointSizeF()/TEXT_UNIT_PT/pixels)
+                item.format.setFont(font)
+        layout.setFormats(formats)
         option=layout.textOption();option.setWrapMode(QTextOption.WrapMode.WrapAtWordBoundaryOrAnywhere)
         layout.setTextOption(option);layout.clearLayout();layout.beginLayout()
         lines=[];y=(0 if paragraph.style.page_break else start_y)+paragraph.style.before
@@ -350,6 +415,13 @@ class SourceLayout:
             if not line.isValid():break
             indent=paragraph.style.indent if not lines else 0
             line.setLineWidth(max(1,available-indent)/TEXT_UNIT_PT)
+            expanded=False
+            for attempt in range(4):
+                length=line.textLength();extra=self._terminal_tracking_width(layout,line)
+                line.setLineWidth(max(1,available-indent)/TEXT_UNIT_PT+extra)
+                expanded=expanded or extra>0
+                if line.textLength()==length:break
+            if expanded:self._positive_tracking_wrap_lines+=1
             style=paragraph.style
             if style.font_line_height:
                 height=line.height()*TEXT_UNIT_PT
@@ -368,14 +440,24 @@ class SourceLayout:
                     sizes.append(paragraph.end_style.size)
                 height=max(sizes,default=paragraph.default_style.size)
                 baseline=.85*height
-            if y+height>self.body_height and y>0:y=0
+            starts_new_page=y+height>self.body_height and y>0
+            if starts_new_page:y=0
             pitch=(height*style.line/100 if style.line_type=='PERCENT' else
                    height+style.line if style.line_type=='BETWEEN_LINES' else
                    max(height,style.line) if style.line_type=='AT_LEAST' else style.line)
+            spacing=pitch-height
+            if style.line_type=='PERCENT':
+                # Native percent spacing quantizes the character height down
+                # to four HWPUNIT before calculating the gap, then rounds the
+                # signed gap independently to four units (ties away from 0).
+                em=math.floor(height*25+1e-9)*4
+                quarters=em*(style.line-100)/400
+                spacing=math.copysign(math.floor(abs(quarters)+.5+1e-9)*.04,quarters)
+            pitch=height+spacing
             lines.append(dict(text_start=line.textStart(),y_pt=y,height_pt=height,text_height_pt=height,
-                              baseline_pt=baseline,spacing_pt=max(0,pitch-height),
+                              baseline_pt=baseline,spacing_pt=spacing,starts_new_page=starts_new_page,
                               x_pt=style.left+indent,width_pt=max(1,available-indent),flags=0))
-            y+=max(height,pitch)
+            y+=pitch
         layout.endLayout()
         if lines:lines[-1]['spacing_pt']+=paragraph.style.after
         return lines
@@ -411,7 +493,7 @@ class SourceLayout:
             text=_utf16_slice(text,0,start)+value+'\u200b'*(8-len(value))+_utf16_slice(text,start+8)
         return text
 
-    def _build(self,blocks,origin,page,body=False,continuation_y=None,content_width=None):
+    def _build(self,blocks,origin,page,body=False,continuation_y=None,content_width=None,table_text_origin=None,table_text_cell=None):
         current=page;last=-1.;origin_x,origin_y=origin
         if content_width is None:content_width=self.body_width
         local_offset=0.;previous_end=0.
@@ -459,7 +541,7 @@ class SourceLayout:
                 flows=not image_only or any(r.image and r.picture.position.inline for r in block.runs)
                 for number,line in enumerate(lines):
                     y=line['y_pt']
-                    if flows and ((number and y<=last+.01) or y+1<last):
+                    if flows and ((number and line.get('starts_new_page',y<=last+.01)) or y+1<last):
                         if body or number or last>self.body_height*.4:
                             current+=1;local_offset=0.;previous_end=0.
                         else:
@@ -476,7 +558,7 @@ class SourceLayout:
                         if text.strip('\u200b\u200c\u200d '):
                             actual_y=(continuation_y if current>page else origin_y)+y+local_offset
                             self._add(current,Command('text',(origin_x+line['x_pt'],actual_y,line['width_pt'],line['height_pt']),block,
-                                                      {'line':line,'text':text,'start':start,
+                                                      {'line':line,'text':text,'start':start,'table_text_origin':table_text_origin,'table_text_cell':table_text_cell,
                                                        'justify_continuation':number+1<len(lines) and not raw_text.endswith(('\n','\x0b'))}))
                 for run in block.runs:
                     if not run.image:continue
@@ -557,7 +639,7 @@ class SourceLayout:
                         # Centre/right and inline alignment need their own rule.
                         if block.position.horz_align=='LEFT':x+=block.position.out_margin[0]
                         if block.position.vert_align=='TOP':y+=block.position.out_margin[2]
-                    extra=self._table(block,x,y,anchor_page)
+                    extra=self._table(block,x,y,anchor_page,origin if body else None)
                 if body:
                     following=next((b for b in blocks[block_index+1:] if isinstance(b,Paragraph) and b.line_segments and b.source_index!=block.source_index),None)
                     if extra and following and not following.style.page_break and following.line_segments[0]['y_pt']+1<last:
@@ -567,6 +649,16 @@ class SourceLayout:
                     current=max(current,anchor_page+extra)
                     begin=command_counts[current] if current<len(command_counts) else 0
                     physical_end=max((command.rect[1]+command.rect[3] for command in self.pages[current][begin:]),default=y)
+                    if block.position.inline:
+                        # The grown inline object occupies the anchor line;
+                        # its paragraph spacing still follows that line.
+                        spacing=line.get('spacing_pt',0)
+                        if (block.position.affect_line_spacing and anchor and
+                            anchor.style.line_type=='PERCENT' and anchor.style.line>=100):
+                            base=continuation_y if current>page else origin_y
+                            height=max(line.get('height_pt',0),physical_end+block.position.out_margin[3]-base-line['y_pt'])
+                            spacing=height*(anchor.style.line/100-1)+anchor.style.after
+                        physical_end+=spacing
                     base_y=continuation_y if current>page else origin_y
                     if current>anchor_page:previous_end=0.;local_offset=0.
                     previous_end=max(previous_end,physical_end+block.position.out_margin[3]-base_y)
@@ -604,11 +696,18 @@ class SourceLayout:
     def _picture(self,run,line,origin,page,align=None,paragraph=None):
         width,height=run.width*.75,run.height*.75
         x,y=self._position(run.picture.position,line,origin,width,height,page,align)
+        baseline_shift=0.
         if run.picture.position.inline and paragraph is not None:
             inline_x=self._inline_x(paragraph,run.source_start or 0,page)
             if inline_x is not None:x=inline_x+run.picture.position.out_margin[0]
+            # Inline pictures have an 85% baseline like declared-size text.
+            # A picture shorter than its anchor line sits below the line top.
+            baseline_shift=max(0,line.get('baseline_pt',0)-height*.85)
+            y+=baseline_shift
         self._add(page,Command('image',(x,y,width,height),run,
-                               {'object_wrap':run.picture.position.wrap,'object_z_order':run.picture.position.z_order}))
+                               {'object_wrap':run.picture.position.wrap,'object_z_order':run.picture.position.z_order,
+                                'source_index':getattr(paragraph,'source_index',-1),
+                                'inline_baseline_origin':origin[1] if baseline_shift else None}))
 
     def _inline_x(self,paragraph,start,page):
         if paragraph is None or not 0<=page<len(self.pages):return None
@@ -620,7 +719,8 @@ class SourceLayout:
                 return command.rect[0]+layout.lineAt(0).cursorToX(offset)[0]*TEXT_UNIT_PT
         return None
 
-    def _table(self,table,x,y,page):
+    def _table(self,table,x,y,page,native_origin=None):
+        command_counts=[len(commands) for commands in self.pages]
         columns,rows,widths,cell_extents=_table_measurements(table,self.body_height*.4,self._segments_for)
         # Cached line positions capture automatic growth of cells beyond their
         # requested minimum height, including continuations to another page.
@@ -661,11 +761,17 @@ class SourceLayout:
                 self._add(page_cell,Command('cell',(cx,cy,width,height),cell,{'table_group':id(table)}))
                 spare=max(0,height-cell.padding[2]-cell.padding[3]-extents[0])
                 shift=spare/2 if cell.vertical_align=='CENTER' else spare if cell.vertical_align=='BOTTOM' else 0
-                final_page=max(final_page,page_cell+self._build(cell.blocks,(cx+cell.padding[0],cy+cell.padding[2]+shift),page_cell,content_width=widths[id(cell)]))
+                final_page=max(final_page,page_cell+self._build(cell.blocks,(cx+cell.padding[0],cy+cell.padding[2]+shift),page_cell,
+                    content_width=widths[id(cell)],table_text_origin=(id(table),native_origin) if native_origin is not None else None,table_text_cell=cell))
             else:
                 for part_page,part_y,part_height in pieces:
                     self._add(part_page,Command('cell',(cx,part_y,width,part_height),cell,{'table_group':id(table)}))
                 final_page=max(final_page,pieces[-1][0],page_cell+self._build(cell.blocks,(cx+cell.padding[0],cy+cell.padding[2]),page_cell,continuation_y=self.top+cell.padding[2],content_width=widths[id(cell)]))
+        for index,commands in enumerate(self.pages):
+            begin=command_counts[index] if index<len(command_counts) else 0
+            cells=[c for c in commands[begin:] if c.kind=='cell' and c.extra.get('table_group')==id(table)]
+            if cells:
+                commands[-1].extra.setdefault('table_frames_after',[]).append((table,cells,native_origin))
         return final_page-page
 
     def _headers_footers(self):
@@ -713,7 +819,8 @@ class SourceLayout:
         font.setPointSizeF(style.size)
         font.setBold(style.bold and not self._synthetic_bold(style,fallback))
         font.setItalic(style.italic and not self._synthetic_italic(style,fallback))
-        font.setUnderline(style.underline);font.setStrikeOut(style.strike)
+        font.setUnderline(style.underline)
+        font.setStrikeOut(style.strike and style.strike_shape not in INVISIBLE_STRIKE_SHAPES)
         font.setStretch(style.stretch)
         font.setKerning(getattr(style,'use_kerning',False))
         # Native advances apply spacing as a percentage of each character's
@@ -732,9 +839,14 @@ class SourceLayout:
 
     def _char_format(self,style,fallback=False):
         fmt=QTextCharFormat();fmt.setFont(self._font(style,fallback));fmt.setForeground(QColor(style.color))
+        if style.strike:fmt.setProperty(STRIKE_SHAPE_PROPERTY,style.strike_shape)
+        if style.strike_color:fmt.setProperty(STRIKE_COLOR_PROPERTY,style.strike_color)
+        fmt.setProperty(BITMAP_TRACKING_PROPERTY,style.letter_spacing)
+        if fallback:fmt.setProperty(FONT_FALLBACK_PROPERTY,style.font)
         if not fallback and style.font in BITMAP_FAMILIES and style.font in self._source_fonts:
             fmt.setProperty(BITMAP_FONT_PROPERTY,style.font)
-            fmt.setProperty(BITMAP_TRACKING_PROPERTY,style.letter_spacing)
+        elif not fallback and style.font in self._source_fonts:
+            fmt.setProperty(OUTLINE_FONT_PROPERTY,style.font)
         if self._synthetic_bold(style,fallback):fmt.setProperty(SYNTHETIC_BOLD_PROPERTY,style.size*.02/TEXT_UNIT_PT)
         if self._synthetic_italic(style,fallback):fmt.setProperty(SYNTHETIC_ITALIC_PROPERTY,.333333)
         return fmt
@@ -968,13 +1080,41 @@ class SourceLayout:
             self._bitmap_images[key]=value;self._bitmap_image_bytes+=image.sizeInBytes()
         return value
 
+    def _clip_pdf_cell(self,painter,command):
+        origin=command.extra.get('table_text_origin');cell=command.extra.get('table_text_cell')
+        grid=self._active_pdf_grids.get(origin[0]) if origin is not None else None
+        if not self._pdf_picture_alpha or grid is None or cell is None:return False
+        from .pdf_table_frames import clip_points
+        inverse,valid=painter.combinedTransform().inverted()
+        if not valid:raise ValueError('Singular PDF cell clip transform')
+        device=painter.device();dx,dy=device.logicalDpiX()/72,device.logicalDpiY()/72
+        path=QPainterPath()
+        for i,(x,y) in enumerate(clip_points(grid,cell)):
+            point=inverse.map(QPointF(x*dx,(math.floor(self._pdf_page_height)-y)*dy))
+            if i:path.lineTo(point)
+            else:path.moveTo(point)
+        path.closeSubpath();painter.setClipPath(path,Qt.ClipOperation.IntersectClip)
+        return True
+
     def _draw_text(self,painter,command):
         paragraph=command.source
         if paragraph.style.background and QColor(paragraph.style.background).isValid():
             x,y,width,height=command.rect
             left,right,top,bottom=paragraph.style.border_offsets
-            painter.fillRect(QRectF((x-left)/.75,(y-top)/.75,(width+left+right)/.75,(height+top+bottom)/.75),QColor(paragraph.style.background))
+            painter.save()
+            try:
+                self._clip_pdf_cell(painter,command)
+                painter.fillRect(QRectF((x-left)/.75,(y-top)/.75,(width+left+right)/.75,(height+top+bottom)/.75),QColor(paragraph.style.background))
+            finally:painter.restore()
         layout=self._text_layout(command)
+        if self._pdf_native_writer is not None and self._pdf_native_writer.draw_line(painter,command,layout):return
+        painter.save()
+        try:
+            if self._clip_pdf_cell(painter,command):self._pdf_native_text['cell_clipped_painter_lines']+=1
+            self._draw_painter_text(painter,command,layout)
+        finally:painter.restore()
+
+    def _draw_painter_text(self,painter,command,layout):
         if self._pdf_picture_alpha:
             from .pdf_bitmap_text import draw_line
             bitmap_text=draw_line(self,painter,command,layout)
@@ -982,6 +1122,8 @@ class SourceLayout:
                 key='processed_lines' if bitmap_text['handled'] else 'legacy_lines'
                 self._pdf_bitmap_text[key]+=1
                 self._pdf_bitmap_text['image_chunks']+=bitmap_text.get('image_chunks',0)
+                for key in ('fitted_lines','condensed_word_gaps','condensed_character_gaps','justified_lines','expanded_word_gaps','expanded_character_gaps'):
+                    self._pdf_bitmap_text[key]=self._pdf_bitmap_text.get(key,0)+bitmap_text.get(key,0)
                 if not bitmap_text['handled']:
                     reason=bitmap_text['reason'];reasons=self._pdf_bitmap_text['legacy_reasons']
                     reasons[reason]=reasons.get(reason,0)+1
@@ -1045,7 +1187,10 @@ class SourceLayout:
             painter.setPen(QPen(color,max(.5/TEXT_TO_VIEW,metrics.lineWidth())))
             baseline=command.extra['line']['baseline_pt']/TEXT_UNIT_PT
             if fmt.fontUnderline():painter.drawLine(QPointF(first,baseline+metrics.underlinePos()),QPointF(last,baseline+metrics.underlinePos()))
-            if fmt.fontStrikeOut():painter.drawLine(QPointF(first,baseline-metrics.strikeOutPos()),QPointF(last,baseline-metrics.strikeOutPos()))
+            if fmt.fontStrikeOut():
+                strike_color=QColor(fmt.property(STRIKE_COLOR_PROPERTY) or color)
+                if strike_color.isValid():painter.setPen(QPen(strike_color,max(.5/TEXT_TO_VIEW,metrics.lineWidth())))
+                painter.drawLine(QPointF(first,baseline-metrics.strikeOutPos()),QPointF(last,baseline-metrics.strikeOutPos()))
             painter.restore()
         painter.restore()
 
@@ -1198,6 +1343,14 @@ class SourceLayout:
 
     def _draw_image(self,painter,command):
         run=command.source;picture=run.picture
+        frame_rect=command.rect
+        anchor_y=command.extra.get('inline_baseline_origin')
+        if anchor_y is not None:
+            # The printer rounds the paragraph origin before adding the
+            # inline baseline offset, rather than rounding their sum.
+            from .pdf_bitmap import printer_pixel
+            x,y,w,h=frame_rect
+            frame_rect=(x,printer_pixel(anchor_y)*.12+y-anchor_y,w,h)
         image=QImage.fromData(run.image)
         if image.isNull():return
         # Hancom's PDF printer emits the opaque source plus a white ordered
@@ -1224,9 +1377,28 @@ class SourceLayout:
             if picture.effect not in ('','REAL_PIC') or picture.brightness or picture.contrast:unsupported.append('picture effects')
             if picture.rotation or picture.flip_h or picture.flip_v:unsupported.append('rotation or reflection')
             if source!=QRectF(0,0,image.width(),image.height()):unsupported.append('source crop')
-            record={'source_index':getattr(command.source,'source_index',-1),'source_start':run.source_start,
+            record={'source_index':command.extra.get('source_index',-1),'source_start':run.source_start,
                     'source_sha256':key[0].hex(),'rect_pt':list(command.rect),
                     'page_size_pt':[self._pdf_page_width,self._pdf_page_height]}
+            if unsupported==['source alpha'] and self._pdf_native_writer is not None:
+                from .pdf_bitmap import prepare_alpha_gif,image_frame
+                try:
+                    alpha_key=('source-alpha',)+key
+                    if alpha_key not in self._pdf_bitmap_cache:
+                        payload,facts=prepare_alpha_gif(run.image,command.rect[2],self._pdf_page_width)
+                        size=len(payload['color'])+len(payload['mask']) if payload else 0
+                        if self._pdf_bitmap_bytes+size>64*1024*1024:
+                            self._pdf_bitmap_cache.clear();self._pdf_bitmap_bytes=0
+                        self._pdf_bitmap_cache[alpha_key]=(payload,facts);self._pdf_bitmap_bytes+=size
+                    payload,facts=self._pdf_bitmap_cache[alpha_key]
+                    frame=image_frame(frame_rect,(self._pdf_page_width,self._pdf_page_height))
+                    if payload:self._pdf_native_writer.draw_alpha_bitmap(painter,payload,frame)
+                    record.update(status='prepared',**facts,image_matrix_pt=frame['matrix'],clip_pt=frame['clip'])
+                    if record not in self._pdf_bitmaps:self._pdf_bitmaps.append(record)
+                    self._pdf_source_alpha_done.add(id(run))
+                    return
+                except (BitmapBackendError,OSError,ValueError) as error:
+                    unsupported.append(str(error))
             if not unsupported:
                 try:
                     if key not in self._pdf_bitmap_cache:
@@ -1244,6 +1416,7 @@ class SourceLayout:
                 except (BitmapBackendError,OSError,ValueError) as error:
                     unsupported.append(str(error))
             if unsupported:
+                if not image_is_opaque(image):self._pdf_source_alpha_failed.add(id(run))
                 record.update(status='source-path',remaining=unsupported)
                 warning='일부 PDF 그림은 기존 표시 경로를 사용했습니다. layout.pdf_bitmaps의 remaining을 확인하세요.'
                 if warning not in self.warnings:self.warnings.append(warning)
@@ -1252,7 +1425,7 @@ class SourceLayout:
         clip=None
         if prepared:
             from .pdf_bitmap import image_frame
-            frame=image_frame(command.rect,(self._pdf_page_width,self._pdf_page_height))
+            frame=image_frame(frame_rect,(self._pdf_page_width,self._pdf_page_height))
             target=QRectF(*(v/.75 for v in frame['rect']))
             clip=QRectF(*(v/.75 for v in frame['clip']))
             record['image_matrix_pt']=frame['matrix'];record['clip_pt']=frame['clip']
@@ -1287,8 +1460,22 @@ class SourceLayout:
             rank={'BEHIND_TEXT':-1,'IN_FRONT_OF_TEXT':1}.get(command.extra.get('object_wrap'),0)
             return rank,command.extra.get('object_z_order',0) if rank else ordinal,ordinal
         commands=[command for _,command in sorted(enumerate(self.pages[index]),key=order)]
+        prepared={}
+        if self._pdf_native_writer is not None:
+            from .pdf_table_frames import prepare,fill_program,stroke_program
+            for command in commands:
+                for table,cells,origin in command.extra.get('table_frames_after',[]):
+                    grid,reason=(prepare(table,cells,origin,(self._pdf_page_width,self._pdf_page_height))
+                        if origin is not None else (None,'nested-table'))
+                    prepared[id(table)]=grid
+                    if grid:self._pdf_table_frames['processed_grids']+=1
+                    else:
+                        self._pdf_table_frames['legacy_grids']+=1
+                        reasons=self._pdf_table_frames['legacy_reasons'];reasons[reason]=reasons.get(reason,0)+1
         tables=set()
+        self._active_pdf_grids=prepared
         for command in commands:
+            if self._pdf_native_writer is not None:self._pdf_native_writer.observe_command(command)
             if command.kind=='text':self._draw_text(painter,command)
             elif command.kind=='image':self._draw_image(painter,command)
             # A Drawing uses one path renderer in both formats. Previously a
@@ -1298,17 +1485,34 @@ class SourceLayout:
             elif command.kind=='box' and isinstance(command.source,Drawing):self._draw_shape(painter,command)
             elif command.kind=='cell' and 'table_group' in command.extra:
                 group=command.extra['table_group']
-                if group in tables:continue
-                tables.add(group)
-                cells=[c for c in commands if c.kind=='cell' and c.extra.get('table_group')==group]
-                # Paint every cell background before the shared edges. A later
-                # neighbour's fill must not erase half of an antialiased border.
-                for cell in cells:
-                    fill=QColor(cell.source.background)
-                    if fill.isValid():
-                        painter.fillRect(QRectF(*(v/.75 for v in cell.rect)),fill)
-                for cell in cells:self._draw_box(painter,cell,background=False)
+                grid=prepared.get(group)
+                if command.source.gradient:
+                    from .pdf_gradients import cell_program,paint_fallback
+                    program,reason=cell_program(grid,command.source) if grid else (None,'unsupported-grid')
+                    if self._pdf_native_writer is not None and program:
+                        self._pdf_native_writer.draw_path(painter,program)
+                        self._pdf_gradients['processed_radial_fills']+=1
+                    else:
+                        paint_fallback(painter,QRectF(*(v/.75 for v in command.rect)),command.source.gradient)
+                        if self._pdf_native_writer is not None:
+                            self._pdf_gradients['fallback_fills']+=1
+                            reasons=self._pdf_gradients['fallback_reasons'];reasons[reason]=reasons.get(reason,0)+1
+                elif grid:
+                    self._pdf_native_writer.draw_path(painter,fill_program(grid,command))
+                elif group not in tables:
+                    tables.add(group)
+                    cells=[c for c in commands if c.kind=='cell' and c.extra.get('table_group')==group]
+                    # Unsupported grids retain their existing painter path.
+                    for cell in cells:
+                        fill=QColor(cell.source.background)
+                        if fill.isValid():
+                            painter.fillRect(QRectF(*(v/.75 for v in cell.rect)),fill)
+                    for cell in cells:self._draw_box(painter,cell,background=False)
             else:self._draw_box(painter,command)
+            if self._pdf_native_writer is not None:
+                for table,_,_ in command.extra.get('table_frames_after',[]):
+                    grid=prepared.get(id(table))
+                    if grid:self._pdf_native_writer.draw_path(painter,stroke_program(grid))
 
     def render_page(self,index,dpi=96):
         width,height=self.page_size(index)
@@ -1339,10 +1543,19 @@ class SourceLayout:
         previous_width=self._pdf_page_width
         previous_height=self._pdf_page_height
         self._pdf_picture_alpha=printer.outputFormat()==printer.OutputFormat.PdfFormat
+        previous_native_writer=self._pdf_native_writer
+        native_writer=None
+        if self._pdf_picture_alpha:
+            from .pdf_native_text import PdfNativeText
+            native_writer=PdfNativeText(self);self._pdf_native_writer=native_writer
+            self._pdf_native_text=native_writer.facts
         self._pdf_alpha_sequence=0
         self._pdf_bitmap_cache.clear();self._pdf_bitmap_bytes=0
         self._pdf_bitmap_qualities.clear();self._pdf_bitmaps.clear()
-        self._pdf_bitmap_text.update(processed_lines=0,legacy_lines=0,image_chunks=0,legacy_reasons={},remaining={})
+        self._pdf_source_alpha_done.clear();self._pdf_source_alpha_failed.clear()
+        self._pdf_bitmap_text.update(processed_lines=0,legacy_lines=0,image_chunks=0,legacy_reasons={},remaining={},fitted_lines=0,condensed_word_gaps=0,condensed_character_gaps=0,justified_lines=0,expanded_word_gaps=0,expanded_character_gaps=0)
+        self._pdf_table_frames.update(processed_grids=0,legacy_grids=0,legacy_reasons={})
+        self._pdf_gradients.update(processed_radial_fills=0,fallback_fills=0,fallback_reasons={})
         try:
             for index in range(len(self.pages)):
                 if index:
@@ -1357,21 +1570,35 @@ class SourceLayout:
             self._pdf_picture_alpha=previous_alpha
             self._pdf_page_width=previous_width
             self._pdf_page_height=previous_height
+            self._pdf_native_writer=previous_native_writer
+            if native_writer:native_writer.close()
             if not painter.end():raise OSError('PDF/인쇄를 완료하지 못했습니다.')
         if printer.outputFormat()==printer.OutputFormat.PdfFormat:
+            native_writer.finish(printer.outputFileName())
             from .pdf_text import add_source_text
             add_source_text(printer.outputFileName(),self)
 
     def geometry_report(self):
+        limits=[]
+        for record in self._image_limitations:
+            run=self._image_limitation_runs[id(record)]
+            handled=run in self._pdf_source_alpha_done and run not in self._pdf_source_alpha_failed
+            remaining=[reason for reason in record['unsupported'] if not (handled and reason=='alpha:source-bitmap-alpha')]
+            if remaining:limits.append({**record,'unsupported':remaining})
+        warnings=self.warnings
+        if not limits:
+            warnings=[w for w in warnings if not w.startswith('그림 효과의 남은 차이는 layout.image_limitations')]
         return {'pages':len(self.pages),'page_pt':[self.width,self.height],
                 'pages_pt':[list(self.page_size(index)) for index in range(len(self.pages))],
                 'uses_hancom_runtime':False,'uses_reference_pdf':False,'mode':'source cached line geometry; retained for compatible text edits',
                 'text_metrics_dpi':TEXT_DPI,'recomputed_paragraphs':len(self._reflowed_paragraphs),
+                'positive_tracking_wrap_lines':self._positive_tracking_wrap_lines,
+                'nonbreaking_control_prefixes':self._nonbreaking_control_prefixes,
                 'repositioned_cached_paragraphs':len(self._repositioned_cached_paragraphs),
                 'synthetic_text_paragraphs':len(self._synthetic_text_paragraphs),
                 'recomputed_object_paragraphs':len(self._reflowed_object_paragraphs),
                 'objects':[[{'kind':c.kind,'rect_pt':list(c.rect),'source_index':getattr(c.source,'source_index',None)} for c in commands] for commands in self.pages],
-                'warnings':self.warnings,'font_substitutions':self.font_substitutions,
+                'warnings':warnings,'font_substitutions':self.font_substitutions,
                 'glyph_substitutions':self.glyph_substitutions,'hft_fonts':self._hft_resolver.fonts,
                 'font_fallback_config':self._default_font_config,
                 'hft_kind_substitutions':self._hft_kind_substitutions,
@@ -1380,9 +1607,12 @@ class SourceLayout:
                 'script_baseline_offsets':[{'source_font':name,'language':language,'offset':offset}
                                             for (name,language),offset in self._script_offsets.items()],
                 'drawing_limitations':list(dict.fromkeys(self._drawing_limitations.values())),
-                'image_limitations':self._image_limitations,
+                'image_limitations':limits,
                 'pdf_bitmaps':self._pdf_bitmaps,
                 'pdf_bitmap_text':self._pdf_bitmap_text,
+                'pdf_native_text':self._pdf_native_text,
+                'pdf_table_frames':self._pdf_table_frames,
+                'pdf_gradients':self._pdf_gradients,
                 'pdf_picture_alpha':'ordered-8x8-white-stencil-300dpi; document brush sequence',
                 'pdf_alpha_native_initial_phase_known':False,
                 'installed_sfnt_fonts':self._sfnt_resolver.fonts}
