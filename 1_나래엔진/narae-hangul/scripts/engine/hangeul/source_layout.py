@@ -200,6 +200,7 @@ class SourceLayout:
         self._pdf_bitmap_text={'processed_lines':0,'legacy_lines':0,'image_chunks':0,
                                'legacy_reasons':{},'remaining':{},'whole_document_parity_verified':False}
         self._pdf_native_writer=None
+        self._pdf_table_frames={'processed_grids':0,'legacy_grids':0,'legacy_reasons':{},'whole_document_parity_verified':False}
         self._pdf_native_text={'processed_lines':0,'legacy_lines':0,'glyphs':0,'fonts':[],
                                'legacy_reasons':{},'whole_document_parity_verified':False}
         self._bitmap_images={}
@@ -429,7 +430,7 @@ class SourceLayout:
             text=_utf16_slice(text,0,start)+value+'\u200b'*(8-len(value))+_utf16_slice(text,start+8)
         return text
 
-    def _build(self,blocks,origin,page,body=False,continuation_y=None,content_width=None):
+    def _build(self,blocks,origin,page,body=False,continuation_y=None,content_width=None,table_text_origin=None):
         current=page;last=-1.;origin_x,origin_y=origin
         if content_width is None:content_width=self.body_width
         local_offset=0.;previous_end=0.
@@ -494,7 +495,7 @@ class SourceLayout:
                         if text.strip('\u200b\u200c\u200d '):
                             actual_y=(continuation_y if current>page else origin_y)+y+local_offset
                             self._add(current,Command('text',(origin_x+line['x_pt'],actual_y,line['width_pt'],line['height_pt']),block,
-                                                      {'line':line,'text':text,'start':start,
+                                                      {'line':line,'text':text,'start':start,'table_text_origin':table_text_origin,
                                                        'justify_continuation':number+1<len(lines) and not raw_text.endswith(('\n','\x0b'))}))
                 for run in block.runs:
                     if not run.image:continue
@@ -575,7 +576,7 @@ class SourceLayout:
                         # Centre/right and inline alignment need their own rule.
                         if block.position.horz_align=='LEFT':x+=block.position.out_margin[0]
                         if block.position.vert_align=='TOP':y+=block.position.out_margin[2]
-                    extra=self._table(block,x,y,anchor_page)
+                    extra=self._table(block,x,y,anchor_page,origin if body else None)
                 if body:
                     following=next((b for b in blocks[block_index+1:] if isinstance(b,Paragraph) and b.line_segments and b.source_index!=block.source_index),None)
                     if extra and following and not following.style.page_break and following.line_segments[0]['y_pt']+1<last:
@@ -648,7 +649,8 @@ class SourceLayout:
                 return command.rect[0]+layout.lineAt(0).cursorToX(offset)[0]*TEXT_UNIT_PT
         return None
 
-    def _table(self,table,x,y,page):
+    def _table(self,table,x,y,page,native_origin=None):
+        command_counts=[len(commands) for commands in self.pages]
         columns,rows,widths,cell_extents=_table_measurements(table,self.body_height*.4,self._segments_for)
         # Cached line positions capture automatic growth of cells beyond their
         # requested minimum height, including continuations to another page.
@@ -689,11 +691,17 @@ class SourceLayout:
                 self._add(page_cell,Command('cell',(cx,cy,width,height),cell,{'table_group':id(table)}))
                 spare=max(0,height-cell.padding[2]-cell.padding[3]-extents[0])
                 shift=spare/2 if cell.vertical_align=='CENTER' else spare if cell.vertical_align=='BOTTOM' else 0
-                final_page=max(final_page,page_cell+self._build(cell.blocks,(cx+cell.padding[0],cy+cell.padding[2]+shift),page_cell,content_width=widths[id(cell)]))
+                final_page=max(final_page,page_cell+self._build(cell.blocks,(cx+cell.padding[0],cy+cell.padding[2]+shift),page_cell,
+                    content_width=widths[id(cell)],table_text_origin=(id(table),native_origin) if native_origin is not None else None))
             else:
                 for part_page,part_y,part_height in pieces:
                     self._add(part_page,Command('cell',(cx,part_y,width,part_height),cell,{'table_group':id(table)}))
                 final_page=max(final_page,pieces[-1][0],page_cell+self._build(cell.blocks,(cx+cell.padding[0],cy+cell.padding[2]),page_cell,continuation_y=self.top+cell.padding[2],content_width=widths[id(cell)]))
+        for index,commands in enumerate(self.pages):
+            begin=command_counts[index] if index<len(command_counts) else 0
+            cells=[c for c in commands[begin:] if c.kind=='cell' and c.extra.get('table_group')==id(table)]
+            if cells:
+                commands[-1].extra.setdefault('table_frames_after',[]).append((table,cells,native_origin))
         return final_page-page
 
     def _headers_footers(self):
@@ -1325,7 +1333,20 @@ class SourceLayout:
             rank={'BEHIND_TEXT':-1,'IN_FRONT_OF_TEXT':1}.get(command.extra.get('object_wrap'),0)
             return rank,command.extra.get('object_z_order',0) if rank else ordinal,ordinal
         commands=[command for _,command in sorted(enumerate(self.pages[index]),key=order)]
+        prepared={}
+        if self._pdf_native_writer is not None:
+            from .pdf_table_frames import prepare,fill_program,stroke_program
+            for command in commands:
+                for table,cells,origin in command.extra.get('table_frames_after',[]):
+                    grid,reason=(prepare(table,cells,origin,(self._pdf_page_width,self._pdf_page_height))
+                        if origin is not None else (None,'nested-table'))
+                    prepared[id(table)]=grid
+                    if grid:self._pdf_table_frames['processed_grids']+=1
+                    else:
+                        self._pdf_table_frames['legacy_grids']+=1
+                        reasons=self._pdf_table_frames['legacy_reasons'];reasons[reason]=reasons.get(reason,0)+1
         tables=set()
+        self._active_pdf_grids=prepared
         for command in commands:
             if self._pdf_native_writer is not None:self._pdf_native_writer.observe_command(command)
             if command.kind=='text':self._draw_text(painter,command)
@@ -1337,17 +1358,23 @@ class SourceLayout:
             elif command.kind=='box' and isinstance(command.source,Drawing):self._draw_shape(painter,command)
             elif command.kind=='cell' and 'table_group' in command.extra:
                 group=command.extra['table_group']
-                if group in tables:continue
-                tables.add(group)
-                cells=[c for c in commands if c.kind=='cell' and c.extra.get('table_group')==group]
-                # Paint every cell background before the shared edges. A later
-                # neighbour's fill must not erase half of an antialiased border.
-                for cell in cells:
-                    fill=QColor(cell.source.background)
-                    if fill.isValid():
-                        painter.fillRect(QRectF(*(v/.75 for v in cell.rect)),fill)
-                for cell in cells:self._draw_box(painter,cell,background=False)
+                grid=prepared.get(group)
+                if grid:
+                    self._pdf_native_writer.draw_path(painter,fill_program(grid,command))
+                elif group not in tables:
+                    tables.add(group)
+                    cells=[c for c in commands if c.kind=='cell' and c.extra.get('table_group')==group]
+                    # Unsupported grids retain their existing painter path.
+                    for cell in cells:
+                        fill=QColor(cell.source.background)
+                        if fill.isValid():
+                            painter.fillRect(QRectF(*(v/.75 for v in cell.rect)),fill)
+                    for cell in cells:self._draw_box(painter,cell,background=False)
             else:self._draw_box(painter,command)
+            if self._pdf_native_writer is not None:
+                for table,_,_ in command.extra.get('table_frames_after',[]):
+                    grid=prepared.get(id(table))
+                    if grid:self._pdf_native_writer.draw_path(painter,stroke_program(grid))
 
     def render_page(self,index,dpi=96):
         width,height=self.page_size(index)
@@ -1388,6 +1415,7 @@ class SourceLayout:
         self._pdf_bitmap_cache.clear();self._pdf_bitmap_bytes=0
         self._pdf_bitmap_qualities.clear();self._pdf_bitmaps.clear()
         self._pdf_bitmap_text.update(processed_lines=0,legacy_lines=0,image_chunks=0,legacy_reasons={},remaining={})
+        self._pdf_table_frames.update(processed_grids=0,legacy_grids=0,legacy_reasons={})
         try:
             for index in range(len(self.pages)):
                 if index:
@@ -1432,6 +1460,7 @@ class SourceLayout:
                 'pdf_bitmaps':self._pdf_bitmaps,
                 'pdf_bitmap_text':self._pdf_bitmap_text,
                 'pdf_native_text':self._pdf_native_text,
+                'pdf_table_frames':self._pdf_table_frames,
                 'pdf_picture_alpha':'ordered-8x8-white-stencil-300dpi; document brush sequence',
                 'pdf_alpha_native_initial_phase_known':False,
                 'installed_sfnt_fonts':self._sfnt_resolver.fonts}

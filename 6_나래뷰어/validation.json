@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T12:30:24+09:00",
+  "date_kst": "2026-10-16T13:14:03+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "876f1d6a57548d36c6ce5057a505a7e6d0519cd8",
+  "base_commit": "979d85532c11e687e24efa627c74a10a01cd8928",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -50,10 +50,10 @@
       "independent_pages": 2,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.004718993161725418,
-      "changed_fraction_max": 0.025543627114230166,
+      "changed_fraction_min": 0.0,
+      "changed_fraction_max": 0.02457378646443693,
       "errors": [],
-      "independent_identical_pages": 0
+      "independent_identical_pages": 1
     },
     {
       "id": "form-hwp",
@@ -66,7 +66,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.054034941203410604,
-      "changed_fraction_max": 0.15656303739723507,
+      "changed_fraction_max": 0.15712316527252074,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -169,11 +169,11 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 71,
+      "run": 76,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "70 distinct final passes through 876f1d6 plus one fresh 352-page stretch/text test",
+      "scope": "71 distinct final passes through 979d855 plus 5 fresh grid/path-token/width-label tests; these are passes from different stages, not one full 76-test run",
       "whole_group_fresh_pass_claimed": false,
       "component_log_sha256": [
         "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
@@ -181,7 +181,8 @@
         "6c6a3acf8e3c20713c4ab941922969c8d52bc5cde8984f98f679e66e97096b58",
         "2c5f768978b7882f2e75d3d0964a94f54efdf9d60445468fe4103e2900f9ea14",
         "6636fc3900d653eaf24ebf62b8b471b295d812e09c1ebf867cb796db984b8e6c",
-        "d44e8a5decbd01935120449d4f638acb5023eee99429501b4cbd89fa2c4ac76c"
+        "d44e8a5decbd01935120449d4f638acb5023eee99429501b4cbd89fa2c4ac76c",
+        "549be769c9c4aaa2238fbf634a03044642f33227273b527805a5f4fffc0ce5a4"
       ]
     },
     "full_native_rerun": {
@@ -207,12 +208,12 @@
       "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 92,
-      "passed": 53,
-      "skipped": 39,
+      "run": 97,
+      "passed": 56,
+      "skipped": 41,
       "failures": 0,
       "errors": 0,
-      "log_sha256": "ca3453a65991b312aa81be14182a6fd313dafeb4e6f14432800ec2e25fd5cac5"
+      "log_sha256": "b6c01b2745b311abe5bfc8dbf35d30a03ecdc21a0c36c5ea54e715acaddd28be"
     },
     "cold_bitmap_cache": {
       "concurrent_workers": 4,
@@ -395,6 +396,42 @@
         "comparison_log_sha256": "34473ea7a2d9d4a8ddb65bd2df0e8e36d1a105f642f173606a4f11931c41772b",
         "single_page_reproduction": "Fresh isolated HCR Batang 13pt RIGHT input reproduces the 209-pixel difference"
       }
+    },
+    "table_frame_pages": {
+      "run": 5,
+      "passed": 5,
+      "whole_pages_exact": 88,
+      "pages_per_format": 44,
+      "formats": [
+        "hwp",
+        "hwpx"
+      ],
+      "dpi": 96,
+      "rgb_tolerance": 0,
+      "alignment": false,
+      "resizing": false,
+      "native_log_sha256": "549be769c9c4aaa2238fbf634a03044642f33227273b527805a5f4fffc0ce5a4",
+      "scope": "Arial 13pt, 1/2 rows, 1/2/3 columns, fractional widths/heights/padding, LEFT/CENTER/RIGHT, TOP/CENTER, opaque fills, solid border widths/colors and ignored table-level border definitions",
+      "border_width_native_conversion_labels": 28,
+      "precision_pages_exact": 4,
+      "precision_log_sha256": "ee8b0d0f4cd498e585fbdddb12fa452c69c9b8fb56f9205f8d5a67961776cc6e",
+      "normal_font_regression_pages_exact": 202,
+      "normal_font_regression_log_sha256": "dafa6af314cb793630a0346bb069feb5e213e50b338fe218e922133eed470c8e",
+      "intermediate_failures": [
+        {
+          "log_sha256": "1dd847d00ef51e5c2d6df5243975190f9033b4f9ae57886b55d99b9bd39cbcf9",
+          "name": "table-frames-native-first-tests.log"
+        },
+        {
+          "log_sha256": "b0610b723372687df1b334baeecc6d79660a7018515fe99d1540e70a080be6b6",
+          "name": "table-frames-native-second-tests.log"
+        },
+        {
+          "log_sha256": "72a10f992d5895e92f52fdaa1d6263721341638ae61bed5550157c59daac0645",
+          "name": "table-frames-native-third-tests.log"
+        }
+      ],
+      "failure_history": "Odd-pixel horizontal extensions and noncanonical HWPX width labels were corrected. One intermediate run also differed by 52 pixels in the HWPX AFTER text; its cause remains unestablished. The final fresh 5-test run passed. This is not a guarantee for every native process/layout context."
     }
   },
   "rea": {
@@ -1055,6 +1092,24 @@
         "parameters": {
           "session_id": "2b3fe4a3-531f-423f-8c91-887e5d3e6eda"
         }
+      },
+      {
+        "query": "trip-title-frida-observed",
+        "evidence_id": "ev_1d0f577692ec3b0c832c2ec78c73dc789c0f6fa7bf2b1fda1b6942eb4721d87b",
+        "record_sha256": "a3713ba4aa6854e329adec20eb797286563af4f24e572e6862f4e7d0754f368f",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "bcb407e3-f637-485d-a59b-1173c03b2c31"
+        }
+      },
+      {
+        "query": "trip-title-all-frida-observed",
+        "evidence_id": "ev_ebc7f07c5cf3a48b1e65a91fd9164866b964d4a68ceae52a4e81c42f08831f1e",
+        "record_sha256": "ec56fa97eb971be73ba8c98081eef5205c111a4e12e4289711d466c8d77a5e42",
+        "operation": "frida_session_status",
+        "parameters": {
+          "session_id": "88da5b47-778e-4089-8592-f771dee0aacb"
+        }
       }
     ],
     "sessions_closed": true,
@@ -1181,15 +1236,37 @@
       },
       "negative_observations": "HncFontLib GetGlyphWidth and HFT width leaf hooks observed readiness only for the isolated TTF input; they do not establish the TTF measurement route",
       "gdi": "Four ABC-width observations were captured in the PDF driver; no ScriptPlace observation established the source layout route"
+    },
+    "actual_title_spacing": {
+      "sessions_closed": true,
+      "installed_binary_hashes": {
+        "HncBaseDraw.dll": "52734f0b0fc92cf890fc7085708fb72de62f67c0b5e0aa5bf668db7646199fb1",
+        "HNCE2PTP.dll": "42b1eaf97af05ff3662ffa23272b9c19ea5948345c8363969b28b601b741c458",
+        "HncFontLib.dll": "bc7300311c5bb367bc5eaf211c5c92744d372d28ff008feb83ba650cd5e1d232"
+      },
+      "hook": "HncBaseDraw+0x4ef00, read-only observation of logical and device advances",
+      "filtered_probe": "Initial size-filtered probe observed readiness only; the filter did not cover the actual calls",
+      "unfiltered_probe": {
+        "messages": 201,
+        "captured_calls": 100,
+        "messages_truncated": false,
+        "coverage": "Explicit 100-call cap; partial document coverage",
+        "script_sha256": "d7edf897a05a26812504c1c15190cfdf7c6b5f5a24b64c64fd9fde676f9df696",
+        "finding": "The 15pt title receives 1230-HWPUNIT Hangul advances despite saved tracking -13. Source and native embedded glyph outlines/widths agree; narrowing origin is unresolved."
+      },
+      "instrumented_native_repeat_exact_pages": 2,
+      "native_repeat_comparison_sha256": "193b45d315a1869b9f9efcb7b0a8d67aa1f3044c640f8281baa162e0d3d0295f",
+      "remaining": "Fresh standalone/table width probes did not reproduce the original title narrowing. No guessed title-only spacing correction was added.",
+      "raw_evidence_distributed": false
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "dc632dd940dac4778d339499ce98d7f43e3b1a3945fb931e43b1d0ddeb8a2b08",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "7249bf3bbd8b190aaf089845ca7cc050cc9aa66800a12fda3cedb606cdb193e4",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "9100636ad934c0effa8c48672d4869f6592e9726990664c6bdd53a80de13b8ce",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ac8024577c0d112f4da78005fc12fc01fb8617d30022e0c0138056d3064d4a96",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "006f64a385239571a76ea5b06f77dc10bdcc4158b8a9eb6699e7970c831f228a",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "e051f040d12c06dab3378cdcfead699ae0934d634298d932a933f12d0bbe9585",
+    "2_나래스킬/narae-viewer/SKILL.md": "3ac3e022463ba2e64fe2661becd83429f32c2d5ea9ca02c928fd1f01080a50f6",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "d275c6086813f2c70d218ba2a44c2e1e4f2ad31bf1b59640217e985abf1b77dd",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "275925621e5437441b86f3e4b98d35c69a134409a33b6c050e021938026886b0",
@@ -1201,15 +1278,18 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "5e2216bbf741981dd31bfa44663664a57a8ce539d8d39f502b5215de924e6e8f",
     "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "24929db32de1b04976a3c9bfce1543dca725138ca767a187697cfc262ae3e66f",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "db0cbc7785d929d1cf0d1aee3bb6ee7ec6fbfee77dddb100c38be185311320d2",
-    "tests/test_pdf_native_text.py": "2b676982c806ea299f1eb9aed5585c384cdbfa6093af1fdfef8f6fb44bc39773",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "59c8ca985c175d086c0ca6fe5fc78961c38977c786dc41a848cb9e7b477eaf62",
+    "tests/test_pdf_native_text.py": "a856a38c83463e0b5f2fbfb613b6a92012d4d2712def7acb6ebcb6f936b5c5d9",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "89e08126b83cc8cdd630c35afd58db02318de1dc41b820d45175cf9de4b85194",
     "tests/test_text_decorations.py": "2b3fed445c5a53b5ef553dfef9ef5beedb086e2588959885b8c0420ba82162ac",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwpx_native.py": "564aa217a166bdcd5ed814a4c6405159b947aa8a17acb81a3ad773a159b2eec1",
     "tests/test_inline_spacing.py": "61b3de9dddf1e7517475f0b5917dfb23b338b3211c8152c827573938eb6172f2",
     "tests/test_pdf_stretch.py": "dcf48403fa663ef49a46933d395ef3984e088fd9eabe1617bc9f0a4fad24e0c6",
-    "1_나래엔진/narae-hangul/references/viewer.md": "189a83f4fa1fce36775d7da120638c8945a27c5b4e5088573be7305fbb1f8f76",
-    "6_나래뷰어/README.md": "c11b67385d70960175bebeabc5706db046a1f4bd359199f5c17cd1f746191fbd"
+    "1_나래엔진/narae-hangul/references/viewer.md": "e13fb86503ccc18e5d3dca39435240681b2ece6498e6d642d86224418f86b5ed",
+    "6_나래뷰어/README.md": "2231977fcbcb108dcf765b9f78abb5c6daca2b131c00f0ebc82d0f10ae06d611",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "86e5d6917540ce33a98ec0a8b8460b3002dbf104d00240fa1f910d32a5207ae8",
+    "tests/test_pdf_table_frames.py": "1186187c1d39ebda9efc11311a02380df96b0801be663cd7d70fd829352cfc5b",
+    "5_유틸리티/hancom_rea_findings.md": "171257f7f72cc8e4bb93733f3ce3ca06d7f3d8fef9f5b29975a87e43e5e007c1"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -1666,8 +1746,9 @@
     },
     "precision_fixture": {
       "pages_checked": 4,
-      "pages_exact": 2,
-      "remaining": "First-page table flow/edges: 2002 changed pixels per format; text-only second pages match."
+      "pages_exact": 4,
+      "remaining": null,
+      "scope": "Two-page filled-cell/stream-precision fixture in HWP/HWPX, 96 dpi RGB tolerance 0"
     },
     "fonts_distributed": false,
     "reference_glyphs_used_by_renderer": false,
@@ -1794,5 +1875,59 @@
     "pages_checked": 124,
     "some_metrics_worsened": "lesson-hwp total changed pixels increased 4305; form-hwp maximum fraction increased slightly although its total decreased"
   },
-  "source_sha256_encoding": "SHA256 of source bytes with CRLF normalized to LF, matching Git archive; UTF-8 content is otherwise unchanged"
+  "source_sha256_encoding": "SHA256 of source bytes with CRLF normalized to LF, matching Git archive; UTF-8 content is otherwise unchanged",
+  "pdf_table_frames": {
+    "scope": "Single-page, inline, body-level, complete unmerged rectangular grids with identical SOLID/NONE cell borders and opaque fills",
+    "coordinates": "Add logical cell offsets to the rounded parent origin; preserve the cumulative origin in cell glyph positions",
+    "paths": "Shared vertical/horizontal rules, flat caps, asymmetric integer extensions for odd-width pens and repeated boundary rules after cell content",
+    "width_labels": "HWPX borderFill width is a 16-label enumeration. Noncanonical labels import as 0.1 mm; writers use the nearest canonical label in both formats.",
+    "diagnostic": "layout.pdf_table_frames counts processing and legacy reasons, never whole-document parity",
+    "remaining": [
+      "merged/split/floating/nested grids",
+      "mixed border styles, widths or colors",
+      "other DPI and font/layout combinations",
+      "actual form-hwp total difference increased by 499 pixels"
+    ],
+    "real_pixels": {
+      "report-hwp": {
+        "before": 1810861,
+        "after": 1791353,
+        "exact": 1
+      },
+      "report-hwpx": {
+        "before": 1810861,
+        "after": 1791353,
+        "exact": 1
+      },
+      "trip-hwpx": {
+        "before": 26960,
+        "after": 21892,
+        "exact": 1
+      },
+      "form-hwp": {
+        "before": 622245,
+        "after": 622744,
+        "exact": 0
+      },
+      "guide-hwp": {
+        "before": 3941770,
+        "after": 3911574,
+        "exact": 2
+      },
+      "lesson-hwp": {
+        "before": 937951,
+        "after": 906554,
+        "exact": 0
+      },
+      "minutes-hwpx": {
+        "before": 180056,
+        "after": 174077,
+        "exact": 0
+      }
+    },
+    "real_pages_exact": 5,
+    "real_documents_exact": 0,
+    "real_pages_checked": 124,
+    "corpus_log_sha256": "02e3ccc9eb5ba1db4c051052ba5bb7652875a99cb0e8fe3e8b62e9c208f335e3"
+  }
 }

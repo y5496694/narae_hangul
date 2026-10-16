@@ -26,3 +26,5 @@ python narae_viewer.py verify "보고서.hwpx" --hancom --result comparison.json
 기본값은 독립 SourceLayout입니다. 한컴 자체 조판으로 확인할 때는 `--backend hancom`을 사용합니다. 독립 모드에는 표시 차이가 남으므로 **모든 문서의 쪽수·픽셀 일치가 완료된 버전은 아닙니다.**
 
 [명령·설치·비교 결과 안내](../1_나래엔진/narae-hangul/references/viewer.md) · [AI 스킬](../2_나래스킬/narae-viewer/SKILL.md)
+
+표 PDF는 본문에 글자처럼 놓인 한 쪽짜리 비병합 격자에서 같은 SOLID/NONE 셀 테두리와 불투명 채우기를 프린터 좌표로 출력합니다. 누적 셀 원점, 공유 선, 홀수 픽셀 두께의 비대칭 연장, 셀 내용 뒤의 경계선을 반영합니다. 두 형식 88쪽 및 기존 정밀도 4쪽이 96 dpi·오차 0으로 전체 일치했습니다. `layout.pdf_table_frames`는 처리 수와 기존 경로의 사유를 제공하며 모든 문서의 일치 판정은 아닙니다. 병합·나뉜 표·떠 있는 표·중첩 표·혼합 테두리는 남은 범위입니다. HWPX borderFill 두께의 16개 문자열은 정확히 구분하며, 저장은 가장 가까운 표준 두께를 사용합니다.

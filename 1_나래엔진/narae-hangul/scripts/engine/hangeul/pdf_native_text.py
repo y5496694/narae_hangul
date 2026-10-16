@@ -24,6 +24,7 @@ MAX_SOURCE_BYTES=256*1024*1024
 MAX_CHARACTERS=1_000_000
 MAX_LINES=100_000
 MARKER_PREFIX=b'NARAE\x02'
+PATH_MARKER_PREFIX=b'NARAE\x03'
 
 
 def _round(value):return math.floor(value+.5+1e-9)
@@ -46,7 +47,7 @@ def _numbers(values):return ' '.join(f'{value:.15f}'.rstrip('0').rstrip('.') if 
 class PdfNativeText:
     def __init__(self,owner):
         self.owner=owner
-        self.hft_sources={};self.sfnt_sources={};self.fonts={};self.records={}
+        self.hft_sources={};self.sfnt_sources={};self.fonts={};self.records={};self.path_records={}
         self.collection_index=None
         self.script_defaults={};self.requested_fonts={};self.hanja_fonts={}
         self.source_bytes=0;self.characters=0
@@ -273,7 +274,15 @@ class PdfNativeText:
         alignment=(math.floor(command.rect[2]*100/4+1e-9)*4-alignment_pen)*factor
         x=printer_pixel(command.rect[0]);line=command.extra['line'];offset=line.get('y_pt',0)
         y=_round((printer_pixel(command.rect[1]-offset)*12+_round(offset*100)+_round(line['baseline_pt']*100))/12)
-        glyphs=[(key,glyph,em,x+_round((alignment+start)/12),y,color,scale,group) for start,key,glyph,em,color,scale,group in parts]
+        origin=command.extra.get('table_text_origin')
+        if origin is not None and self.owner._active_pdf_grids.get(origin[0]):
+            ox,oy=origin[1]
+            x_units=printer_pixel(ox)*12+round((command.rect[0]-ox)*200)/2
+            y_units=printer_pixel(oy)*12+round((command.rect[1]-oy)*200)/2+_round(line['baseline_pt']*100)
+            y=_round(y_units/12)
+            glyphs=[(key,glyph,em,_round((x_units+alignment+start)/12),y,color,scale,group) for start,key,glyph,em,color,scale,group in parts]
+        else:
+            glyphs=[(key,glyph,em,x+_round((alignment+start)/12),y,color,scale,group) for start,key,glyph,em,color,scale,group in parts]
         marker=MARKER_PREFIX+len(self.records).to_bytes(6,'big')
         self.records[marker]=(glyphs,(self.owner._pdf_page_width,self.owner._pdf_page_height),self.precision)
         image=QImage(marker,4,1,12,QImage.Format.Format_RGB888).copy()
@@ -287,9 +296,23 @@ class PdfNativeText:
         self.facts['stretched_glyphs']+=stretched
         return True
 
+    def draw_path(self,painter,program):
+        """Place an independently built path in physical PDF coordinates."""
+        from PySide6.QtCore import QRectF
+        from PySide6.QtGui import QImage,QPainter
+        if not program:return
+        marker=PATH_MARKER_PREFIX+len(self.path_records).to_bytes(6,'big')
+        self.path_records[marker]=program
+        image=QImage(marker,4,1,12,QImage.Format.Format_RGB888).copy()
+        painter.save()
+        try:
+            painter.setRenderHint(QPainter.RenderHint.LosslessImageRendering,True)
+            painter.drawImage(QRectF(-100,-100,1,1),image)
+        finally:painter.restore()
+
     def finish(self,path):
         """Replace every placement token once, then atomically save the PDF."""
-        if not self.records:return
+        if not self.records and not self.path_records:return
         from pypdf import PdfReader,PdfWriter
         from pypdf.generic import (ArrayObject,DictionaryObject,DecodedStreamObject,
                                   NameObject,NumberObject,FloatObject,ContentStream,TextStringObject)
@@ -403,7 +426,8 @@ class PdfNativeText:
                         obj=resources['/XObject'][values[0]].get_object()
                         if obj.get('/Subtype')!='/Image' or obj.get('/Width')!=4 or obj.get('/Height')!=1:continue
                         marker=obj.get_data();record=self.records.get(marker)
-                        if record is None:continue
+                        path_program=self.path_records.get(marker)
+                        if record is None and path_program is None:continue
                         # A document image can contain the same twelve bytes.
                         # Only the off-paper RGB token belongs to this writer.
                         xs=[ctm[4],ctm[0]+ctm[4],ctm[2]+ctm[4],ctm[0]+ctm[2]+ctm[4]]
@@ -413,6 +437,15 @@ class PdfNativeText:
                         seen.add(marker);start,parent=stack[-1]
                         if i+1>=len(ops) or ops[i+1][1]!=b'Q' or any(op not in (b'cm',b'gs') for _,op in ops[start+1:i]):
                             raise ValueError('Unexpected PDF text placement block')
+                        if path_program is not None:
+                            replacement=DecodedStreamObject()
+                            replacement.set_data(('q\n'+_numbers(_inverse(parent))+' cm\n'+path_program+'\nQ\n').encode('ascii'))
+                            chunk=ContentStream(replacement,writer).operations
+                            for values,operator in chunk:
+                                if operator==b'cm':
+                                    for index,value in enumerate(values):values[index]=MatrixFloat(value)
+                            replacements[start]=(i+2,chunk)
+                            continue
                         glyphs,(pw,ph),precision=record;f32=lambda value:struct.unpack('<f',struct.pack('<f',value))[0]
                         sx=round(f32(math.floor(pw)/printer_pixel(pw)),precision);sy=round(f32(math.floor(ph)/printer_pixel(ph)),precision)
                         relative=_multiply((sx,0,0,-sy,0,math.floor(ph)),_inverse(parent))
@@ -467,7 +500,7 @@ class PdfNativeText:
                     if index in replacements:index,chunk=replacements[index];new.extend(chunk)
                     else:new.append(ops[index]);index+=1
                 content.operations=new;page[name('/Contents')]=stream(content.get_data())
-            if len(seen)!=len(self.records):raise ValueError('Missing PDF text placement token')
+            if len(seen)!=len(self.records)+len(self.path_records):raise ValueError('Missing PDF text placement token')
             writer.compress_identical_objects(remove_duplicates=False,remove_unreferenced=True)
             fd,filename=tempfile.mkstemp(prefix='.narae-font-',suffix='.pdf',dir=path.parent)
             os.close(fd);temporary=Path(filename)

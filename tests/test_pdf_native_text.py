@@ -166,9 +166,9 @@ class NativePdfTextTests(unittest.TestCase):
                     self.assertEqual(expected,matrix_sequence(reference.pages[0],reference))
                     self.assertEqual(expected,matrix_sequence(actual.pages[0],actual,True))
                     self.assertEqual([(.12,.12)],matrix_sequence(actual.pages[1],actual,True))
-                    # First-page table flow/edges are a separate layout issue;
-                    # the following text-only page must match every pixel.
-                    self.assertTrue(compare(own,native)['pages'][1]['match'])
+                    # Grid paths and cell text share the rounded parent origin;
+                    # both complete pages must match, including table edges.
+                    self.assertTrue(compare(own,native)['match'])
                     self.assertEqual(3,own.details['pdf_native_text']['number_precision'])
 
     @staticmethod

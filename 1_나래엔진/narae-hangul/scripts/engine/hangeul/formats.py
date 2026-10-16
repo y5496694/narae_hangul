@@ -448,6 +448,7 @@ def bind_geometry(document, model):
 
 _BORDER_STYLES = ("NONE", "SOLID", "DASH", "DOT", "DASH_DOT", "DASH_DOT_DOT", "LONG_DASH", "CIRCLE", "DOUBLE_SLIM", "SLIM_THICK", "THICK_SLIM", "SLIM_THICK_SLIM", "WAVE", "DOUBLE_WAVE", "THICK_3D", "THICK_3D_REVERSE", "SOLID_3D", "SOLID_3D_REVERSE")
 _BORDER_WIDTHS = (.1, .12, .15, .2, .25, .3, .4, .5, .6, .7, 1, 1.5, 2, 3, 4, 5)
+_BORDER_WIDTH_LABELS = tuple(str(float(value))+' mm' for value in _BORDER_WIDTHS)
 _ARROW_STYLES = ("NORMAL", "ARROW", "CONCAVE_ARROW", "EMPTY_DIAMOND", "EMPTY_CIRCLE", "EMPTY_BOX", "FILLED_DIAMOND", "FILLED_CIRCLE", "FILLED_BOX")
 _ARROW_SIZES = ("SMALL_SMALL", "SMALL_MEDIUM", "SMALL_LARGE", "MEDIUM_SMALL", "MEDIUM_MEDIUM", "MEDIUM_LARGE", "LARGE_SMALL", "LARGE_MEDIUM", "LARGE_LARGE")
 
@@ -469,11 +470,16 @@ def _line_flags_hwp(style, options):
     return flag | int(bool(options.get("headfill",1))) << 30 | int(bool(options.get("tailfill",1))) << 31
 
 
-def _dimension_pt(value):
-    match = re.fullmatch(r"\s*([\d.]+)\s*(mm|cm|pt|in)?\s*", value or "")
-    if not match:
-        return .283465
-    return float(match[1]) * {"mm": 72 / 25.4, "cm": 720 / 25.4, "in": 72, "pt": 1, None: 1}[match[2]]
+def _border_width_pt(value):
+    # This attribute is an enumeration, not a general length. Native imports
+    # even "0.120 mm" and "1 mm" as the default 0.1 mm border; canonical
+    # labels are exactly "0.12 mm" and "1.0 mm". Keep that reading behavior.
+    index=_BORDER_WIDTH_LABELS.index(value) if value in _BORDER_WIDTH_LABELS else 0
+    return _BORDER_WIDTHS[index]*72/25.4
+
+
+def _border_width_index(width_pt):
+    return min(range(16),key=lambda i:abs(_BORDER_WIDTHS[i]-width_pt*25.4/72))
 
 
 def _position_xml(e):
@@ -726,7 +732,7 @@ def _load_hwpx(path):
                     _attr(border,"connect")=="1",_attr(border,"ignoreMargin")=="1")
             elif _local(e) == "borderFill":
                 fill = _desc(e, "winBrush")
-                sides = tuple(Border(_attr(_child(e, n), "type", "NONE"), _dimension_pt(_attr(_child(e, n), "width")),
+                sides = tuple(Border(_attr(_child(e, n), "type", "NONE"), _border_width_pt(_attr(_child(e, n), "width")),
                     _attr(_child(e, n), "color", "#000000")) for n in ("leftBorder", "rightBorder", "topBorder", "bottomBorder"))
                 background = fill.get("faceColor", "") if fill is not None else ""
                 borders[e.get("id")] = BorderFill(sides, "" if background.lower()=="none" else background)
@@ -1915,7 +1921,7 @@ def save_hwpx(document_or_html, path) -> list[str]:
         for n in ("slash", "backSlash"):
             _element(bf, "hh", n, type="NONE", Crooked=0, isCounter=0)
         for n, border in zip(("leftBorder", "rightBorder", "topBorder", "bottomBorder"), fill.borders):
-            _element(bf, "hh", n, type=border.style, width=f"{border.width_pt * 25.4 / 72:g} mm", color=border.color)
+            _element(bf, "hh", n, type=border.style, width=_BORDER_WIDTH_LABELS[_border_width_index(border.width_pt)], color=border.color)
         _element(bf, "hh", "diagonal", type="NONE", width="0.1 mm", color="#000000")
         if fill.background:
             brush = _element(bf, "hc", "fillBrush")
@@ -2254,8 +2260,7 @@ def save_hwp(document_or_html, path) -> list[str]:
         # HWP serializes border style/width/color as four interleaved tuples.
         for border in fill.borders:
             style = _BORDER_STYLES.index(border.style) if border.style in _BORDER_STYLES else 1
-            mm = border.width_pt * 25.4 / 72
-            thickness = min(range(16), key=lambda i: abs(_BORDER_WIDTHS[i] - mm))
+            thickness = _border_width_index(border.width_pt)
             bf.extend(struct.pack("<BBI", style, thickness, _rgb(border.color)))
         bf.extend(struct.pack("<BBI", 0, 0, 0))
         if fill.background:

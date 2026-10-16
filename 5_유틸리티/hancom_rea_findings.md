@@ -60,3 +60,7 @@ npx -y rea-agents@6.5.0 analyze "C:/Program Files (x86)/HNC/Office 2024/HOffice1
 ```
 
 참고: [REA](https://github.com/morluto/rea), [Windows Ghidra 경계](https://github.com/morluto/rea/blob/main/docs/windows-ghidra-p0.md), [한컴 공식 자동화 가이드](https://developer.hancom.com/hwpautomation), [공식 액션 표](https://github.com/hancom-io/devcenter-archive/blob/main/hwp-automation/ActionTable_2504.pdf), [공식 파일 접근 모듈 설명](https://forum.developer.hancom.com/t/topic/3206/2).
+
+## 뷰어 표 원점과 실제 제목 간격의 추가 관찰
+
+실제 문서의 제목을 REA Frida로 읽기 관찰해 논리 간격이 저장된 자간으로 계산한 값과 다름을 확인했다. 글리프 윤곽·폭은 원본과 같으며 좁아지는 원인은 미확인이다. 첫 필터의 준비 신호만 있는 결과도 보존하고, 필터를 넓힌 100회 호출의 제한된 범위와 전체 2쪽 출력 재현성을 구분한다. 독립 표 격자는 별도 한컴 PDF 경로와 두께 변환으로 검증했다. 최종 88쪽·정밀도 4쪽의 표본 일치, 실제 5/124쪽 일치와 중간 실패는 [뷰어 검증 기록](../6_나래뷰어/validation.md)을 따른다. 전체 무차이는 미달성이며 원시 문서·폰트·바이너리·REA 자료를 배포하지 않는다.
