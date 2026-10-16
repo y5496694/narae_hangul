@@ -299,7 +299,7 @@ class _DocInfoEditor:
                 raise ValueError("HWP 줄 간격이 허용 범위를 벗어났습니다.")
             kind = options.index(new.line_type)
             flags = (flags & ~3) | kind
-            line = round(new.line if kind == 0 else new.line * 100)
+            line = round(new.line) if kind == 0 else round(new.line * 100)*2
             struct.pack_into("<i", data, 24, line)
             if len(data) >= 54:
                 prop3, = struct.unpack_from("<I", data, 46)

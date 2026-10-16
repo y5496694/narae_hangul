@@ -672,6 +672,20 @@ def load_document(path) -> LoadedDocument:
     raise ValueError("지원하지 않는 파일입니다. HWP 5, HWPX, HTML, TXT를 선택하세요.")
 
 
+def _line_spacing_units(value,kind,*,packed=False,unit='HWPUNIT'):
+    """Return points, or character units to resolve from the document style."""
+    if kind=='PERCENT':return value,None
+    if packed:
+        raw=int(value);unit='CHAR' if raw&1 else 'HWPUNIT';value=raw>>1
+    if unit=='CHAR':return 0,value
+    return value/100,None
+
+
+def _character_line_spacing(value,height):
+    units=value*round(height*100)/200
+    return (int(abs(units)+.5+1e-9)*(1 if units>=0 else -1))/100
+
+
 def _load_hwpx(path):
     warnings, metadata = [], {}
     header_footers = []
@@ -698,6 +712,7 @@ def _load_hwpx(path):
                             font_types[f.get("id","0")] = f.get("type","TTF")
         chars = {}
         paras = {}
+        character_spacing = {}
         borders = {}
         for e in head.iter():
             if _local(e) == "charPr":
@@ -741,12 +756,16 @@ def _load_hwpx(path):
                 vals = {n: _num(_attr(_child(margin, n), "value")) / margin_divisor if margin is not None else 0 for n in ("left", "right", "intent", "prev", "next")}
                 line = native_property("lineSpacing")
                 line_type = _attr(line, "type", "PERCENT")
+                line_default=any(line is x for default in e.iter() if _local(default)=='default' for x in default.iter())
+                line_value,char_value=_line_spacing_units(_num(_attr(line,'value'),160),line_type,
+                    packed=line_default,unit=_attr(line,'unit','HWPUNIT'))
+                if char_value is not None:character_spacing[e.get('id','0')]=char_value
                 breaking = _child(e,"breakSetting")
                 auto = _child(e,"autoSpacing")
                 border = _child(e,"border")
                 fill = borders.get(_attr(border,"borderFillIDRef"),BorderFill((Border("NONE"),)*4))
                 paras[e.get("id", "0")] = ParaStyle(_attr(_child(e, "align"), "horizontal", "LEFT"),
-                    vals["left"], vals["right"], vals["intent"], vals["prev"], vals["next"], _num(_attr(line, "value"), 160) / (1 if line_type == "PERCENT" else 100),
+                    vals["left"], vals["right"], vals["intent"], vals["prev"], vals["next"], line_value,
                     _attr(line, "type", "PERCENT"), _attr(breaking, "pageBreakBefore") == "1",
                     _attr(breaking,"breakLatinWord","KEEP_WORD"),_attr(breaking,"breakNonLatinWord","BREAK_WORD"),
                     _attr(_child(e,"align"),"vertical","BASELINE"),_int(e.get("condense")),e.get("snapToGrid")=="1",e.get("fontLineHeight")=="1",
@@ -894,8 +913,15 @@ def _load_hwpx(path):
                 _warning(warnings, "곡선·원호의 보간과 구역 도형은 화면 동일성이 검증되지 않았습니다. 원본 보존 저장에서는 해당 XML을 유지합니다.")
             return d
         para_counter = [0]
+        style_chars={e.get('id','0'):e.get('charPrIDRef','0') for e in head.iter() if _local(e)=='style'}
         def paragraph(e, scope=None):
-            style = paras.get(e.get("paraPrIDRef", "0"), ParaStyle())
+            para_id=e.get('paraPrIDRef','0')
+            style = paras.get(para_id, ParaStyle())
+            if para_id in character_spacing:
+                # CHAR uses the document's base style (ID 0), independently
+                # of the current run and paragraph's chosen style.
+                face=chars.get(style_chars.get('0','0'),TextStyle())
+                style=replace(style,line=_character_line_spacing(character_spacing[para_id],face.size))
             if e.get("pageBreak") == "1":
                 style = ParaStyle(**{**style.__dict__, "page_break": True})
             p = Paragraph(style=style)
@@ -1155,6 +1181,7 @@ def _load_hwp(path):
         return _inflate(raw) if flags & 1 else raw
     info = _records(read("DocInfo"))
     fonts, font_types, chars, paras, borders, binaries = [], [], {}, {}, {}, {}
+    character_spacing,style_chars = {},{}
     mappings = next((r.data for r in info if r.tag == 17), b"")
     font_count = struct.unpack_from("<I", mappings, 4)[0] if len(mappings) >= 8 else 0
     font_counts = struct.unpack_from("<7I", mappings, 4) if len(mappings) >= 32 else (font_count,) * 7
@@ -1190,11 +1217,14 @@ def _load_hwp(path):
             if len(d) >= 54:
                 line_type = struct.unpack_from("<I", d, 46)[0] & 3
                 line = struct.unpack_from("<i", d, 50)[0]
+            kind={0:'PERCENT',1:'FIXED',2:'BETWEEN_LINES',3:'AT_LEAST'}.get(line_type,'PERCENT')
+            line_value,char_value=_line_spacing_units(line,kind,packed=True)
+            if char_value is not None:character_spacing[len(paras)]=char_value
             prop2 = struct.unpack_from("<I",d,42)[0] if len(d)>=46 else 0
             fill_id = struct.unpack_from("<H",d,32)[0] if len(d)>=34 else 1
             fill = borders.get(fill_id,BorderFill((Border("NONE"),)*4))
             paras[len(paras)] = ParaStyle({0: "JUSTIFY", 1: "LEFT", 2: "RIGHT", 3: "CENTER",4:"DISTRIBUTE",5:"DISTRIBUTE_SPACE"}.get((prop >> 2) & 7, "JUSTIFY"),
-                left / 200, right / 200, indent / 200, before / 200, after / 200, line if not line_type else line / 100,
+                left / 200, right / 200, indent / 200, before / 200, after / 200, line_value,
                 {0: "PERCENT", 1: "FIXED", 2: "BETWEEN_LINES",3:"AT_LEAST"}.get(line_type, "PERCENT"), bool(prop & (1 << 19)),
                 {0:"KEEP_WORD",1:"HYPHENATION",2:"BREAK_WORD"}.get((prop>>5)&3,"KEEP_WORD"),
                 "KEEP_WORD" if prop & (1<<7) else "BREAK_WORD",  # native XML cross-checked
@@ -1203,6 +1233,12 @@ def _load_hwp(path):
                 {0:"BREAK",1:"SQUEEZE",2:"KEEP"}.get(prop2&3,"BREAK"),bool(prop2 & 16),bool(prop2 & 32),
                 fill.background,fill.borders,tuple(v/100 for v in struct.unpack_from("<4h",d,34)) if len(d)>=42 else (0,)*4,
                 bool(prop & (1<<28)),bool(prop & (1<<29)))
+        elif r.tag == 26:
+            offset=0
+            for _ in range(2):
+                if offset+2>len(d):break
+                length=struct.unpack_from('<H',d,offset)[0];offset+=2+length*2
+            if offset+8<=len(d):style_chars[len(style_chars)]=struct.unpack_from('<H',d,offset+6)[0]
         elif r.tag == 20:
             color = ""
             if len(d) >= 44 and struct.unpack_from("<I", d, 32)[0] & 1:
@@ -1283,6 +1319,9 @@ def _load_hwp(path):
         d = node.data
         pid = struct.unpack_from("<H", d, 8)[0] if len(d) >= 10 else 0
         ps = paras.get(pid, ParaStyle())
+        if pid in character_spacing:
+            face=chars.get(style_chars.get(0,0),TextStyle())
+            ps=replace(ps,line=_character_line_spacing(character_spacing[pid],face.size))
         if len(d) > 11 and d[11] & 4:
             ps = ParaStyle(**{**ps.__dict__, "page_break": True})
         text = b"".join(x.data for x in node.children if x.tag == 67)
@@ -2317,13 +2356,13 @@ def save_hwp(document_or_html, path) -> list[str]:
     for s in paras:
         alignment = {"JUSTIFY": 0, "LEFT": 1, "RIGHT": 2, "CENTER": 3,"DISTRIBUTE":4,"DISTRIBUTE_SPACE":5}.get(s.align, 1)
         line_type = {"PERCENT": 0, "FIXED": 1, "BETWEEN_LINES": 2,"AT_LEAST":3}.get(s.line_type, 0)
-        flags = (alignment << 2) | ({"KEEP_WORD":0,"HYPHENATION":1,"BREAK_WORD":2}.get(s.break_latin,0)<<5)
+        flags = line_type | (alignment << 2) | ({"KEEP_WORD":0,"HYPHENATION":1,"BREAK_WORD":2}.get(s.break_latin,0)<<5)
         flags |= int(s.break_nonlatin=="KEEP_WORD")<<7 | int(s.snap_to_grid)<<8 | min(127,max(0,s.condense))<<9
         flags |= int(s.widow_orphan)<<16 | int(s.keep_with_next)<<17 | int(s.keep_lines)<<18 | int(s.page_break)<<19
         flags |= {"BASELINE":0,"TOP":1,"CENTER":2,"BOTTOM":3}.get(s.vertical_align,0)<<20 | int(s.font_line_height)<<22
         flags |= int(s.border_connect)<<28 | int(s.border_ignore_margin)<<29
         prop2 = {"BREAK":0,"SQUEEZE":1,"KEEP":2}.get(s.line_wrap,0) | int(s.auto_spacing_eng)<<4 | int(s.auto_spacing_num)<<5
-        line = round(s.line if not line_type else s.line * 100)
+        line = round(s.line) if not line_type else round(s.line * 100)*2
         d = struct.pack("<I6i3H4hIII", flags, round(s.left * 200), round(s.right * 200), round(s.indent * 200),
             round(s.before * 200), round(s.after * 200), line, 0, 0, border_fills.index(BorderFill(tuple(s.borders),s.background))+1,
             *(round(v*100) for v in s.border_offsets),prop2,line_type,line)

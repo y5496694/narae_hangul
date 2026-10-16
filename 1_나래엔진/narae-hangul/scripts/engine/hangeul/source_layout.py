@@ -443,7 +443,7 @@ class SourceLayout:
             pitch=(height*style.line/100 if style.line_type=='PERCENT' else
                    height+style.line if style.line_type=='BETWEEN_LINES' else
                    max(height,style.line) if style.line_type=='AT_LEAST' else style.line)
-            spacing=max(0,pitch-height)
+            spacing=pitch-height
             if style.line_type=='PERCENT':
                 # Native percent spacing quantizes the character height down
                 # to four HWPUNIT before calculating the gap, then rounds the

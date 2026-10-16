@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T19:53:10+09:00",
+  "date_kst": "2026-10-16T20:26:48+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "bd3f84ab1fe3156931ef9340abff2470e9fba23d",
+  "base_commit": "50e24f0b2f51c0236d12a70bf3ba1ca0e930c476",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -169,11 +169,11 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 101,
+      "run": 106,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "99 historical native appearance final passes plus 2 percent-spacing native tests. Current four related groups passed 12 tests, including portable tests. Historical cumulative count is not a fresh whole101-test pass. Existing native-context failure and nonpercent unit/overlap findings remain.",
+      "scope": "101 historical final native appearance passes plus5 new line-spacing-unit native methods. Current related union13 distinct passes is assembled from final module/subset/portable logs, not a fresh full106 run. Existing native-context failure remains.",
       "whole_group_fresh_pass_claimed": false,
       "component_log_sha256": [
         "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
@@ -207,7 +207,9 @@
         "e1ac6fd8ce597ba1a3e394868e3e6acd7f4473f9d5747326d6f265e782900fac",
         "9e728a0dac0215f7b0dbd2177cb9f5e81225bde3c1b85f8e8c6e5e36623c0e47",
         "8f55f00153f036d69e106fed78e5b73f0f3ee3e218c3f613f0e43770b380b695",
-        "05b922929f85e7eb39efe5a30c9a7e0970a892816213d5d1f4122d53e6d693b8"
+        "05b922929f85e7eb39efe5a30c9a7e0970a892816213d5d1f4122d53e6d693b8",
+        "1274a51a66ed2c5b94f505e5bd2066ff624860691d52065a0e4863f74651fe11",
+        "66def86637e01b96a892ed33dee560e5944ecd1aa5f336ea149272a50baccb01"
       ]
     },
     "full_native_rerun": {
@@ -233,9 +235,9 @@
       "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 130,
-      "passed": 70,
-      "skipped": 60,
+      "run": 137,
+      "passed": 72,
+      "skipped": 65,
       "failures": 0,
       "errors": 0,
       "log_sha256": "845086660acf2ab09f01a5b58169330161059dbdd80d85ada33e0e25d2d154c0"
@@ -1547,12 +1549,12 @@
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "e5d8aa4922f3b7bfb61d460559f176a53c14d7866531c8bf6e7edc6a35ff6812",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "088ff4fc1f09d2068e94e4c1332bbfeb23d423ccd9fcf8cebafe5d92e9593830",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "52bbbdec290189059a89402171f073276d8bdde1ecba059f76149b837602759c",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "2a926644ab598b2ae037c0af2e6f71a0350e53ff4e18afe56989ae64a5c7b534",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "810e1de2dfc10cb5ef1f02286c92b7bc73b8c49bbe25a004a0aa27f8d7d407ba",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "29a855dd7961ac405322d02afc33496066fccdc160992c62406f9fea1cb6063a",
+    "2_나래스킬/narae-viewer/SKILL.md": "af4ea4e9cc42b8f67418fb9b0021874c6df24f6f8857442efdec6904c226ef06",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "fb40ee0ba3bd73dba0dbe1aef6db2768f5281d0f731d9d353002b8bf640eeac8",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "275925621e5437441b86f3e4b98d35c69a134409a33b6c050e021938026886b0",
@@ -1566,16 +1568,16 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "7c0c085dc6005b94c5bf6de0b52463164814c9964051b61640ca25e2fdd93824",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "4afd6277d0b921fe468e4dc99272eea3bf10eb4fc39b6e53f81262151215e8d2",
     "tests/test_pdf_native_text.py": "1a71fa6835520e9333f920914180835e7d3b5002802cfd76f351ab4821fe3631",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "89e08126b83cc8cdd630c35afd58db02318de1dc41b820d45175cf9de4b85194",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "669433dbcc221d5a7bd51c5ed02355d80401301d04923b3bc4ecee66a49eae89",
     "tests/test_text_decorations.py": "2b3fed445c5a53b5ef553dfef9ef5beedb086e2588959885b8c0420ba82162ac",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwpx_native.py": "564aa217a166bdcd5ed814a4c6405159b947aa8a17acb81a3ad773a159b2eec1",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwpx_native.py": "8c53e0c6bf57d02936e00a9220f2de43106a0c9083487ad63e3ce14c5759b0d7",
     "tests/test_inline_spacing.py": "61b3de9dddf1e7517475f0b5917dfb23b338b3211c8152c827573938eb6172f2",
     "tests/test_pdf_stretch.py": "dcf48403fa663ef49a46933d395ef3984e088fd9eabe1617bc9f0a4fad24e0c6",
-    "1_나래엔진/narae-hangul/references/viewer.md": "47d8a7e035f344d1427031c3a9f6dea43e83c72eace62a0d070a741bbba06249",
-    "6_나래뷰어/README.md": "ff0fb1ac17bf49bff17fa9da16c8e3547ad09d304ba3dfac9cfe14ef2dd1f551",
+    "1_나래엔진/narae-hangul/references/viewer.md": "1edca6d766bd089011070db30155e10cf0900471c89d9ceda1530d891f641add",
+    "6_나래뷰어/README.md": "a831c22dbe862f5a2c932c600cc77a3cd25cba146744b7b8a486cbe9b307c614",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "478bd0411db359e3a73021da9a81d736b936f018a1d87efabb1505e3015f7450",
     "tests/test_pdf_table_frames.py": "1c0d7df362ab78952b2e33b9ab5c48aeb43d62b5ae6d783e08f2c9eeba548718",
-    "5_유틸리티/hancom_rea_findings.md": "c46b4d763ec7d2eafb55818cc71a0709290ce2bac11c0cb95678d15405c3d5ff",
+    "5_유틸리티/hancom_rea_findings.md": "61d0dfd6fddcb81e52ec071608278c9eee0d888aeff4ca3dfccd41b2fb5ac3ef",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_device_metrics.py": "d34cf23187060a4b41590eb3906312192160bb3f7c0ebff8ab60ada8bd4acc87",
     "tests/test_pdf_device_metrics.py": "1a3ce42dccdcce868780a79c807211c6404f7cd28bf88763d04233bbcfce5680",
     "tests/test_pdf_mixed_table_frames.py": "f204eee622dcdb6e717c55623fe39bf9d8ca2c4b7383b56593376191ac4ef130",
@@ -1587,7 +1589,8 @@
     "tests/test_pdf_cached_stretch.py": "98fbbf9ef44b6bf3273608c89510d6bed60c82f7287223e0cd46060bbd01005b",
     "tests/test_pdf_continued_alignment.py": "c965545541d4c6e213f6ef24204c5f9a3da31a69f0de2a5aefe4e0cd3de54b4d",
     "tests/test_pdf_source_alpha.py": "81e8249d50adbe8a76c28cb9b609007dc70bc607f7d52ba81298b1c580ff262a",
-    "tests/test_percent_line_spacing.py": "3ec8366e8acb85c440d11058aeae3286c0b0b4b6805665b57c2a78e6bd14c4ad"
+    "tests/test_percent_line_spacing.py": "3ec8366e8acb85c440d11058aeae3286c0b0b4b6805665b57c2a78e6bd14c4ad",
+    "tests/test_line_spacing_units.py": "8ef2ad9f03766338ad6cdd9feb9889c867fc2fc9ab24a60c44f66f6bcaa68217"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -2868,7 +2871,7 @@
       "whole actual documents remain different"
     ]
   },
-  "current_validation_stage": "percent_line_spacing",
+  "current_validation_stage": "nonpercent_line_spacing_units",
   "pdf_cell_clipping": {
     "behavior": "Clip direct cell text and paragraph backgrounds at the prepared physical cell rectangle, including outline/bitmap/painter paths. Preserve original glyph CTMs; transform clip points into the current parent coordinate system. Invert the single-precision PDF device parent for physical grid fills/strokes.",
     "scope": "Prepared complete single-page inline body grids with SOLID/NONE cell borders; text clips use cell edges rather than padding/pen extents",
@@ -6173,6 +6176,398 @@
       "percent-spacing-normal-fonts-final.log": "58ac66437a446dafe5e8b1a6a6ebc9bc073f5745dd62777358fb7bd37a4b67eb",
       "percent-spacing-portable-final.log": "89ec193173fa3ff5d04f4a8cfd32ba08f36c3b412599cf04ecbbdbb4adc26a40",
       "percent-spacing-source-alpha-final.log": "7ca4a0d1f2951d975a125fe9254037e2f1b2b6f27872b0fd7cbf2b61d3e807ed"
+    }
+  },
+  "nonpercent_line_spacing_units": {
+    "base_commit": "50e24f0b2f51c0236d12a70bf3ba1ca0e930c476",
+    "formats": [
+      "hwp",
+      "hwpx"
+    ],
+    "dpi": 96,
+    "pixel_tolerance": 0,
+    "inference_source": "Native byte, SaveAs line cache and PDF observations. Official HWP specification used for record/style-reference structure; unit packing and rounding inferred from the local application.",
+    "rule": {
+      "nonpercent": "Decode low unit bit and value in HWP legacy/current and HWPX versioned default. Resolve direct/compatibility HWPX HWPUNIT or CHAR units separately.",
+      "character_base": "Document base style ID0 charPr reference, regardless of the selected paragraph style/run size; declared size before per-language relative size.",
+      "character_rounding": "Round to integer HWPUNIT before subsequent line accumulation; 151 units at11pt gives831 HU, not830.5.",
+      "model": "Nonpercent line value normalized to absolute points. New writes/changed line spacing use explicit HWPUNIT. Untouched native source properties retain original units.",
+      "overlap": "Preserve short/zero fixed line pitch instead of clamping to the text height."
+    },
+    "fixtures": {
+      "point_cases": 24,
+      "point_formats": 2,
+      "new_point_pages": 48,
+      "character_cases_per_base": 54,
+      "document_base_sizes": [
+        11,
+        20
+      ],
+      "character_hwp_and_direct_hwpx_pages": 216,
+      "new_unique_pages_exact": 264,
+      "versioned_hwpx_character_pages_repeated": 108,
+      "preserved_edit_pages_repeated": 234,
+      "legacy_pages_repeated": 8,
+      "complete_page_comparisons_for_new_tests": 614,
+      "historical_unique_pages_exact": 2314,
+      "count_scope": "Only point48 + character216 are added; versioned copies/edits/legacy overlap are excluded from the historical increment. No fresh whole2314-page pass claimed."
+    },
+    "test_scope": {
+      "new_unit_module_distinct_passed": 7,
+      "new_native_methods_passed": 5,
+      "new_portable_methods_passed": 2,
+      "execution": "Final5 module tests, final2 preserved tests (one repeated with stronger value assertions), and general portable run with new pixel-pair test; not a single fresh whole7-method invocation.",
+      "related_distinct_passed": 13,
+      "related_groups": 3,
+      "related_scope": "unit7 + existing percent3 + inline3"
+    },
+    "old_fixed_references": [
+      {
+        "scope": "line-pitch-oracles",
+        "format": "hwp",
+        "pages": 60,
+        "exact": 60,
+        "reference_sha256": "5afde03355dce2baa65c6a498c1d9ea860ed784eae08215d163be45507fa0258",
+        "bad": []
+      },
+      {
+        "scope": "line-pitch-oracles",
+        "format": "hwpx",
+        "pages": 60,
+        "exact": 60,
+        "reference_sha256": "53946de995d897ef6117c187b8c1cb127d0f100038f2762c7a98cd5127c552f2",
+        "bad": []
+      },
+      {
+        "scope": "line-pitch-negative-oracles",
+        "format": "hwp",
+        "pages": 10,
+        "exact": 10,
+        "reference_sha256": "a5e63d4d9956c4fab6ac617f86926682e570f4f26266f5a7dd8deccd4bd8bcee",
+        "bad": []
+      },
+      {
+        "scope": "line-pitch-negative-oracles",
+        "format": "hwpx",
+        "pages": 10,
+        "exact": 10,
+        "reference_sha256": "f9f95d7d7cea8a8defa6ead0a0422be8b1732e262aa20238490873294a9f87be",
+        "bad": []
+      },
+      {
+        "scope": "line-pitch-zero-oracles",
+        "format": "hwp",
+        "pages": 2,
+        "exact": 2,
+        "reference_sha256": "7876f08cd8ac7932dab9a569c278dcf2b844deed987af3aebf315d4f5047723c",
+        "bad": []
+      },
+      {
+        "scope": "line-pitch-zero-oracles",
+        "format": "hwpx",
+        "pages": 2,
+        "exact": 2,
+        "reference_sha256": "e8b05617009aa9f7d958d551665675e5f0cc5126061384e4d817dfb01f39e20b",
+        "bad": []
+      },
+      {
+        "scope": "char-base",
+        "base": 11,
+        "format": ".hwpx",
+        "pages": 9,
+        "exact": 9,
+        "reference_sha256": "85f9a69b47ea3571fcdfa6b9194e262292e1cecf9558bfc0da5b0ef2ced7245b",
+        "bad": []
+      },
+      {
+        "scope": "char-base",
+        "base": 11,
+        "format": ".hwp",
+        "pages": 9,
+        "exact": 9,
+        "reference_sha256": "85f9a69b47ea3571fcdfa6b9194e262292e1cecf9558bfc0da5b0ef2ced7245b",
+        "bad": []
+      },
+      {
+        "scope": "char-base",
+        "base": 11,
+        "format": "-native.hwpx",
+        "pages": 9,
+        "exact": 9,
+        "reference_sha256": "85f9a69b47ea3571fcdfa6b9194e262292e1cecf9558bfc0da5b0ef2ced7245b",
+        "bad": []
+      },
+      {
+        "scope": "char-base",
+        "base": 16,
+        "format": ".hwpx",
+        "pages": 9,
+        "exact": 9,
+        "reference_sha256": "216aa93fccf05fceb0493446b4ba65d50c61ac17ce0509cf58d7a82027c9e407",
+        "bad": []
+      },
+      {
+        "scope": "char-base",
+        "base": 16,
+        "format": ".hwp",
+        "pages": 9,
+        "exact": 9,
+        "reference_sha256": "216aa93fccf05fceb0493446b4ba65d50c61ac17ce0509cf58d7a82027c9e407",
+        "bad": []
+      },
+      {
+        "scope": "char-base",
+        "base": 16,
+        "format": "-native.hwpx",
+        "pages": 9,
+        "exact": 9,
+        "reference_sha256": "216aa93fccf05fceb0493446b4ba65d50c61ac17ce0509cf58d7a82027c9e407",
+        "bad": []
+      },
+      {
+        "scope": "char-base",
+        "base": 20,
+        "format": ".hwpx",
+        "pages": 9,
+        "exact": 9,
+        "reference_sha256": "8076e2f24efe12f3422119d48bb8c52e0f4bd8e9eeb8602cd122ee5c79075b7f",
+        "bad": []
+      },
+      {
+        "scope": "char-base",
+        "base": 20,
+        "format": ".hwp",
+        "pages": 9,
+        "exact": 9,
+        "reference_sha256": "8076e2f24efe12f3422119d48bb8c52e0f4bd8e9eeb8602cd122ee5c79075b7f",
+        "bad": []
+      },
+      {
+        "scope": "char-base",
+        "base": 20,
+        "format": "-native.hwpx",
+        "pages": 9,
+        "exact": 9,
+        "reference_sha256": "8076e2f24efe12f3422119d48bb8c52e0f4bd8e9eeb8602cd122ee5c79075b7f",
+        "bad": []
+      }
+    ],
+    "old_nonpercent_exploratory_pages_now_exact": 36,
+    "nonzero_base_font_reference_checks": [
+      {
+        "label": "normal-ref16",
+        "pages": 1,
+        "match": true,
+        "native_reference_sha256": "2caa13178129036f74386bbddd6e589ee055d64dacc4bf05ae8c5583aa62b831"
+      },
+      {
+        "label": "normal-ref20-char016",
+        "pages": 1,
+        "match": true,
+        "native_reference_sha256": "577d59a8da82b8003e4edc9755db4053b450e211248d345baa6c5e4a27f6a3c4"
+      }
+    ],
+    "preserved_failures": [
+      {
+        "log": "spacing-units-fixed-reference-first.log",
+        "issue": "402 pixels on HWP page51 due to unresolved half-HWPUNIT character spacing; final225/225 fixed refs now exact"
+      },
+      {
+        "log": "spacing-units-native-first.log",
+        "issue": "Mixed paragraph styles disproved using the chosen paragraph style as CHAR basis; corrected to document styleID0"
+      }
+    ],
+    "checks": [
+      {
+        "check": "percent",
+        "exit": 0,
+        "seconds": 24.57,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 6.01,
+          "used_percent": 62.2
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 6.01,
+          "used_percent": 62.2
+        }
+      },
+      {
+        "check": "inline",
+        "exit": 0,
+        "seconds": 12.16,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 6.02,
+          "used_percent": 62.1
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 6.15,
+          "used_percent": 61.3
+        }
+      },
+      {
+        "check": "fixed-reference",
+        "exit": 0,
+        "seconds": 22.4,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 6.14,
+          "used_percent": 61.4
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 6.16,
+          "used_percent": 61.2
+        }
+      },
+      {
+        "check": "normal-fonts",
+        "exit": 0,
+        "seconds": 24.44,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 6.17,
+          "used_percent": 61.2
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 6.16,
+          "used_percent": 61.2
+        }
+      },
+      {
+        "check": "portable",
+        "exit": 0,
+        "seconds": 17.97,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 6.15,
+          "used_percent": 61.3
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 6.27,
+          "used_percent": 60.5
+        }
+      },
+      {
+        "check": "corpus",
+        "exit": 0,
+        "seconds": 126.17,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 6.27,
+          "used_percent": 60.6
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 6.3,
+          "used_percent": 60.4
+        }
+      },
+      {
+        "check": "installed-skill",
+        "exit": 0,
+        "seconds": 63.87,
+        "before": {
+          "hwp_processes": 0,
+          "free_gb": 6.3,
+          "used_percent": 60.3
+        },
+        "after": {
+          "hwp_processes": 0,
+          "free_gb": 6.12,
+          "used_percent": 61.5
+        }
+      }
+    ],
+    "actual": {
+      "report-hwp": {
+        "before": 1755338,
+        "after": 1755338,
+        "exact": 1,
+        "reference_sha256": "59d00f031684f77c3c17323686df5ed18ceac1c800494fc3ad3ae45fd348c0a5",
+        "max_fraction": 0.18037913585402102
+      },
+      "report-hwpx": {
+        "before": 1755338,
+        "after": 1755338,
+        "exact": 1,
+        "reference_sha256": "81625234203ea5fce32ce098057125140a11f5c51c40dc9b461f16dbe8b1a9bd",
+        "max_fraction": 0.18037913585402102
+      },
+      "trip-hwpx": {
+        "before": 0,
+        "after": 0,
+        "exact": 2,
+        "reference_sha256": "e4bf914e2b4b9ea1d6410c37e69cd32a4a2c2ed404002d5d05e31c043608bcdf",
+        "max_fraction": 0.0
+      },
+      "form-hwp": {
+        "before": 609370,
+        "after": 609370,
+        "exact": 0,
+        "reference_sha256": "b2cc8c977f1d211cc755ca3742171c91ade919377937be0830fbfb9639d840cb",
+        "max_fraction": 0.14713852108280912
+      },
+      "guide-hwp": {
+        "before": 3876487,
+        "after": 3876487,
+        "exact": 2,
+        "reference_sha256": "4043d88876e1342b1873f83bf7960983f21504f576c0e7cb701b9f62fe35124d",
+        "max_fraction": 0.20485189725077116
+      },
+      "lesson-hwp": {
+        "before": 869202,
+        "after": 869202,
+        "exact": 0,
+        "reference_sha256": "3aed17b54f71f25cd6f795cfe03dd6db1e8810c3ed2d8dd5848aa80452e00832",
+        "max_fraction": 0.22941782620994355
+      },
+      "minutes-hwpx": {
+        "before": 172806,
+        "after": 172806,
+        "exact": 0,
+        "reference_sha256": "c6389ce79c6a1cebf148ef78f14dd94d3bb12839fb57bec6b6142e3b840fbed5",
+        "max_fraction": 0.11340625098218816
+      }
+    },
+    "real_documents_exact": 1,
+    "real_pages_exact": 6,
+    "real_pages_checked": 124,
+    "independent_zero_difference_complete": false,
+    "limits": [
+      "Other actual documents remain nonexact",
+      "Bold/italic/underline and justified continuation still use legacy paths in actual files",
+      "PNG source alpha and effect/rotation/crop combinations remain",
+      "Fresh 5pt native context67pixels and separate narrow-wrap24pages remain",
+      "Model normalization preserves current point layout; relative CHAR behavior is not retained by full-rebuild serialization"
+    ],
+    "evidence_sha256": {
+      "line-char-base-oracles\\base-16-native.hwpx": "5fb5f8e75a449df113f90e32d3d54b343887f6ccff4b38827f66a5d94472860c",
+      "line-char-base-oracles\\base-20-native.hwpx": "d34875794961d7415a0187970efd1dee285e69371a3180bc38acd7136b409f13",
+      "mixed-char-unit-oracles\\native.hwpx": "5424790e56bbd58f1ab5ce0cfda211ddf5d55b12f97b64c06670f028e0213ed6",
+      "mixed-char-unit-oracles\\normal-ref16-native.hwpx": "10ee651e5bbf9321a0ea1dd1a4af43b6cec94b939bc7ad9ccfd978bc5005631d",
+      "mixed-char-unit-oracles\\normal-ref20-char016-native.hwpx": "7e025d85fa5bcbbee4d67310f8997d10954c892c690076eacf003e8ded79c099",
+      "line-legacy-oracles\\rounding-native-cache.hwpx": "e04e88dae37ffef7da03e9134dc1faad6f36656145b81ca013dce6704ca6a9de",
+      "line-legacy-oracles\\comparison.json": "e15478694511b861013bc80862993daa1c27be986f6d7c7cd32b80ed4b6bd737"
+    },
+    "log_sha256": {
+      "spacing-units-corpus-final.log": "4dfd36132df79fdca61ffd2a5edac24335da1bb896d2fe80a8141a766a6492d2",
+      "spacing-units-fixed-reference-final.log": "3cb7609ceaf745bc193456d0c1cc17987f014e0fb284b237c86dd75f2b35e9c6",
+      "spacing-units-fixed-reference-first.log": "d31b2986e28d0b210547db6681d3a9a5c45f270aa355ac34ce1fe1bb9983dbb3",
+      "spacing-units-inline-final.log": "753627bd3a6e1928fdf810ffa85394a0d6cbe9675a43ed456e18f0cecc8d9c28",
+      "spacing-units-installed-skill-final.log": "63a3673564e64beea127d3609c6ef6f44b58c3676c29a1b88299ea5dee1fc4f2",
+      "spacing-units-native-final.log": "1274a51a66ed2c5b94f505e5bd2066ff624860691d52065a0e4863f74651fe11",
+      "spacing-units-native-first.log": "efd2742a0435eae9b83d607e20a2f2687bbbe69f05180519ea3ae29ac63ac0cd",
+      "spacing-units-normal-fonts-final.log": "58ac66437a446dafe5e8b1a6a6ebc9bc073f5745dd62777358fb7bd37a4b67eb",
+      "spacing-units-percent-final.log": "a12c343e83ae39a78994d712eb03441c368d38255adba129e3d829b5616f23dd",
+      "spacing-units-portable-final.log": "9789808bcd55de8ef74820b9419c8388684cc2bcd1f89517ecb4aad8d3acf24e",
+      "spacing-units-portable-first.log": "2b15e65321549f7c80d2d74afb7fada51aa9f8aeb6c3948ec13de6fa6b272955",
+      "spacing-units-preserved-final.log": "66def86637e01b96a892ed33dee560e5944ecd1aa5f336ea149272a50baccb01"
     }
   }
 }

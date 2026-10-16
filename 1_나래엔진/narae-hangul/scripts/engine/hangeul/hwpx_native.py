@@ -129,10 +129,11 @@ def _alter(raw, changes, toggles=None):
                 if path[0] == "margin" or values.get("type") != "PERCENT":
                     values["value"] = round(values["value"] / 2)
                 if path[0] == "lineSpacing":
-                    values["unit"] = "CHAR" if values.get("type") != "PERCENT" else "HWPUNIT"
+                    values["unit"] = "HWPUNIT"
             elif path and path[0] == "margin" and "value" in values and not in_default:
                 values["value"] = round(values["value"] / 2)
             elif path and path[0] == "lineSpacing" and "value" in values:
+                if not in_default and values.get('type')!='PERCENT':values['value']=round(values['value']/2)
                 values["unit"] = "HWPUNIT"
             edits.append((node["begin"], node["content"], _attributes(raw[node["begin"]:node["content"]], values)))
     for local, enabled in (toggles or {}).items():
@@ -261,7 +262,7 @@ class _References:
             if getattr(before, field) != getattr(after, field):
                 changes.append((("margin", local), {"value": round(getattr(after, field) * 200)}))
         if (before.line, before.line_type) != (after.line, after.line_type):
-            changes.append((("lineSpacing",), {"type": after.line_type, "value": round(after.line if after.line_type == "PERCENT" else after.line * 100)}))
+            changes.append((("lineSpacing",), {"type": after.line_type, "value": round(after.line) if after.line_type == 'PERCENT' else round(after.line*100)*2}))
         if before.page_break != after.page_break:
             changes.append((("breakSetting",), {"pageBreakBefore": int(after.page_break)}))
         cloned = _alter(self.raw[source["begin"]:source["end"]], changes)
