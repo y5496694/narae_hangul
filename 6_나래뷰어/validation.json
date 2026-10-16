@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T13:14:03+09:00",
+  "date_kst": "2026-10-16T14:47:08+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "979d85532c11e687e24efa627c74a10a01cd8928",
+  "base_commit": "cb88fc53587520af51bc71c9e946d89670cb653a",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -96,7 +96,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0006207429158977537,
-      "changed_fraction_max": 0.22693822204860878,
+      "changed_fraction_max": 0.22941782620994355,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -110,7 +110,7 @@
       "independent_pages": 4,
       "independent_match": false,
       "page_count_match": true,
-      "changed_fraction_min": 0.003242904672746131,
+      "changed_fraction_min": 0.003229434663721225,
       "changed_fraction_max": 0.11367901866494251,
       "errors": [],
       "independent_identical_pages": 0
@@ -169,11 +169,11 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 76,
+      "run": 83,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "71 distinct final passes through 979d855 plus 5 fresh grid/path-token/width-label tests; these are passes from different stages, not one full 76-test run",
+      "scope": "76 distinct historical final passes through cb88fc5 plus 3 merged-grid tests and 4 cached-metric tests; current table and metric groups freshly passed 12 tests, not a full 83-test run",
       "whole_group_fresh_pass_claimed": false,
       "component_log_sha256": [
         "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
@@ -182,7 +182,9 @@
         "2c5f768978b7882f2e75d3d0964a94f54efdf9d60445468fe4103e2900f9ea14",
         "6636fc3900d653eaf24ebf62b8b471b295d812e09c1ebf867cb796db984b8e6c",
         "d44e8a5decbd01935120449d4f638acb5023eee99429501b4cbd89fa2c4ac76c",
-        "549be769c9c4aaa2238fbf634a03044642f33227273b527805a5f4fffc0ce5a4"
+        "549be769c9c4aaa2238fbf634a03044642f33227273b527805a5f4fffc0ce5a4",
+        "53d53da5129ef89b9ee8cbc67ef1483e6b5c7d6caf3f39b050e75edc81a37625",
+        "7433e63c1be550938962b4e7b98bc369f1c85664757de6bae7b91b0ab3ef0e0d"
       ]
     },
     "full_native_rerun": {
@@ -208,12 +210,12 @@
       "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 97,
-      "passed": 56,
-      "skipped": 41,
+      "run": 104,
+      "passed": 60,
+      "skipped": 44,
       "failures": 0,
       "errors": 0,
-      "log_sha256": "b6c01b2745b311abe5bfc8dbf35d30a03ecdc21a0c36c5ea54e715acaddd28be"
+      "log_sha256": "a51eba1131c21a3a573df5be8ef7054301fe4c786343e90d7cb6fde0a885fdef"
     },
     "cold_bitmap_cache": {
       "concurrent_workers": 4,
@@ -398,10 +400,10 @@
       }
     },
     "table_frame_pages": {
-      "run": 5,
-      "passed": 5,
-      "whole_pages_exact": 88,
-      "pages_per_format": 44,
+      "run": 8,
+      "passed": 8,
+      "whole_pages_exact": 128,
+      "pages_per_format": 64,
       "formats": [
         "hwp",
         "hwpx"
@@ -410,8 +412,8 @@
       "rgb_tolerance": 0,
       "alignment": false,
       "resizing": false,
-      "native_log_sha256": "549be769c9c4aaa2238fbf634a03044642f33227273b527805a5f4fffc0ce5a4",
-      "scope": "Arial 13pt, 1/2 rows, 1/2/3 columns, fractional widths/heights/padding, LEFT/CENTER/RIGHT, TOP/CENTER, opaque fills, solid border widths/colors and ignored table-level border definitions",
+      "native_log_sha256": "7433e63c1be550938962b4e7b98bc369f1c85664757de6bae7b91b0ab3ef0e0d",
+      "scope": "Prior 88 grid pages plus 40 complete merged-grid pages; uniform SOLID/NONE borders, opaque fill, inline body tables",
       "border_width_native_conversion_labels": 28,
       "precision_pages_exact": 4,
       "precision_log_sha256": "ee8b0d0f4cd498e585fbdddb12fa452c69c9b8fb56f9205f8d5a67961776cc6e",
@@ -431,7 +433,43 @@
           "name": "table-frames-native-third-tests.log"
         }
       ],
-      "failure_history": "Odd-pixel horizontal extensions and noncanonical HWPX width labels were corrected. One intermediate run also differed by 52 pixels in the HWPX AFTER text; its cause remains unestablished. The final fresh 5-test run passed. This is not a guarantee for every native process/layout context."
+      "failure_history": "Earlier odd-pen and width-label corrections retained. Cached AFTER 52-pixel and FIRST 55-pixel metric differences were reproduced and traced to device-centering mode. Hidden full-span grid axes are now compacted in both regenerated formats; no claim covers every native layout context."
+    },
+    "cached_pdf_device_metrics": {
+      "run": 4,
+      "passed": 4,
+      "failures": 0,
+      "errors": 0,
+      "whole_pages_exact": 90,
+      "cached_grid_pages": 88,
+      "multifont_pages": 2,
+      "multifont_lines": 18,
+      "families": [
+        "Arial",
+        "맑은 고딕",
+        "함초롬바탕"
+      ],
+      "sizes": [
+        9.5,
+        13,
+        18
+      ],
+      "formats": [
+        "hwp",
+        "hwpx"
+      ],
+      "dpi": 96,
+      "rgb_tolerance": 0,
+      "alignment": false,
+      "resizing": false,
+      "log_sha256": "53d53da5129ef89b9ee8cbc67ef1483e6b5c7d6caf3f39b050e75edc81a37625",
+      "visual_qa": "Whole-page cached multifont and fully merged native/independent image pairs inspected; RGB differences zero"
+    },
+    "normal_font_regression_current": {
+      "whole_pages_exact": 202,
+      "precision_pages_exact": 4,
+      "references": "Existing native PDF references reused without replacement",
+      "log_sha256": "d3392b4941058de77c5e9e986a04045d378d71483440716ffcd2b6a639cbb25c"
     }
   },
   "rea": {
@@ -1265,8 +1303,8 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "9100636ad934c0effa8c48672d4869f6592e9726990664c6bdd53a80de13b8ce",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ac8024577c0d112f4da78005fc12fc01fb8617d30022e0c0138056d3064d4a96",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "3ac3e022463ba2e64fe2661becd83429f32c2d5ea9ca02c928fd1f01080a50f6",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "d275c6086813f2c70d218ba2a44c2e1e4f2ad31bf1b59640217e985abf1b77dd",
+    "2_나래스킬/narae-viewer/SKILL.md": "66402bcef1a6b2fdaffed4c228ce6a56cc41b72a4d55b75050159aa757a3a1a8",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "d75b226d7627bb268566c0456128c688cb0cce3492db1c43b620cfff15d8f47b",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hft.py": "275925621e5437441b86f3e4b98d35c69a134409a33b6c050e021938026886b0",
@@ -1278,18 +1316,20 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "5e2216bbf741981dd31bfa44663664a57a8ce539d8d39f502b5215de924e6e8f",
     "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "24929db32de1b04976a3c9bfce1543dca725138ca767a187697cfc262ae3e66f",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "59c8ca985c175d086c0ca6fe5fc78961c38977c786dc41a848cb9e7b477eaf62",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "a7e02a4aa80b4ac23cee4ba59ce618299803ba97790adc79ba4d4ec73c0a1f92",
     "tests/test_pdf_native_text.py": "a856a38c83463e0b5f2fbfb613b6a92012d4d2712def7acb6ebcb6f936b5c5d9",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "89e08126b83cc8cdd630c35afd58db02318de1dc41b820d45175cf9de4b85194",
     "tests/test_text_decorations.py": "2b3fed445c5a53b5ef553dfef9ef5beedb086e2588959885b8c0420ba82162ac",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwpx_native.py": "564aa217a166bdcd5ed814a4c6405159b947aa8a17acb81a3ad773a159b2eec1",
     "tests/test_inline_spacing.py": "61b3de9dddf1e7517475f0b5917dfb23b338b3211c8152c827573938eb6172f2",
     "tests/test_pdf_stretch.py": "dcf48403fa663ef49a46933d395ef3984e088fd9eabe1617bc9f0a4fad24e0c6",
-    "1_나래엔진/narae-hangul/references/viewer.md": "e13fb86503ccc18e5d3dca39435240681b2ece6498e6d642d86224418f86b5ed",
-    "6_나래뷰어/README.md": "2231977fcbcb108dcf765b9f78abb5c6daca2b131c00f0ebc82d0f10ae06d611",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "86e5d6917540ce33a98ec0a8b8460b3002dbf104d00240fa1f910d32a5207ae8",
-    "tests/test_pdf_table_frames.py": "1186187c1d39ebda9efc11311a02380df96b0801be663cd7d70fd829352cfc5b",
-    "5_유틸리티/hancom_rea_findings.md": "171257f7f72cc8e4bb93733f3ce3ca06d7f3d8fef9f5b29975a87e43e5e007c1"
+    "1_나래엔진/narae-hangul/references/viewer.md": "de0593d7b58f5f4c00392404b0e8ad1239b1d09009b63da799a5080f50c21e86",
+    "6_나래뷰어/README.md": "facd0c94c25edd79f5a5a0e4f899edc99b6050c087f5778728ef8856ce9a95c5",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "cf9cbe2dcb3419368f87f62f05f9b7bd738fa38e2593cdf750b5a56afe0b3043",
+    "tests/test_pdf_table_frames.py": "fd1227f98e716e2ef980afc842de76efaa6625b945cdf69eb80308802dbb7e3d",
+    "5_유틸리티/hancom_rea_findings.md": "689c6828daa78eda95122870b028e90756b3b5a9f252b3587c544223645e1ac1",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_device_metrics.py": "9627ec91821ba34c0d37069f983e89b8753b968e9b5bd1d4ce1c019410699740",
+    "tests/test_pdf_device_metrics.py": "007a971d27e5cf2687cc3966a0d7a745cbd01b0c3658a7f4cdc85cde880bd954"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -1877,16 +1917,15 @@
   },
   "source_sha256_encoding": "SHA256 of source bytes with CRLF normalized to LF, matching Git archive; UTF-8 content is otherwise unchanged",
   "pdf_table_frames": {
-    "scope": "Single-page, inline, body-level, complete unmerged rectangular grids with identical SOLID/NONE cell borders and opaque fills",
+    "scope": "Single-page, inline, body-level, complete rectangular grids including merged cells with identical SOLID/NONE cell borders and opaque fills",
     "coordinates": "Add logical cell offsets to the rounded parent origin; preserve the cumulative origin in cell glyph positions",
     "paths": "Shared vertical/horizontal rules, flat caps, asymmetric integer extensions for odd-width pens and repeated boundary rules after cell content",
     "width_labels": "HWPX borderFill width is a 16-label enumeration. Noncanonical labels import as 0.1 mm; writers use the nearest canonical label in both formats.",
     "diagnostic": "layout.pdf_table_frames counts processing and legacy reasons, never whole-document parity",
     "remaining": [
-      "merged/split/floating/nested grids",
+      "split/floating/nested grids",
       "mixed border styles, widths or colors",
-      "other DPI and font/layout combinations",
-      "actual form-hwp total difference increased by 499 pixels"
+      "other DPI and font/layout combinations"
     ],
     "real_pixels": {
       "report-hwp": {
@@ -1928,6 +1967,139 @@
     "real_pages_exact": 5,
     "real_documents_exact": 0,
     "real_pages_checked": 124,
-    "corpus_log_sha256": "02e3ccc9eb5ba1db4c051052ba5bb7652875a99cb0e8fe3e8b62e9c208f335e3"
+    "corpus_log_sha256": "02e3ccc9eb5ba1db4c051052ba5bb7652875a99cb0e8fe3e8b62e9c208f335e3",
+    "grid_serialization": "Compact boundaries hidden across every cell in both regenerated HWP and HWPX without resizing or mutating source spans; infer missing row heights from spanning cells"
+  },
+  "cached_pdf_device_metrics": {
+    "scope": "Single saved line segment, one verified normal TrueType face and em, 100% stretch, zero tracking, BMP text without U+0021; unsupported contexts retain previous logical metrics with reasons",
+    "independent_source": "Windows GDI CreateFontW/GetCharWidth32W; original head/maxp/name bytes verified with GetFontData before using device widths; no Hancom runtime used by the independent renderer",
+    "calculation": "Logical point size is truncated to quarter units before glyph multiplication; native device-centering adjusts adjacent advances separately per word/script run, including trailing spaces",
+    "diagnostics": [
+      "layout.pdf_native_text.device_centered_lines",
+      "layout.pdf_native_text.device_metric_fallbacks"
+    ],
+    "measured_after": {
+      "logical": [
+        868,
+        796,
+        796,
+        868,
+        940
+      ],
+      "device": [
+        864,
+        792,
+        804,
+        864,
+        936
+      ],
+      "centered": [
+        868,
+        790,
+        802,
+        868,
+        940
+      ],
+      "normal_mode": 1,
+      "centered_mode": 2
+    },
+    "raw_hook_sha256": {
+      "observe_cached_measure.js": "29e6220524e5ffc14de6cac1e489bd9aee3edf3bf676ac2ccb8d115ec20789c6",
+      "observe_cached_measure_raw.js": "001e7cc0a57fdaa7fe00d75edb9333b4c374d90547e108f9e6f5a76441c0a094",
+      "observe_cached_device_width.js": "146860dea867397679c85b32fd867642a86a59f34495b61dd1df586b95fb3174"
+    },
+    "limitations": [
+      "Does not establish every source-cache/native-process state equivalence",
+      "Multiline/mixed-metric/tracked/stretched/complex styled spans remain outside this correction",
+      "Later exploratory word hook read extra array fields without validating their lengths; those extra fields are not evidence",
+      "Actual whole-document parity remains incomplete"
+    ],
+    "real_pixels": {
+      "report-hwp": {
+        "before": 1791353,
+        "after": 1791200,
+        "exact": 1,
+        "max_fraction": 0.18037913585402102,
+        "reference_sha256": "59d00f031684f77c3c17323686df5ed18ceac1c800494fc3ad3ae45fd348c0a5",
+        "before_max_fraction": 0.18037913585402102
+      },
+      "report-hwpx": {
+        "before": 1791353,
+        "after": 1791200,
+        "exact": 1,
+        "max_fraction": 0.18037913585402102,
+        "reference_sha256": "81625234203ea5fce32ce098057125140a11f5c51c40dc9b461f16dbe8b1a9bd",
+        "before_max_fraction": 0.18037913585402102
+      },
+      "trip-hwpx": {
+        "before": 21892,
+        "after": 21892,
+        "exact": 1,
+        "max_fraction": 0.02457378646443693,
+        "reference_sha256": "e4bf914e2b4b9ea1d6410c37e69cd32a4a2c2ed404002d5d05e31c043608bcdf",
+        "before_max_fraction": 0.02457378646443693
+      },
+      "form-hwp": {
+        "before": 622744,
+        "after": 622744,
+        "exact": 0,
+        "max_fraction": 0.15712316527252074,
+        "reference_sha256": "b2cc8c977f1d211cc755ca3742171c91ade919377937be0830fbfb9639d840cb",
+        "before_max_fraction": 0.15712316527252074
+      },
+      "guide-hwp": {
+        "before": 3911574,
+        "after": 3911297,
+        "exact": 2,
+        "max_fraction": 0.20751446903469425,
+        "reference_sha256": "4043d88876e1342b1873f83bf7960983f21504f576c0e7cb701b9f62fe35124d",
+        "before_max_fraction": 0.20751446903469425
+      },
+      "lesson-hwp": {
+        "before": 906554,
+        "after": 875131,
+        "exact": 0,
+        "max_fraction": 0.22941782620994355,
+        "reference_sha256": "3aed17b54f71f25cd6f795cfe03dd6db1e8810c3ed2d8dd5848aa80452e00832",
+        "before_max_fraction": 0.22693822204860878
+      },
+      "minutes-hwpx": {
+        "before": 174077,
+        "after": 174065,
+        "exact": 0,
+        "max_fraction": 0.11367901866494251,
+        "reference_sha256": "c6389ce79c6a1cebf148ef78f14dd94d3bb12839fb57bec6b6142e3b840fbed5",
+        "before_max_fraction": 0.11367901866494251
+      }
+    },
+    "real_pages_exact": 5,
+    "real_documents_exact": 0,
+    "real_pages_checked": 124,
+    "native_references_reused_unchanged": true,
+    "corpus_log_sha256": "8bd39b3f093e26d149fae474c7f4ccffcb7a7b2f978d61c479adc67b70c783a1",
+    "intermediate_logs_sha256": {
+      "merged-table-native-first-tests.log": "63b5e2910e76b3fac57bdcaab647b8cf1e6d495813f52b4c3aae34fad59d1188",
+      "native-version-timing-second.log": "0816b2631bbf4abb7cc80659fee933301e42fc148b2d47e7d8ce83aa3a2b09d0",
+      "cached-device-metrics-native-first.log": "fcb2c40fef71e111f2e91a938dedf4bcd3cd993d27f709d944c46a93864ad267",
+      "cached-device-metrics-native-second.log": "7c63aee13e373c5b42987a0abd58c59a44046eb112ebe3b605d2f6db4f3e9602",
+      "cached-device-metrics-native-third.log": "a6da9d6c9f4a5d53f917b7ff9e56b4fa9f2d629b88999653fe84570f9033d01e",
+      "cached-device-metrics-native-fourth.log": "d0985655723f8c3d6c90940e19eb99fe0c9224caa7d2af919f2777687e6689dc",
+      "cached-device-metrics-normal-fonts.log": "616e66d78f6fa03ffefb8d7bf0161b8d1265a59dbdd1c3f2473e2b136eed94d3",
+      "cached-device-metrics-native-final.log": "7e7427424d7337c21caa533003139bb7b2ff476a17df5ef78be5f0ba6a0a4f90",
+      "cached-device-metrics-corpus-first.log": "b174c685bfed16b6cf79107c36fe52c62f5102872420cd6f14bae9a5619c2afc"
+    },
+    "environment_retry": "Parallel native/corpus/font checks exhausted commit memory; those incomplete/failed runs were retained. Twenty verified empty hidden automation servers created during this goal were retired, then all current checks were rerun sequentially.",
+    "measurement_evidence": [
+      "ev_f6fe4f0e48228096d8d2d1eb02982110ceadecc7edf9e3dc494cf25f2e612f2e",
+      "ev_cc21cf8d49442e26df77bd389f80817a67388928b23d1228ef51c089c67da533",
+      "ev_fc5c6c06686b994a72fd3a2b8c6695f681a5fa38f67a0ed7c6524535450cd543"
+    ],
+    "original_binary_sha256": {
+      "HncBaseDraw.dll": "52734f0b0fc92cf890fc7085708fb72de62f67c0b5e0aa5bf668db7646199fb1",
+      "HNCE2PTP.dll": "42b1eaf97af05ff3662ffa23272b9c19ea5948345c8363969b28b601b741c458",
+      "HncFontLib.dll": "bc7300311c5bb367bc5eaf211c5c92744d372d28ff008feb83ba650cd5e1d232",
+      "HwpApp.dll": "0aa051839026fe803f5ec24965ac112a8e54aecf0da0132f91e20483078429d1",
+      "HwpAppModule.dll": "3a7b930af2cb467b66775cef5f793aecab28cba2b58596226f04bb5512489bf3"
+    }
   }
 }

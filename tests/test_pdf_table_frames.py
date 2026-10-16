@@ -57,7 +57,7 @@ class PdfTableFramesTests(unittest.TestCase):
         self.assertEqual((None,'mixed-cell-borders'),prepare(table,commands,(56.69,56.69),(595.28,841.86)))
         cells[1].borders=cells[0].borders
         cells[0].col_span=2
-        self.assertEqual((None,'split-or-merged-grid'),prepare(table,commands,(56.69,56.69),(595.28,841.86)))
+        self.assertEqual((None,'overlapping-grid'),prepare(table,commands,(56.69,56.69),(595.28,841.86)))
 
     def test_missing_path_token_preserves_original_pdf(self):
         from pypdf import PdfWriter
@@ -69,6 +69,20 @@ class PdfTableFramesTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'Missing PDF text placement token'):fonts.finish(path)
             self.assertEqual(before,path.read_bytes())
             self.assertEqual(['original.pdf'],[p.name for p in Path(folder).iterdir()])
+
+    def test_full_span_height_and_hwpx_visible_grid_preserve_model(self):
+        from hangeul.formats import _table_grid
+        cell=Cell(0,0,3,3,width=236.31,height=126.77)
+        table=Table(3,3,[cell],width=236.31,height=126.77)
+        _,heights=_table_grid(table)
+        self.assertAlmostEqual(126.77,sum(heights))
+        with tempfile.TemporaryDirectory() as folder:
+            for ext,save in (('hwp',save_hwp),('hwpx',save_hwpx)):
+                path=Path(folder)/('full-span.'+ext);save(DocumentModel([table]),path)
+                restored=next(t for t in load_document(path).model.blocks if isinstance(t,Table))
+                self.assertEqual((1,1),(restored.rows,restored.cols))
+                self.assertAlmostEqual(126.77,sum(_table_grid(restored)[1]))
+                self.assertEqual((3,3,3,3),(table.rows,table.cols,cell.row_span,cell.col_span))
 
     @staticmethod
     def width_labels_source(path):
@@ -124,6 +138,53 @@ class PdfTableFramesTests(unittest.TestCase):
                     self.assertEqual(44,own.details['pdf_table_frames']['processed_grids'])
                     self.assertEqual(0,own.details['pdf_table_frames']['legacy_grids'])
                     for index in range(44):self.assertIn('FIRST',own.text(index))
+
+    @staticmethod
+    def merged_fixture():
+        style=TextStyle(font='Arial',size=13,language_fonts=('Arial',)*7,language_font_types=('TTF',)*7)
+        def paragraph(text,page=False,align='LEFT'):
+            return Paragraph([Run(text,style)],style=ParaStyle(page_break=page,align=align))
+        shapes=[(2,2,[(0,0,1,2),(1,0,1,1),(1,1,1,1)]),
+            (2,2,[(0,0,2,1),(0,1,1,1),(1,1,1,1)]),
+            (3,3,[(0,0,2,2),(0,2,1,1),(1,2,1,1),(2,0,1,1),(2,1,1,1),(2,2,1,1)]),
+            (3,3,[(0,0,3,3)]),
+            (3,3,[(0,0,1,3),(1,0,2,1),(1,1,1,2),(2,1,1,1),(2,2,1,1)])]
+        blocks=[]
+        for rows,cols,spans in shapes:
+            for align in ('LEFT','CENTER'):
+                for vertical in ('TOP','CENTER'):
+                    widths=[77.13,101.27,57.91][:cols];heights=[31.21,42.37,53.19][:rows]
+                    border=Border('SOLID',.5 if cols==2 else 1,'#2939e7')
+                    cells=[Cell(r,c,rs,cs,blocks=[paragraph('FIRST',align=align)],width=sum(widths[c:c+cs]),height=sum(heights[r:r+rs]),
+                        padding=(2.13,3.27,1.19,2.21),vertical_align=vertical,borders=(border,)*4,
+                        background='#99ddff' if n%2 else '') for n,(r,c,rs,cs) in enumerate(spans)]
+                    blocks.extend([paragraph('BEFORE',bool(blocks)),Table(rows,cols,cells,width=sum(widths),height=sum(heights),
+                        column_widths=widths,row_heights=heights),paragraph('AFTER')])
+        return DocumentModel(blocks)
+
+    def test_merged_format_pair_has_identical_complete_pages(self):
+        with tempfile.TemporaryDirectory() as folder:
+            hwp=Path(folder)/'merged.hwp';hwpx=Path(folder)/'merged.hwpx'
+            save_hwp(self.merged_fixture(),hwp);save_hwpx(self.merged_fixture(),hwpx)
+            with Document(hwp) as first,Document(hwpx) as second:
+                self.assertEqual(20,first.count)
+                result=compare(first,second)
+                self.assertTrue(result['match'],result['pages'])
+                for index in range(20):self.assertEqual(first.text(index),second.text(index))
+
+    @unittest.skipUnless(os.environ.get('NARAE_RUN_HANCOM_TESTS')=='1','requires installed Hancom/fonts')
+    def test_complete_merged_grid_pages_in_both_formats(self):
+        with tempfile.TemporaryDirectory() as folder:
+            for ext,save in (('hwp',save_hwp),('hwpx',save_hwpx)):
+                source=Path(folder)/('merged.'+ext);save(self.merged_fixture(),source)
+                with Document(source) as own,Document(source,'hancom') as native:
+                    self.assertEqual(20,own.count)
+                    result=compare(own,native)
+                    for index,page in enumerate(result['pages']):self.assertTrue(page['match'],(ext,index+1,page))
+                    self.assertTrue(result['match'])
+                    self.assertEqual(20,own.details['pdf_table_frames']['processed_grids'])
+                    self.assertEqual(0,own.details['pdf_table_frames']['legacy_grids'])
+                    for index in range(20):self.assertIn('FIRST',own.text(index))
 
 
 if __name__=='__main__':unittest.main()

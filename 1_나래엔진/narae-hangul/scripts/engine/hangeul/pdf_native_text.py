@@ -50,11 +50,65 @@ class PdfNativeText:
         self.hft_sources={};self.sfnt_sources={};self.fonts={};self.records={};self.path_records={}
         self.collection_index=None
         self.script_defaults={};self.requested_fonts={};self.hanja_fonts={}
-        self.source_bytes=0;self.characters=0
+        self.source_bytes=0;self.characters=0;self.device_widths={}
         self.precision=6
         self.facts={'processed_lines':0,'legacy_lines':0,'glyphs':0,'fonts':[],
                     'legacy_reasons':{},'number_precision':6,'glyph_fallbacks':{},'suppressed_strike_glyphs':0,'stretched_glyphs':0,
-                    'whole_document_parity_verified':False}
+                    'device_centered_lines':0,'device_metric_fallbacks':{},'whole_document_parity_verified':False}
+
+    def _center_cached_line(self,command,text,parts,metrics):
+        # A saved, single-line paragraph uses device-centered widths. Uncached
+        # paragraphs retain logical widths; a line cache is not a page-number
+        # heuristic. More complex font spans and tracking need their own layout.
+        if not command.source.line_segments:return parts,None
+        text=text.replace('\u200b','')
+        reason=None
+        if len(command.source.line_segments)!=1:reason='multiline-paragraph'
+        elif len(metrics)!=len(text) or any(ord(c)>=65536 or c=='!' for c in text):reason='control-or-postprocessed-character'
+        elif len({item[:4] for item in metrics})!=1:reason='mixed-font-metrics'
+        elif metrics:
+            key,em,stretch,tracking,*_=metrics[0]
+            if self.fonts[key]['kind']!='ttf':return parts,None
+            if stretch!=100 or tracking:reason='stretch-or-tracking'
+        if reason or not metrics:
+            if reason:
+                facts=self.facts['device_metric_fallbacks'];facts[reason]=facts.get(reason,0)+1
+            return parts,None
+        from .pdf_device_metrics import centered_advances,installed_widths
+        key,em,*_=metrics[0];source=self.fonts[key];identity=(key,em)
+        widths=self.device_widths.setdefault(identity,{})
+        missing=''.join(set(text)-widths.keys())
+        try:
+            if missing:
+                # Loaded fontTools tables may recompile timestamps or names;
+                # GDI identity must be checked against original source bytes.
+                tables={tag:source['source'].reader[tag] for tag in ('head','maxp','name')}
+                widths.update(installed_widths(source['family'],em,missing,tables))
+            advances=[item[4] for item in metrics]
+            # Each word's measurement run includes its trailing spaces.
+            # Spaces flush the word's endpoint carry, then their paragraph
+            # width is restored by character postprocessing.
+            first=0
+            while first<len(text):
+                if text[first]==' ':first+=1;continue
+                last=first+1
+                while last<len(text) and text[last]!=' ' and parts[last][6]==parts[first][6]:last+=1
+                while last<len(text) and text[last]==' ':last+=1
+                advances[first:last]=centered_advances(text[first:last],advances[first:last],
+                    [widths[c] for c in text[first:last]])
+                first=last
+            advances=[item[4] if character==' ' else advance
+                      for character,item,advance in zip(text,metrics,advances)]
+        except (OSError,ValueError) as error:
+            reason=str(error) if isinstance(error,ValueError) else 'device-metrics-error'
+            facts=self.facts['device_metric_fallbacks'];facts[reason]=facts.get(reason,0)+1
+            return parts,None
+        pen=0;alignment=0;result=[]
+        for character,part,advance in zip(text,parts,advances):
+            result.append((pen,*part[1:]));pen+=advance
+            if character!=' ':alignment=pen
+        self.facts['device_centered_lines']+=1
+        return result,alignment
 
     def _hanja_fallback(self,font,character,raw,index):
         from PySide6.QtGui import QRawFont,QFont
@@ -199,7 +253,7 @@ class PdfNativeText:
         if command.source.style.align=='JUSTIFY' and command.extra.get('justify_continuation'):
             return legacy('justified-continuation')
         if len(self.records)>=MAX_LINES:return legacy('line-count-bounds')
-        text=layout.text();cursor=0;pen=0;alignment_pen=0;parts=[];terminal=len(text.rstrip('\u200b '))-1
+        text=layout.text();cursor=0;pen=0;alignment_pen=0;parts=[];metrics=[];terminal=len(text.rstrip('\u200b '))-1
         group_number=0;current_group=None;hft_fallback_mode=False;suppressed_strike=0;stretched=0
         if len(text)+self.characters>MAX_CHARACTERS:return legacy('character-count-bounds')
         for position,character in enumerate(text):
@@ -254,8 +308,9 @@ class PdfNativeText:
                 # this order changes 11pt/50% and 18pt/95% by four HWP units.
                 delta=_round(math.floor(size*100/8+1e-9)*stretch/100*tracking)*4
             else:
-                width=(math.floor(advance*_round(size*100)*stretch/100/4+1e-9) if stretch!=100
-                       else _round(advance*_round(size*100)/4))
+                logical_em=math.trunc(_round(size*100)/4)
+                width=(math.floor(advance*logical_em*stretch/100+1e-9) if stretch!=100
+                       else _round(advance*logical_em))
                 delta=_round(width*tracking)*4
             if self.fonts[key].get('script_fallback'):hft_fallback_mode=True
             rgb=(color.red(),color.green(),color.blue());fallback=fmt.property(FONT_FALLBACK_PROPERTY) or hft_fallback_mode
@@ -263,6 +318,7 @@ class PdfNativeText:
             if fallback or current_group!=group_key:group_number+=1
             current_group=group_key
             parts.append((pen,key,glyph,em,rgb,scale,group_number))
+            metrics.append((key,em,stretch,tracking_percent,delta))
             if stretch!=100:stretched+=1
             if fmt.property(STRIKE_SHAPE_PROPERTY) in INVISIBLE_STRIKE_SHAPES:suppressed_strike+=1
             if character.isspace() or fallback:current_group=None
@@ -270,6 +326,8 @@ class PdfNativeText:
             if character!=' ':alignment_pen=pen
         if not parts:
             self.facts['processed_lines']+=1;return True
+        parts,centered_alignment=self._center_cached_line(command,text,parts,metrics)
+        if centered_alignment is not None:alignment_pen=centered_alignment
         factor={'CENTER':.5,'RIGHT':1}.get(command.source.style.align,0)
         alignment=(math.floor(command.rect[2]*100/4+1e-9)*4-alignment_pen)*factor
         x=printer_pixel(command.rect[0]);line=command.extra['line'];offset=line.get('y_pt',0)

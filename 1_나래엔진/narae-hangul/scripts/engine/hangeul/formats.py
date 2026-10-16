@@ -18,7 +18,7 @@ import struct
 import tempfile
 import zipfile
 import zlib
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field, asdict, replace
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -303,6 +303,11 @@ def _table_grid(t):
             residual = c.width - sum(columns[c.col:c.col + c.col_span])
             for i in unknown:
                 columns[i] = max(1, residual / len(unknown))
+        if c.row_span > 1 and c.height > 0:
+            unknown = [i for i in range(c.row, min(t.rows, c.row + c.row_span)) if not rows[i]]
+            residual = c.height - sum(rows[c.row:c.row + c.row_span])
+            for i in unknown:
+                rows[i] = max(1, residual / len(unknown))
     unknown = [i for i, w in enumerate(columns) if w <= 0]
     residual = t.width - sum(columns)
     for i in unknown:
@@ -312,6 +317,26 @@ def _table_grid(t):
     if not t.height:
         t.height = sum(rows)
     return columns, rows
+
+
+def _compact_table_axes(table):
+    """Remove grid boundaries hidden across every cell, without resizing.
+
+    Native MergeAll returns a 1x1 table. A nominal 3x3 HWP with one 3x3
+    spanning cell can paginate inconsistently and its HWPX export cannot
+    reopen. Use the equivalent visible grid in both regenerated formats,
+    preserving the source model.
+    """
+    rows=sorted({0,table.rows}|{v for c in table.cells for v in (c.row,c.row+c.row_span)})
+    cols=sorted({0,table.cols}|{v for c in table.cells for v in (c.col,c.col+c.col_span)})
+    if len(rows)==table.rows+1 and len(cols)==table.cols+1:return table
+    if not rows or not cols or rows[0]!=0 or cols[0]!=0 or rows[-1]!=table.rows or cols[-1]!=table.cols:return table
+    ri={value:index for index,value in enumerate(rows)};ci={value:index for index,value in enumerate(cols)}
+    return replace(table,rows=len(rows)-1,cols=len(cols)-1,
+        cells=[replace(c,row=ri[c.row],col=ci[c.col],row_span=ri[c.row+c.row_span]-ri[c.row],
+                       col_span=ci[c.col+c.col_span]-ci[c.col]) for c in table.cells],
+        row_heights=[sum(table.row_heights[a:b]) for a,b in zip(rows,rows[1:])],
+        column_widths=[sum(table.column_widths[a:b]) for a,b in zip(cols,cols[1:])])
 
 
 def _qt_tables_images(document):
@@ -1994,6 +2019,7 @@ def save_hwpx(document_or_html, path) -> list[str]:
         write_blocks(sub,part.blocks or [Paragraph()],False)
     def write_table(parent, table, anchor=None, default_style=None):
         _table_grid(table)
+        table=_compact_table_axes(table)
         run = _element(anchor if anchor is not None else new_p(parent, ParaStyle(),table.anchor_style), "hp", "run", charPrIDRef=chars.index(table.anchor_style or default_style or TextStyle()))
         tbl = _element(run, "hp", "tbl", id=counter[0], zOrder=table.position.z_order, numberingType="TABLE", textWrap=table.position.wrap, textFlow=table.position.text_flow, lock=0, dropcapstyle="None", pageBreak=table.page_break, repeatHeader=int(table.repeat_header), rowCnt=table.rows, colCnt=table.cols, cellSpacing=round(table.cell_spacing * 100), borderFillIDRef=border_fills.index(BorderFill(tuple(table.borders), table.background)) + 1, noAdjust=0)
         width = round(table.width * 100)
@@ -2476,6 +2502,7 @@ def save_hwp(document_or_html, path) -> list[str]:
         body.extend(_record(79, level + 3, struct.pack("<B8i", 0, *(round(v * 100) for p in points for v in p))))
     def emit_table(t, level):
         _table_grid(t)
+        t=_compact_table_axes(t)
         w = round(t.width * 100)
         height = round(t.height * 100)
         body.extend(_record(71, level + 1, object_header("tbl ", t.position, w, height, 2)))
