@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T17:28:54+09:00",
+  "date_kst": "2026-10-16T18:29:03+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "763e5b04350bac6f9b9177094cb0ae67b95cc20d",
+  "base_commit": "3dbbe1372329f6c8343a3147104107739171b648",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -51,7 +51,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.015325502768086854,
+      "changed_fraction_max": 0.002136118931199684,
       "errors": [],
       "independent_identical_pages": 1
     },
@@ -169,11 +169,11 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 94,
+      "run": 97,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "91 distinct historical final passes through 763e5b0 plus 3 cell/bitmap tests; current seven related groups freshly passed 26 tests, not a fresh full 94-test run",
+      "scope": "94 distinct historical final passes through 3dbbe13 plus 2 cached-stretch and 1 continued-alignment tests. Current seven related groups passed 19 tests; this is not a fresh full 97-test run. A separate fresh uncached stretch run failed with 67 pixels and remains unresolved.",
       "whole_group_fresh_pass_claimed": false,
       "component_log_sha256": [
         "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
@@ -203,7 +203,9 @@
         "2740833f1ebe3c80c159f2adb25106f3e9831c4ecda39ce9a77304581774bcb0",
         "c63f7bfb5c709e138b58f6532aae03bd43007e95761755944c379c6f5614230c",
         "b49a481a23fe14d9dfee9e1280bd266be1a46ca57f09dae357bc92d0dd5249ff",
-        "aaa1939eb36a189c22b7e85bbd1d4cf2448445f67b1c85b0612e27f201edc535"
+        "aaa1939eb36a189c22b7e85bbd1d4cf2448445f67b1c85b0612e27f201edc535",
+        "e1ac6fd8ce597ba1a3e394868e3e6acd7f4473f9d5747326d6f265e782900fac",
+        "9e728a0dac0215f7b0dbd2177cb9f5e81225bde3c1b85f8e8c6e5e36623c0e47"
       ]
     },
     "full_native_rerun": {
@@ -229,12 +231,12 @@
       "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 119,
+      "run": 122,
       "passed": 66,
-      "skipped": 53,
+      "skipped": 56,
       "failures": 0,
       "errors": 0,
-      "log_sha256": "20913e9bf6c04b5ac40cff801654a29ebc30deaf3780ca44cf9f64cecee38ce4"
+      "log_sha256": "845086660acf2ab09f01a5b58169330161059dbdd80d85ada33e0e25d2d154c0"
     },
     "cold_bitmap_cache": {
       "concurrent_workers": 4,
@@ -489,7 +491,7 @@
       "whole_pages_exact": 202,
       "precision_pages_exact": 4,
       "references": "Existing native PDF references reused without replacement",
-      "log_sha256": "bbd0a2f74263bbad454da50013dbb7d30b47b5be78edcf451a268f65c9c53b6e"
+      "log_sha256": "58ac66437a446dafe5e8b1a6a6ebc9bc073f5745dd62777358fb7bd37a4b67eb"
     },
     "mixed_table_border_pages": {
       "run": 2,
@@ -564,6 +566,156 @@
       "alignment": false,
       "resizing": false,
       "log_sha256": "ffed38e3ba9097462742230da669a9653a7ae118e776e83847c6bcc901031bd1"
+    },
+    "layout_flow": {
+      "fresh_related_groups": 7,
+      "fresh_related_tests_passed": 19,
+      "fresh_whole_native_suite_pass_claimed": false,
+      "cached_stretch_full_pages_exact": 96,
+      "continued_alignment_full_pages_exact": 16,
+      "synthetic_cumulative_unique_pages_exact": 1868,
+      "checks": [
+        {
+          "check": "cached-stretch",
+          "exit": 0,
+          "seconds": 26.59,
+          "before": {
+            "free_gb": 2.24,
+            "hwp_processes": 0
+          },
+          "after": {
+            "free_gb": 1.81,
+            "hwp_processes": 0
+          }
+        },
+        {
+          "check": "tracking",
+          "exit": 0,
+          "seconds": 33.33,
+          "before": {
+            "free_gb": 1.81,
+            "hwp_processes": 0
+          },
+          "after": {
+            "free_gb": 2.14,
+            "hwp_processes": 0
+          }
+        },
+        {
+          "check": "line-fit",
+          "exit": 0,
+          "seconds": 38.2,
+          "before": {
+            "free_gb": 2.14,
+            "hwp_processes": 0
+          },
+          "after": {
+            "free_gb": 2.13,
+            "hwp_processes": 0
+          }
+        },
+        {
+          "check": "device",
+          "exit": 0,
+          "seconds": 29.79,
+          "before": {
+            "free_gb": 2.13,
+            "hwp_processes": 0
+          },
+          "after": {
+            "free_gb": 1.93,
+            "hwp_processes": 0
+          }
+        },
+        {
+          "check": "cell-clip",
+          "exit": 0,
+          "seconds": 36.15,
+          "before": {
+            "free_gb": 1.93,
+            "hwp_processes": 0
+          },
+          "after": {
+            "free_gb": 1.77,
+            "hwp_processes": 0
+          }
+        },
+        {
+          "check": "normal-fonts",
+          "exit": 0,
+          "seconds": 31.9,
+          "before": {
+            "free_gb": 1.77,
+            "hwp_processes": 0
+          },
+          "after": {
+            "free_gb": 1.56,
+            "hwp_processes": 0
+          }
+        },
+        {
+          "check": "fixed-reference",
+          "exit": 0,
+          "seconds": 16.02,
+          "before": {
+            "free_gb": 1.55,
+            "hwp_processes": 0
+          },
+          "after": {
+            "free_gb": 1.68,
+            "hwp_processes": 0
+          }
+        },
+        {
+          "check": "portable",
+          "exit": 0,
+          "seconds": 14.74,
+          "before": {
+            "free_gb": 1.68,
+            "hwp_processes": 0
+          },
+          "after": {
+            "free_gb": 1.69,
+            "hwp_processes": 0
+          }
+        },
+        {
+          "check": "corpus",
+          "exit": 0,
+          "seconds": 132.55,
+          "before": {
+            "free_gb": 1.69,
+            "hwp_processes": 0
+          },
+          "after": {
+            "free_gb": 4.82,
+            "hwp_processes": 0
+          }
+        },
+        {
+          "check": "installed-skill",
+          "exit": 0,
+          "seconds": 65.38,
+          "before": {
+            "free_gb": 4.82,
+            "hwp_processes": 0
+          },
+          "after": {
+            "free_gb": 5.17,
+            "hwp_processes": 0
+          }
+        }
+      ],
+      "inline_checks": {
+        "run": 3,
+        "passed": 3,
+        "log_sha256": "cbbc5623eee595c648b559887dcac36586a06869aaee52854b7a4dda29446b6b"
+      },
+      "continued_check": {
+        "run": 1,
+        "passed": 1,
+        "log_sha256": "9e728a0dac0215f7b0dbd2177cb9f5e81225bde3c1b85f8e8c6e5e36623c0e47"
+      }
     }
   },
   "rea": {
@@ -1393,11 +1545,11 @@
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "2d659c0648ee2763a4177fe1c9fc1ce17147a18353a39032eb75af4e28562520",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "0e113da5ccd80af8fcade552b2061e023714e33b0b6d7cde4fe580b184c97c69",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "52bbbdec290189059a89402171f073276d8bdde1ecba059f76149b837602759c",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "2a926644ab598b2ae037c0af2e6f71a0350e53ff4e18afe56989ae64a5c7b534",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "465fd5fcf57c511dddbaddc549f74cfc0c7321cb25fab4f96a0d02b7451e47b4",
+    "2_나래스킬/narae-viewer/SKILL.md": "2a26e98e3081b9b7b0c3d6ca57ba2e448b983c2dba92457bafa3a12c9770c63a",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "29a855dd7961ac405322d02afc33496066fccdc160992c62406f9fea1cb6063a",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
@@ -1410,26 +1562,28 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "5e2216bbf741981dd31bfa44663664a57a8ce539d8d39f502b5215de924e6e8f",
     "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "7c0c085dc6005b94c5bf6de0b52463164814c9964051b61640ca25e2fdd93824",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "b580704c5c117465e9f0c1bca2be5f922ddfe98a706feceaf46afbcd44bf2e1e",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "36fde4610e0120f13872eb961197cea7d8b7e723683bca87a8cff008531bf583",
     "tests/test_pdf_native_text.py": "1a71fa6835520e9333f920914180835e7d3b5002802cfd76f351ab4821fe3631",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "89e08126b83cc8cdd630c35afd58db02318de1dc41b820d45175cf9de4b85194",
     "tests/test_text_decorations.py": "2b3fed445c5a53b5ef553dfef9ef5beedb086e2588959885b8c0420ba82162ac",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwpx_native.py": "564aa217a166bdcd5ed814a4c6405159b947aa8a17acb81a3ad773a159b2eec1",
     "tests/test_inline_spacing.py": "61b3de9dddf1e7517475f0b5917dfb23b338b3211c8152c827573938eb6172f2",
     "tests/test_pdf_stretch.py": "dcf48403fa663ef49a46933d395ef3984e088fd9eabe1617bc9f0a4fad24e0c6",
-    "1_나래엔진/narae-hangul/references/viewer.md": "7c92528a23b1a6e5932c62c7e33983b8adc64cf46f34cec72f4e7e4a9cf846ee",
-    "6_나래뷰어/README.md": "df71b89683e2bdac8fe781d54eabc7e46bc42e79ba1a06b37e68276a2821b4e7",
+    "1_나래엔진/narae-hangul/references/viewer.md": "450e6ce63f3506e74a56067e9c89e4db8fe778c506956b45392ace619438958e",
+    "6_나래뷰어/README.md": "5dfdfc3aa2455faa7a240a25c9ddebd2bc6899836d7706366ee0c68683e30668",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "478bd0411db359e3a73021da9a81d736b936f018a1d87efabb1505e3015f7450",
     "tests/test_pdf_table_frames.py": "1c0d7df362ab78952b2e33b9ab5c48aeb43d62b5ae6d783e08f2c9eeba548718",
-    "5_유틸리티/hancom_rea_findings.md": "ab45c8f8e848c1e3225750ec4bed3bf2a0dec6673635b9c691393a3aa399cd2f",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_device_metrics.py": "8cb2ff0c24892934ae47d3c516cdb4557f8312d22bc049c4f1e48090d4adf60c",
-    "tests/test_pdf_device_metrics.py": "007a971d27e5cf2687cc3966a0d7a745cbd01b0c3658a7f4cdc85cde880bd954",
+    "5_유틸리티/hancom_rea_findings.md": "c8ba9252136568240915372879c6eb569e255c376a96eb8fae4b528216364bcb",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_device_metrics.py": "d34cf23187060a4b41590eb3906312192160bb3f7c0ebff8ab60ada8bd4acc87",
+    "tests/test_pdf_device_metrics.py": "1a3ce42dccdcce868780a79c807211c6404f7cd28bf88763d04233bbcfce5680",
     "tests/test_pdf_mixed_table_frames.py": "f204eee622dcdb6e717c55623fe39bf9d8ca2c4b7383b56593376191ac4ef130",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_line_fit.py": "b0c6a4d3131c7d510127993c6620dcbb4965f85c2a00fc4da8ac69959d15fdc3",
     "tests/test_pdf_line_fit.py": "3d775fe5f7ad1aabbf0d1dd49cd19c9193a7038588a22fe138cce204fd1463e7",
     "tests/test_pdf_cached_tracking.py": "5c68ce6d0d0a22ae29cddf16888b3bcd341bb3251c6021f8456c5d0add613054",
     "tests/test_pdf_cell_clip.py": "160d7b8c5a2c7d2e4ade6c7a74f4c95fe56122a2eecc7f5a908528eb558d1c75",
-    "tests/test_hancom.py": "c3fcf73209b52ad3afe4f8d1f1f753b6b8ca11eceea5db714899299194ab5058"
+    "tests/test_hancom.py": "c3fcf73209b52ad3afe4f8d1f1f753b6b8ca11eceea5db714899299194ab5058",
+    "tests/test_pdf_cached_stretch.py": "98fbbf9ef44b6bf3273608c89510d6bed60c82f7287223e0cd46060bbd01005b",
+    "tests/test_pdf_continued_alignment.py": "c965545541d4c6e213f6ef24204c5f9a3da31a69f0de2a5aefe4e0cd3de54b4d"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -2710,7 +2864,7 @@
       "whole actual documents remain different"
     ]
   },
-  "current_validation_stage": "pdf_cell_clipping",
+  "current_validation_stage": "cached_stretch_and_continued_alignment",
   "pdf_cell_clipping": {
     "behavior": "Clip direct cell text and paragraph backgrounds at the prepared physical cell rectangle, including outline/bitmap/painter paths. Preserve original glyph CTMs; transform clip points into the current parent coordinate system. Invert the single-precision PDF device parent for physical grid fills/strokes.",
     "scope": "Prepared complete single-page inline body grids with SOLID/NONE cell borders; text clips use cell edges rather than padding/pen extents",
@@ -2913,6 +3067,955 @@
       "An application that becomes visible, shared with another controller, or cannot be verified is preserved; inspect the retirement status and process count before the next batch.",
       "Abnormal Python termination can bypass context-manager cleanup.",
       "Native jobs are run sequentially; inspect process counts and available memory between batches."
+    ]
+  },
+  "cached_stretch_and_continued_alignment": {
+    "behavior": [
+      "Use the requested integer LOGFONT width for verified cached TrueType device metrics and include it in the metric cache key.",
+      "Exclude final visible tracking from CENTER/RIGHT alignment of continuation lines while retaining logical advances.",
+      "Keep leading zero-width section-control slots nonbreaking without changing their UTF-16 positions.",
+      "Do not require positive trailing tracking after the final glyph during uncached TrueType wrapping; preserve negative tracking layout and the original frame width."
+    ],
+    "independent_runtime": "Original document, installed fonts, Qt/font tables, Windows GDI and independent PDF paths; no Hancom runtime/reference PDF in renderer.",
+    "rea": {
+      "evidence_id": "ev_1e4b9b58552abd7c726ade26611965e9e768528b0ace6c60dc910a52a6dc90c5",
+      "observation_sha256": "9aebef32bc32197d6fea42c76bc8b8f580ba296500e4d87a08a9ffeb8bf35115",
+      "messages": 61,
+      "messages_truncated": false,
+      "device_widths": 44,
+      "groups": [
+        {
+          "family": "Arial",
+          "em": 125,
+          "font_width": 0,
+          "characters": 11,
+          "all_device_widths_match": true
+        },
+        {
+          "family": "Arial",
+          "em": 108,
+          "font_width": 0,
+          "characters": 11,
+          "all_device_widths_match": true
+        },
+        {
+          "family": "Arial",
+          "em": 79,
+          "font_width": 33,
+          "characters": 11,
+          "all_device_widths_match": true
+        },
+        {
+          "family": "Arial",
+          "em": 150,
+          "font_width": 70,
+          "characters": 11,
+          "all_device_widths_match": true
+        }
+      ]
+    },
+    "rea_hook_sha256": "16b1f37f9d6de31517460e799dccb7a25b9db3f9af51473ecffddee428688142",
+    "first_observation": {
+      "message_count": 1,
+      "device_measurements": 0,
+      "reason": "The earlier five-character AFTER filter did not match these whole-line measurements; broadened hooks then captured the selected fonts and widths."
+    },
+    "wrapping_basis": "Continuation alignment and uncached wrapping changes were inferred from native PDF/layout comparisons and verified with fresh native outputs, not newly traced internal wrap functions.",
+    "installed_binary_sha256": {
+      "HncBaseDraw.dll": "52734f0b0fc92cf890fc7085708fb72de62f67c0b5e0aa5bf668db7646199fb1",
+      "HNCE2PTP.dll": "42b1eaf97af05ff3662ffa23272b9c19ea5948345c8363969b28b601b741c458",
+      "HncFontLib.dll": "bc7300311c5bb367bc5eaf211c5c92744d372d28ff008feb83ba650cd5e1d232",
+      "HwpApp.dll": "0aa051839026fe803f5ec24965ac112a8e54aecf0da0132f91e20483078429d1",
+      "HwpAppModule.dll": "3a7b930af2cb467b66775cef5f793aecab28cba2b58596226f04bb5512489bf3"
+    },
+    "real_pixels": {
+      "report-hwp": {
+        "before": 1755338,
+        "after": 1755338,
+        "exact": 1,
+        "max_fraction": 0.18037913585402102,
+        "reference_sha256": "59d00f031684f77c3c17323686df5ed18ceac1c800494fc3ad3ae45fd348c0a5"
+      },
+      "report-hwpx": {
+        "before": 1755338,
+        "after": 1755338,
+        "exact": 1,
+        "max_fraction": 0.18037913585402102,
+        "reference_sha256": "81625234203ea5fce32ce098057125140a11f5c51c40dc9b461f16dbe8b1a9bd"
+      },
+      "trip-hwpx": {
+        "before": 13653,
+        "after": 1903,
+        "exact": 1,
+        "max_fraction": 0.002136118931199684,
+        "reference_sha256": "e4bf914e2b4b9ea1d6410c37e69cd32a4a2c2ed404002d5d05e31c043608bcdf"
+      },
+      "form-hwp": {
+        "before": 609370,
+        "after": 609370,
+        "exact": 0,
+        "max_fraction": 0.14713852108280912,
+        "reference_sha256": "b2cc8c977f1d211cc755ca3742171c91ade919377937be0830fbfb9639d840cb"
+      },
+      "guide-hwp": {
+        "before": 3890365,
+        "after": 3889470,
+        "exact": 2,
+        "max_fraction": 0.20485189725077116,
+        "reference_sha256": "4043d88876e1342b1873f83bf7960983f21504f576c0e7cb701b9f62fe35124d"
+      },
+      "lesson-hwp": {
+        "before": 869883,
+        "after": 869824,
+        "exact": 0,
+        "max_fraction": 0.22941782620994355,
+        "reference_sha256": "3aed17b54f71f25cd6f795cfe03dd6db1e8810c3ed2d8dd5848aa80452e00832"
+      },
+      "minutes-hwpx": {
+        "before": 172806,
+        "after": 172806,
+        "exact": 0,
+        "max_fraction": 0.11340625098218816,
+        "reference_sha256": "c6389ce79c6a1cebf148ef78f14dd94d3bb12839fb57bec6b6142e3b840fbed5"
+      }
+    },
+    "real_diagnostics": {
+      "report-hwp": {
+        "positive_tracking_wrap_lines": 0,
+        "nonbreaking_control_prefixes": 0,
+        "pdf_native_text": {
+          "processed_lines": 521,
+          "legacy_lines": 310,
+          "glyphs": 11448,
+          "fonts": [
+            {
+              "family": "바탕체",
+              "kind": "ttf",
+              "source_sha256": "51d9a8d4205239c865e24b6eb7e6e6dbacfd59c3e2c46f623db0af45e169c9d8",
+              "source_sha256s": [
+                "51d9a8d4205239c865e24b6eb7e6e6dbacfd59c3e2c46f623db0af45e169c9d8"
+              ],
+              "glyphs": 363,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "MS UI Gothic",
+              "kind": "ttf",
+              "source_sha256": "4bde3e6392b96910fb59094c6c1a4dbfae18fee78d0bf13dc30616837c4f95db",
+              "source_sha256s": [
+                "4bde3e6392b96910fb59094c6c1a4dbfae18fee78d0bf13dc30616837c4f95db"
+              ],
+              "glyphs": 1,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "한양중고딕",
+              "kind": "hft",
+              "source_sha256": "067cf9d952613a01de01290080016b1b8ffecb7c077e430d0f8c3aa2a71f0dd0",
+              "source_sha256s": [
+                "067cf9d952613a01de01290080016b1b8ffecb7c077e430d0f8c3aa2a71f0dd0",
+                "0b270e27df3889727dd70b4a62fb61c4379c8739b7e4a3b2f886bf3eb7e71568"
+              ],
+              "glyphs": 144,
+              "preserves_truetype_hinting": false
+            },
+            {
+              "family": "한컴바탕",
+              "kind": "ttf",
+              "source_sha256": "35f84328500fc2c3ee0b148aa75de0ed384bf9eee8dee9148c01b0a11a27fe05",
+              "source_sha256s": [
+                "35f84328500fc2c3ee0b148aa75de0ed384bf9eee8dee9148c01b0a11a27fe05"
+              ],
+              "glyphs": 7,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "한양신명조",
+              "kind": "hft",
+              "source_sha256": "1fd68a78e75c3214e422f116cd86f20e601fc5f577b223817ae8555a3304ec1c",
+              "source_sha256s": [
+                "1fd68a78e75c3214e422f116cd86f20e601fc5f577b223817ae8555a3304ec1c"
+              ],
+              "glyphs": 2,
+              "preserves_truetype_hinting": false
+            },
+            {
+              "family": "바탕",
+              "kind": "ttf",
+              "source_sha256": "51d9a8d4205239c865e24b6eb7e6e6dbacfd59c3e2c46f623db0af45e169c9d8",
+              "source_sha256s": [
+                "51d9a8d4205239c865e24b6eb7e6e6dbacfd59c3e2c46f623db0af45e169c9d8"
+              ],
+              "glyphs": 273,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "굴림",
+              "kind": "ttf",
+              "source_sha256": "05a38ff214ee932c6147a4e697b494040fd68ce654795f10f723c01d7bb8ee12",
+              "source_sha256s": [
+                "05a38ff214ee932c6147a4e697b494040fd68ce654795f10f723c01d7bb8ee12"
+              ],
+              "glyphs": 312,
+              "preserves_truetype_hinting": true
+            }
+          ],
+          "legacy_reasons": {
+            "style-or-script-offset": 141,
+            "justified-continuation": 169
+          },
+          "number_precision": 3,
+          "glyph_fallbacks": {},
+          "suppressed_strike_glyphs": 0,
+          "stretched_glyphs": 0,
+          "device_centered_lines": 136,
+          "device_centered_stretched_lines": 0,
+          "continuation_tracking_aligned_lines": 0,
+          "device_metric_fallbacks": {
+            "mixed-font-metrics": 52,
+            "multiline-paragraph": 333
+          },
+          "fitted_lines": 0,
+          "condensed_word_gaps": 0,
+          "condensed_character_gaps": 0,
+          "cell_clipped_lines": 48,
+          "cell_clipped_painter_lines": 10,
+          "whole_document_parity_verified": false
+        }
+      },
+      "report-hwpx": {
+        "positive_tracking_wrap_lines": 0,
+        "nonbreaking_control_prefixes": 0,
+        "pdf_native_text": {
+          "processed_lines": 521,
+          "legacy_lines": 310,
+          "glyphs": 11448,
+          "fonts": [
+            {
+              "family": "바탕체",
+              "kind": "ttf",
+              "source_sha256": "51d9a8d4205239c865e24b6eb7e6e6dbacfd59c3e2c46f623db0af45e169c9d8",
+              "source_sha256s": [
+                "51d9a8d4205239c865e24b6eb7e6e6dbacfd59c3e2c46f623db0af45e169c9d8"
+              ],
+              "glyphs": 363,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "MS UI Gothic",
+              "kind": "ttf",
+              "source_sha256": "4bde3e6392b96910fb59094c6c1a4dbfae18fee78d0bf13dc30616837c4f95db",
+              "source_sha256s": [
+                "4bde3e6392b96910fb59094c6c1a4dbfae18fee78d0bf13dc30616837c4f95db"
+              ],
+              "glyphs": 1,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "한양중고딕",
+              "kind": "hft",
+              "source_sha256": "067cf9d952613a01de01290080016b1b8ffecb7c077e430d0f8c3aa2a71f0dd0",
+              "source_sha256s": [
+                "067cf9d952613a01de01290080016b1b8ffecb7c077e430d0f8c3aa2a71f0dd0",
+                "0b270e27df3889727dd70b4a62fb61c4379c8739b7e4a3b2f886bf3eb7e71568"
+              ],
+              "glyphs": 144,
+              "preserves_truetype_hinting": false
+            },
+            {
+              "family": "한컴바탕",
+              "kind": "ttf",
+              "source_sha256": "35f84328500fc2c3ee0b148aa75de0ed384bf9eee8dee9148c01b0a11a27fe05",
+              "source_sha256s": [
+                "35f84328500fc2c3ee0b148aa75de0ed384bf9eee8dee9148c01b0a11a27fe05"
+              ],
+              "glyphs": 7,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "한양신명조",
+              "kind": "hft",
+              "source_sha256": "1fd68a78e75c3214e422f116cd86f20e601fc5f577b223817ae8555a3304ec1c",
+              "source_sha256s": [
+                "1fd68a78e75c3214e422f116cd86f20e601fc5f577b223817ae8555a3304ec1c"
+              ],
+              "glyphs": 2,
+              "preserves_truetype_hinting": false
+            },
+            {
+              "family": "바탕",
+              "kind": "ttf",
+              "source_sha256": "51d9a8d4205239c865e24b6eb7e6e6dbacfd59c3e2c46f623db0af45e169c9d8",
+              "source_sha256s": [
+                "51d9a8d4205239c865e24b6eb7e6e6dbacfd59c3e2c46f623db0af45e169c9d8"
+              ],
+              "glyphs": 273,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "굴림",
+              "kind": "ttf",
+              "source_sha256": "05a38ff214ee932c6147a4e697b494040fd68ce654795f10f723c01d7bb8ee12",
+              "source_sha256s": [
+                "05a38ff214ee932c6147a4e697b494040fd68ce654795f10f723c01d7bb8ee12"
+              ],
+              "glyphs": 312,
+              "preserves_truetype_hinting": true
+            }
+          ],
+          "legacy_reasons": {
+            "style-or-script-offset": 141,
+            "justified-continuation": 169
+          },
+          "number_precision": 3,
+          "glyph_fallbacks": {},
+          "suppressed_strike_glyphs": 0,
+          "stretched_glyphs": 0,
+          "device_centered_lines": 136,
+          "device_centered_stretched_lines": 0,
+          "continuation_tracking_aligned_lines": 0,
+          "device_metric_fallbacks": {
+            "mixed-font-metrics": 52,
+            "multiline-paragraph": 333
+          },
+          "fitted_lines": 0,
+          "condensed_word_gaps": 0,
+          "condensed_character_gaps": 0,
+          "cell_clipped_lines": 48,
+          "cell_clipped_painter_lines": 10,
+          "whole_document_parity_verified": false
+        }
+      },
+      "trip-hwpx": {
+        "positive_tracking_wrap_lines": 0,
+        "nonbreaking_control_prefixes": 2,
+        "pdf_native_text": {
+          "processed_lines": 31,
+          "legacy_lines": 0,
+          "glyphs": 581,
+          "fonts": [
+            {
+              "family": "HY수평선B",
+              "kind": "ttf",
+              "source_sha256": "3ac03d75b2e752546044990917fab57b415780ca119751e8bfa0136765772071",
+              "source_sha256s": [
+                "3ac03d75b2e752546044990917fab57b415780ca119751e8bfa0136765772071"
+              ],
+              "glyphs": 24,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "굴림체",
+              "kind": "ttf",
+              "source_sha256": "05a38ff214ee932c6147a4e697b494040fd68ce654795f10f723c01d7bb8ee12",
+              "source_sha256s": [
+                "05a38ff214ee932c6147a4e697b494040fd68ce654795f10f723c01d7bb8ee12"
+              ],
+              "glyphs": 26,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "HY울릉도B",
+              "kind": "ttf",
+              "source_sha256": "c48939f1dac8d1946d64d2063adf6e47c6dcecfb978548d52d9e47d1f70ff61a",
+              "source_sha256s": [
+                "c48939f1dac8d1946d64d2063adf6e47c6dcecfb978548d52d9e47d1f70ff61a"
+              ],
+              "glyphs": 18,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "함초롬바탕",
+              "kind": "ttf",
+              "source_sha256": "0dbeb7b129fcec63f8d6b7f1d3b5bb991c1d599e725286518ccc598de643f014",
+              "source_sha256s": [
+                "0dbeb7b129fcec63f8d6b7f1d3b5bb991c1d599e725286518ccc598de643f014"
+              ],
+              "glyphs": 135,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "굴림",
+              "kind": "ttf",
+              "source_sha256": "05a38ff214ee932c6147a4e697b494040fd68ce654795f10f723c01d7bb8ee12",
+              "source_sha256s": [
+                "05a38ff214ee932c6147a4e697b494040fd68ce654795f10f723c01d7bb8ee12"
+              ],
+              "glyphs": 7,
+              "preserves_truetype_hinting": true
+            }
+          ],
+          "legacy_reasons": {},
+          "number_precision": 6,
+          "glyph_fallbacks": {},
+          "suppressed_strike_glyphs": 0,
+          "stretched_glyphs": 313,
+          "device_centered_lines": 14,
+          "device_centered_stretched_lines": 1,
+          "continuation_tracking_aligned_lines": 3,
+          "device_metric_fallbacks": {
+            "control-or-postprocessed-character": 2,
+            "mixed-font-metrics": 2
+          },
+          "fitted_lines": 1,
+          "condensed_word_gaps": 2,
+          "condensed_character_gaps": 16,
+          "cell_clipped_lines": 19,
+          "cell_clipped_painter_lines": 0,
+          "whole_document_parity_verified": false
+        }
+      },
+      "form-hwp": {
+        "positive_tracking_wrap_lines": 0,
+        "nonbreaking_control_prefixes": 0,
+        "pdf_native_text": {
+          "processed_lines": 58,
+          "legacy_lines": 189,
+          "glyphs": 961,
+          "fonts": [
+            {
+              "family": "한컴바탕",
+              "kind": "ttf",
+              "source_sha256": "35f84328500fc2c3ee0b148aa75de0ed384bf9eee8dee9148c01b0a11a27fe05",
+              "source_sha256s": [
+                "35f84328500fc2c3ee0b148aa75de0ed384bf9eee8dee9148c01b0a11a27fe05"
+              ],
+              "glyphs": 211,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "함초롬바탕",
+              "kind": "ttf",
+              "source_sha256": "0dbeb7b129fcec63f8d6b7f1d3b5bb991c1d599e725286518ccc598de643f014",
+              "source_sha256s": [
+                "0dbeb7b129fcec63f8d6b7f1d3b5bb991c1d599e725286518ccc598de643f014"
+              ],
+              "glyphs": 10,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "굴림",
+              "kind": "ttf",
+              "source_sha256": "05a38ff214ee932c6147a4e697b494040fd68ce654795f10f723c01d7bb8ee12",
+              "source_sha256s": [
+                "05a38ff214ee932c6147a4e697b494040fd68ce654795f10f723c01d7bb8ee12"
+              ],
+              "glyphs": 3,
+              "preserves_truetype_hinting": true
+            }
+          ],
+          "legacy_reasons": {
+            "style-or-script-offset": 171,
+            "justified-continuation": 18
+          },
+          "number_precision": 3,
+          "glyph_fallbacks": {},
+          "suppressed_strike_glyphs": 0,
+          "stretched_glyphs": 0,
+          "device_centered_lines": 45,
+          "device_centered_stretched_lines": 0,
+          "continuation_tracking_aligned_lines": 0,
+          "device_metric_fallbacks": {
+            "multiline-paragraph": 10,
+            "mixed-font-metrics": 3
+          },
+          "fitted_lines": 6,
+          "condensed_word_gaps": 67,
+          "condensed_character_gaps": 126,
+          "cell_clipped_lines": 17,
+          "cell_clipped_painter_lines": 46,
+          "whole_document_parity_verified": false
+        }
+      },
+      "guide-hwp": {
+        "positive_tracking_wrap_lines": 0,
+        "nonbreaking_control_prefixes": 0,
+        "pdf_native_text": {
+          "processed_lines": 1158,
+          "legacy_lines": 806,
+          "glyphs": 21805,
+          "fonts": [
+            {
+              "family": "HY헤드라인M",
+              "kind": "ttf",
+              "source_sha256": "a3f57b4cb4292977479c1511b52997daadaf04c37f180ff05ab152c4d12ccaf5",
+              "source_sha256s": [
+                "a3f57b4cb4292977479c1511b52997daadaf04c37f180ff05ab152c4d12ccaf5"
+              ],
+              "glyphs": 25,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "HCI Poppy",
+              "kind": "hft",
+              "source_sha256": "222fceeeffb111c095a760ee178e7c7aebf8d334cf91706658bccb4e2b1d01d4",
+              "source_sha256s": [
+                "222fceeeffb111c095a760ee178e7c7aebf8d334cf91706658bccb4e2b1d01d4"
+              ],
+              "glyphs": 18,
+              "preserves_truetype_hinting": false
+            },
+            {
+              "family": "휴먼명조",
+              "kind": "ttf",
+              "source_sha256": "d033df71fa41de48905407f7d39aca74ebd9ae87298c5420513acaa187fbefc6",
+              "source_sha256s": [
+                "d033df71fa41de48905407f7d39aca74ebd9ae87298c5420513acaa187fbefc6"
+              ],
+              "glyphs": 427,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "한양신명조",
+              "kind": "hft",
+              "source_sha256": "1fd68a78e75c3214e422f116cd86f20e601fc5f577b223817ae8555a3304ec1c",
+              "source_sha256s": [
+                "1fd68a78e75c3214e422f116cd86f20e601fc5f577b223817ae8555a3304ec1c",
+                "7937877f3bbebd97159e6be6e2def84ec2ead2f65d510e61721a1aab4087b0c1"
+              ],
+              "glyphs": 11,
+              "preserves_truetype_hinting": false
+            },
+            {
+              "family": "한컴바탕",
+              "kind": "ttf",
+              "source_sha256": "35f84328500fc2c3ee0b148aa75de0ed384bf9eee8dee9148c01b0a11a27fe05",
+              "source_sha256s": [
+                "35f84328500fc2c3ee0b148aa75de0ed384bf9eee8dee9148c01b0a11a27fe05"
+              ],
+              "glyphs": 11,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "Tahoma",
+              "kind": "ttf",
+              "source_sha256": "9af03d4ad44a3b413d92f7de48b94aa7cc8a1471a75d498406eae837f62ee1d1",
+              "source_sha256s": [
+                "9af03d4ad44a3b413d92f7de48b94aa7cc8a1471a75d498406eae837f62ee1d1"
+              ],
+              "glyphs": 5,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "한양중고딕",
+              "kind": "hft",
+              "source_sha256": "067cf9d952613a01de01290080016b1b8ffecb7c077e430d0f8c3aa2a71f0dd0",
+              "source_sha256s": [
+                "067cf9d952613a01de01290080016b1b8ffecb7c077e430d0f8c3aa2a71f0dd0",
+                "0b270e27df3889727dd70b4a62fb61c4379c8739b7e4a3b2f886bf3eb7e71568",
+                "8c33c27f1c301fed311a7c18a24abd0a2eb07cfc02c0e2b04e186197510af908"
+              ],
+              "glyphs": 366,
+              "preserves_truetype_hinting": false
+            },
+            {
+              "family": "굴림",
+              "kind": "ttf",
+              "source_sha256": "05a38ff214ee932c6147a4e697b494040fd68ce654795f10f723c01d7bb8ee12",
+              "source_sha256s": [
+                "05a38ff214ee932c6147a4e697b494040fd68ce654795f10f723c01d7bb8ee12"
+              ],
+              "glyphs": 3,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "함초롬바탕",
+              "kind": "ttf",
+              "source_sha256": "0dbeb7b129fcec63f8d6b7f1d3b5bb991c1d599e725286518ccc598de643f014",
+              "source_sha256s": [
+                "0dbeb7b129fcec63f8d6b7f1d3b5bb991c1d599e725286518ccc598de643f014"
+              ],
+              "glyphs": 5,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "바탕체",
+              "kind": "ttf",
+              "source_sha256": "51d9a8d4205239c865e24b6eb7e6e6dbacfd59c3e2c46f623db0af45e169c9d8",
+              "source_sha256s": [
+                "51d9a8d4205239c865e24b6eb7e6e6dbacfd59c3e2c46f623db0af45e169c9d8"
+              ],
+              "glyphs": 268,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "MS UI Gothic",
+              "kind": "ttf",
+              "source_sha256": "4bde3e6392b96910fb59094c6c1a4dbfae18fee78d0bf13dc30616837c4f95db",
+              "source_sha256s": [
+                "4bde3e6392b96910fb59094c6c1a4dbfae18fee78d0bf13dc30616837c4f95db"
+              ],
+              "glyphs": 2,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "HCI Hollyhock",
+              "kind": "hft",
+              "source_sha256": "44b2c395846eec9c9b29c6835408a0e3475ebb5b984718f13403092f59c94d49",
+              "source_sha256s": [
+                "44b2c395846eec9c9b29c6835408a0e3475ebb5b984718f13403092f59c94d49"
+              ],
+              "glyphs": 10,
+              "preserves_truetype_hinting": false
+            }
+          ],
+          "legacy_reasons": {
+            "style-or-script-offset": 634,
+            "inline-object-or-control-space": 18,
+            "justified-continuation": 154
+          },
+          "number_precision": 3,
+          "glyph_fallbacks": {
+            "휴먼명조 → 함초롬바탕": 2
+          },
+          "suppressed_strike_glyphs": 21431,
+          "stretched_glyphs": 1323,
+          "device_centered_lines": 450,
+          "device_centered_stretched_lines": 52,
+          "continuation_tracking_aligned_lines": 9,
+          "device_metric_fallbacks": {
+            "mixed-font-metrics": 420,
+            "multiline-paragraph": 269,
+            "control-or-postprocessed-character": 1
+          },
+          "fitted_lines": 15,
+          "condensed_word_gaps": 116,
+          "condensed_character_gaps": 0,
+          "cell_clipped_lines": 20,
+          "cell_clipped_painter_lines": 50,
+          "whole_document_parity_verified": false
+        }
+      },
+      "lesson-hwp": {
+        "positive_tracking_wrap_lines": 0,
+        "nonbreaking_control_prefixes": 0,
+        "pdf_native_text": {
+          "processed_lines": 127,
+          "legacy_lines": 232,
+          "glyphs": 2631,
+          "fonts": [
+            {
+              "family": "함초롬돋움",
+              "kind": "ttf",
+              "source_sha256": "38126c8212411cfc4616d2d9463da75e46ae483f1d7d7f5bb2cd681de665c9ea",
+              "source_sha256s": [
+                "38126c8212411cfc4616d2d9463da75e46ae483f1d7d7f5bb2cd681de665c9ea"
+              ],
+              "glyphs": 276,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "HY헤드라인M",
+              "kind": "ttf",
+              "source_sha256": "a3f57b4cb4292977479c1511b52997daadaf04c37f180ff05ab152c4d12ccaf5",
+              "source_sha256s": [
+                "a3f57b4cb4292977479c1511b52997daadaf04c37f180ff05ab152c4d12ccaf5"
+              ],
+              "glyphs": 30,
+              "preserves_truetype_hinting": true
+            }
+          ],
+          "legacy_reasons": {
+            "inline-object-or-control-space": 2,
+            "kerning": 13,
+            "style-or-script-offset": 160,
+            "justified-continuation": 53,
+            "complex-shaping-or-glyph-map": 4
+          },
+          "number_precision": 3,
+          "glyph_fallbacks": {},
+          "suppressed_strike_glyphs": 2533,
+          "stretched_glyphs": 713,
+          "device_centered_lines": 97,
+          "device_centered_stretched_lines": 33,
+          "continuation_tracking_aligned_lines": 0,
+          "device_metric_fallbacks": {
+            "control-or-postprocessed-character": 1,
+            "multiline-paragraph": 24,
+            "mixed-font-metrics": 5
+          },
+          "fitted_lines": 1,
+          "condensed_word_gaps": 3,
+          "condensed_character_gaps": 9,
+          "cell_clipped_lines": 16,
+          "cell_clipped_painter_lines": 51,
+          "whole_document_parity_verified": false
+        }
+      },
+      "minutes-hwpx": {
+        "positive_tracking_wrap_lines": 0,
+        "nonbreaking_control_prefixes": 0,
+        "pdf_native_text": {
+          "processed_lines": 17,
+          "legacy_lines": 39,
+          "glyphs": 212,
+          "fonts": [
+            {
+              "family": "HY헤드라인M",
+              "kind": "ttf",
+              "source_sha256": "a3f57b4cb4292977479c1511b52997daadaf04c37f180ff05ab152c4d12ccaf5",
+              "source_sha256s": [
+                "a3f57b4cb4292977479c1511b52997daadaf04c37f180ff05ab152c4d12ccaf5"
+              ],
+              "glyphs": 36,
+              "preserves_truetype_hinting": true
+            },
+            {
+              "family": "휴먼명조",
+              "kind": "ttf",
+              "source_sha256": "d033df71fa41de48905407f7d39aca74ebd9ae87298c5420513acaa187fbefc6",
+              "source_sha256s": [
+                "d033df71fa41de48905407f7d39aca74ebd9ae87298c5420513acaa187fbefc6"
+              ],
+              "glyphs": 66,
+              "preserves_truetype_hinting": true
+            }
+          ],
+          "legacy_reasons": {
+            "style-or-script-offset": 13,
+            "justified-continuation": 26
+          },
+          "number_precision": 3,
+          "glyph_fallbacks": {},
+          "suppressed_strike_glyphs": 0,
+          "stretched_glyphs": 23,
+          "device_centered_lines": 10,
+          "device_centered_stretched_lines": 1,
+          "continuation_tracking_aligned_lines": 0,
+          "device_metric_fallbacks": {
+            "multiline-paragraph": 7
+          },
+          "fitted_lines": 0,
+          "condensed_word_gaps": 0,
+          "condensed_character_gaps": 0,
+          "cell_clipped_lines": 9,
+          "cell_clipped_painter_lines": 4,
+          "whole_document_parity_verified": false
+        }
+      }
+    },
+    "real_pages_exact": 5,
+    "real_documents_exact": 0,
+    "real_pages_checked": 124,
+    "source_and_native_reference_hashes_unchanged": true,
+    "corpus_log_sha256": "cdacb95ef5ad445ac1c0bce46ebc4366c505ec22f1255036aa160154748151ce",
+    "expanded_fixed_reference_qa": [
+      {
+        "label": "expanded-body",
+        "pages": 32,
+        "exact": 32,
+        "reference_sha256": "5a86a9ede76cbab4e85632232e1b2e73ee23ed45218539e8cb8648412420da9c",
+        "source_sha256": "5671b28d9859e11a07088a6e64b3a5adfe53758678eaa1607f1922f6cda29324"
+      },
+      {
+        "label": "expanded-cell",
+        "pages": 32,
+        "exact": 32,
+        "reference_sha256": "4f8cfe97158dca8d423ee9384926386673ad50de48a8e439795a6f7697ace742",
+        "source_sha256": "7e1c4b9dd10ec5954bc1fa0257f73d8ff053967d4a5de93d93e97784d9670d8b"
+      },
+      {
+        "label": "edge-hwp",
+        "pages": 16,
+        "exact": 16,
+        "reference_sha256": "52458a041e0bf03e28630030389c0d35a6b47af298a4682b0157548d079c91bf",
+        "source_sha256": "e1e80160afbc272f57b386f5b22f3bcaac0b0ffe3d2aa75b5283415a40817b94"
+      },
+      {
+        "label": "edge-hwpx",
+        "pages": 16,
+        "exact": 16,
+        "reference_sha256": "e1d129bb7cb0b743007e6d1b390bd6a2a0c5e6341bb96ae92dd76fb3b9b8085c",
+        "source_sha256": "9c2ebe5cbf680367e90bced7676394d6c57f458d33fac8cd5729dd5fb6383702"
+      },
+      {
+        "label": "native-repeat",
+        "pages": 32,
+        "exact": 32,
+        "reference_sha256": "984bb25d97ad65f3e3f0daac49c81cfc555682b920cc087474d5b8d3f4c00176",
+        "source_sha256": "5a86a9ede76cbab4e85632232e1b2e73ee23ed45218539e8cb8648412420da9c"
+      }
+    ],
+    "expanded_probe_scope": "Original 64 pages now 64 exact, earlier cell edges 32 exact, and fresh instrumented native repeat 32 exact. These subsets are not added to cumulative unique fixture counts.",
+    "broad_continued_probe": [
+      {
+        "format": "hwp",
+        "pages": 12,
+        "exact": 0,
+        "reference_sha256": "1221acba91e04cd173422a9382e14b3b4f171a2a5259963d20ed09776224b988",
+        "before_pixels": 252993,
+        "after_pixels": 192007,
+        "remaining": [
+          {
+            "page": 1,
+            "before": 4935,
+            "pixels": 1632
+          },
+          {
+            "page": 2,
+            "before": 7949,
+            "pixels": 958
+          },
+          {
+            "page": 3,
+            "before": 8814,
+            "pixels": 504
+          },
+          {
+            "page": 4,
+            "before": 13863,
+            "pixels": 2456
+          },
+          {
+            "page": 5,
+            "before": 17226,
+            "pixels": 16724
+          },
+          {
+            "page": 6,
+            "before": 20841,
+            "pixels": 15951
+          },
+          {
+            "page": 7,
+            "before": 24080,
+            "pixels": 16438
+          },
+          {
+            "page": 8,
+            "before": 39869,
+            "pixels": 38954
+          },
+          {
+            "page": 9,
+            "before": 20020,
+            "pixels": 19967
+          },
+          {
+            "page": 10,
+            "before": 22716,
+            "pixels": 18756
+          },
+          {
+            "page": 11,
+            "before": 27834,
+            "pixels": 16337
+          },
+          {
+            "page": 12,
+            "before": 44846,
+            "pixels": 43330
+          }
+        ]
+      },
+      {
+        "format": "hwpx",
+        "pages": 12,
+        "exact": 0,
+        "reference_sha256": "f9065df009ff12e8ff8ccae54025e30d893e8e14535a09674fd2511b606b8994",
+        "before_pixels": 252993,
+        "after_pixels": 192007,
+        "remaining": [
+          {
+            "page": 1,
+            "before": 4935,
+            "pixels": 1632
+          },
+          {
+            "page": 2,
+            "before": 7949,
+            "pixels": 958
+          },
+          {
+            "page": 3,
+            "before": 8814,
+            "pixels": 504
+          },
+          {
+            "page": 4,
+            "before": 13863,
+            "pixels": 2456
+          },
+          {
+            "page": 5,
+            "before": 17226,
+            "pixels": 16724
+          },
+          {
+            "page": 6,
+            "before": 20841,
+            "pixels": 15951
+          },
+          {
+            "page": 7,
+            "before": 24080,
+            "pixels": 16438
+          },
+          {
+            "page": 8,
+            "before": 39869,
+            "pixels": 38954
+          },
+          {
+            "page": 9,
+            "before": 20020,
+            "pixels": 19967
+          },
+          {
+            "page": 10,
+            "before": 22716,
+            "pixels": 18756
+          },
+          {
+            "page": 11,
+            "before": 27834,
+            "pixels": 16337
+          },
+          {
+            "page": 12,
+            "before": 44846,
+            "pixels": 43330
+          }
+        ]
+      }
+    ],
+    "broad_probe_scope": "These 24 exploratory narrow-frame/word-break pages remain nonidentical; all improved from their prior independent outputs. They are not counted as exact.",
+    "uncached_native_failure": {
+      "test": "test_pdf_stretch.PdfStretchTests.test_complete_stretched_pages_and_text_in_both_formats",
+      "format": "hwp",
+      "page": 4,
+      "font": "맑은 고딕",
+      "size_pt": 5,
+      "stretch": 150,
+      "pixels": 67,
+      "log_sha256": "bdfc69e985c974ade55dd9a4c731c9cfdabeab8ef798974600ff0b73ea3cfb3a",
+      "audit": {
+        "uncached_pages_unchanged_vs_3dbbe13": 176,
+        "original_native_pages_exact": 112,
+        "original_reference_sha256": "983ee3635247b90dc6850aef088cb83a86dbb2c99dd111d40b42f3ae7ae15f17",
+        "source_sha256": "85d05128760c8414e2caba361538b3128bcc377eee040bb9c71bd2043e6aef2d"
+      },
+      "audit_log_sha256": "10d4e118dd92b12779794f59bf03562a378e67f921e66a6a3db3b20557ab4ed9",
+      "status": "Unresolved fresh-native output context/fixture discrepancy; do not claim a fresh 352-page pass. Current vs 3dbbe13 independent outputs match all 176 pages, and the original 112-page native reference still matches."
+    },
+    "intermediate_logs_sha256": {
+      "cached-stretch-prototype-first.log": "b238510f7d598857a8fe908527285b62d268957ae243bd3f0ba8df1201056c40",
+      "continued-alignment-native-prototype.log": "28cd4fb53323f1b0bf669b822157e548f34d4012b31c7e0f40e2fb642ed3f356",
+      "continued-alignment-native-first.log": "a837bbebbf62c82929767e27ffef3f8386ff867ae3fd73f1af9c06ef10f7c6eb",
+      "continued-alignment-native-second.log": "94a7f5917f685d0c4c1ad708f0c470cb3288055b96ad98a9605bd730f8e02d1d"
+    },
+    "resource_management": {
+      "native_jobs_sequential": true,
+      "after_each_pipeline_step_hwp_processes": 0,
+      "minimum_before_step_free_gb": 1.55
+    },
+    "remaining": [
+      "Mixed-font and multiline cached device measurement",
+      "Broad narrow-frame/word-break probes remain nonidentical",
+      "Fresh small-size uncached native context discrepancy",
+      "Bitmap/HFT continuation tracking and other styles still need broader verification",
+      "Source image alpha and native print stipple brush phase",
+      "Whole actual documents remain nonidentical"
     ]
   }
 }

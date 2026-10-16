@@ -11,7 +11,7 @@ import math
 import unicodedata
 from PySide6.QtCore import Qt, QPointF, QRectF, QSizeF, Signal
 from PySide6.QtGui import (QColor, QFont, QFontDatabase, QFontMetricsF, QImage, QPainter, QPen, QTextLayout,
-                          QTextCharFormat, QTextOption, QTransform, QPageSize, QPageLayout)
+                          QTextCharFormat, QTextOption, QTransform, QPageSize, QPageLayout, QRawFont)
 from PySide6.QtGui import QPainterPath
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem
 from .formats import Paragraph, Table, Drawing, _table_grid,INVISIBLE_STRIKE_SHAPES
@@ -209,6 +209,9 @@ class SourceLayout:
         self._metrics_device=QImage(1,1,QImage.Format.Format_RGB32)
         self._metrics_device.setDotsPerMeterX(round(TEXT_DPI/0.0254))
         self._metrics_device.setDotsPerMeterY(round(TEXT_DPI/0.0254))
+        self._terminal_wrap_fonts={}
+        self._positive_tracking_wrap_lines=0
+        self._nonbreaking_control_prefixes=0
         self._paragraph_pages={}
         self._paragraph_entries={}
         self._paragraphs={}
@@ -340,6 +343,38 @@ class SourceLayout:
         self._ensure_page(page)
         self.pages[page].append(command)
 
+    def _terminal_tracking_width(self,layout,line):
+        """Positive trailing tracking takes no room after a wrapped glyph."""
+        import struct
+        from .pdf_device_metrics import logical_advances
+        text=_utf16_slice(layout.text(),line.textStart(),line.textStart()+line.textLength()).rstrip('\u200b\u2060 \u2028')
+        if (not text or ord(text[-1])>=65536 or text[-1]=='\u2000'
+            or unicodedata.category(text[-1]) in {'Cc','Cf'}):return 0
+        position=line.textStart()+len(text.encode('utf-16le'))//2-1
+        # Keep FormatRange wrappers alive while reading their Qt formats.
+        formats=layout.formats()
+        fmt=next((f.format for f in formats if f.start<=position<f.start+f.length),None)
+        if fmt is None:return 0
+        spacing=fmt.property(BITMAP_TRACKING_PROPERTY) or 0
+        if spacing<=0 or fmt.property(OUTLINE_FONT_PROPERTY) or fmt.property(BITMAP_FONT_PROPERTY):return 0
+        font=fmt.font();character=text[-1];advance=0
+        if character!='!':
+            key=font.key();entry=self._terminal_wrap_fonts.get(key)
+            if entry is None:
+                raw=QRawFont.fromFont(font)
+                if not raw.isValid():return 0
+                head=bytes(raw.fontTable('head'));hhea=bytes(raw.fontTable('hhea'));hmtx=bytes(raw.fontTable('hmtx'))
+                if len(head)<20 or len(hhea)<36:return 0
+                units=struct.unpack_from('>H',head,18)[0];count=struct.unpack_from('>H',hhea,34)[0]
+                if not units or not count or len(hmtx)<count*4:return 0
+                entry=(raw,units,count,hmtx)
+                if len(self._terminal_wrap_fonts)<64:self._terminal_wrap_fonts[key]=entry
+            raw,units,count,hmtx=entry;glyphs=raw.glyphIndexesForString(character)
+            if not glyphs or not glyphs[0]:return 0
+            advance=struct.unpack_from('>H',hmtx,min(glyphs[0],count-1)*4)[0]/units
+        tracked,untracked=logical_advances(advance,font.pointSizeF(),font.stretch(),1+spacing/100,character=='!')
+        return max(0,tracked-untracked)/100/TEXT_UNIT_PT
+
     def _segments_for(self,paragraph,width,start_y=0):
         if paragraph.line_segments:return paragraph.line_segments
         text=self._paragraph_text(paragraph)
@@ -348,6 +383,12 @@ class SourceLayout:
         if not text:text='\u200b'
         self._reflowed_paragraphs.add(id(paragraph))
         text=text.replace('\r','\u200b').replace('\n','\u2028').replace('\x0b','\u2028').replace('\ufffc','\u200b')
+        # Section-control slots must retain their UTF-16 offsets without
+        # becoming a legal empty-line break before the first visible word.
+        leading=len(text)-len(text.lstrip('\u200b'))
+        if leading:
+            text='\u2060'*leading+text[leading:]
+            self._nonbreaking_control_prefixes+=1
         available=max(1,width-paragraph.style.left-paragraph.style.right)
         seed=Command('text',(0,0,available,1),paragraph,{'text':text,'start':0,'line':{'baseline_pt':0}})
         layout=self._text_layout(seed)
@@ -370,6 +411,13 @@ class SourceLayout:
             if not line.isValid():break
             indent=paragraph.style.indent if not lines else 0
             line.setLineWidth(max(1,available-indent)/TEXT_UNIT_PT)
+            expanded=False
+            for attempt in range(4):
+                length=line.textLength();extra=self._terminal_tracking_width(layout,line)
+                line.setLineWidth(max(1,available-indent)/TEXT_UNIT_PT+extra)
+                expanded=expanded or extra>0
+                if line.textLength()==length:break
+            if expanded:self._positive_tracking_wrap_lines+=1
             style=paragraph.style
             if style.font_line_height:
                 height=line.height()*TEXT_UNIT_PT
@@ -1473,6 +1521,8 @@ class SourceLayout:
                 'pages_pt':[list(self.page_size(index)) for index in range(len(self.pages))],
                 'uses_hancom_runtime':False,'uses_reference_pdf':False,'mode':'source cached line geometry; retained for compatible text edits',
                 'text_metrics_dpi':TEXT_DPI,'recomputed_paragraphs':len(self._reflowed_paragraphs),
+                'positive_tracking_wrap_lines':self._positive_tracking_wrap_lines,
+                'nonbreaking_control_prefixes':self._nonbreaking_control_prefixes,
                 'repositioned_cached_paragraphs':len(self._repositioned_cached_paragraphs),
                 'synthetic_text_paragraphs':len(self._synthetic_text_paragraphs),
                 'recomputed_object_paragraphs':len(self._reflowed_object_paragraphs),

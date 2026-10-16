@@ -54,7 +54,7 @@ class PdfNativeText:
         self.precision=6
         self.facts={'processed_lines':0,'legacy_lines':0,'glyphs':0,'fonts':[],
                     'legacy_reasons':{},'number_precision':6,'glyph_fallbacks':{},'suppressed_strike_glyphs':0,'stretched_glyphs':0,
-                    'device_centered_lines':0,'device_metric_fallbacks':{},'fitted_lines':0,
+                    'device_centered_lines':0,'device_centered_stretched_lines':0,'continuation_tracking_aligned_lines':0,'device_metric_fallbacks':{},'fitted_lines':0,
                     'condensed_word_gaps':0,'condensed_character_gaps':0,'cell_clipped_lines':0,'cell_clipped_painter_lines':0,'whole_document_parity_verified':False}
 
     def _center_cached_line(self,command,text,parts,metrics):
@@ -66,17 +66,16 @@ class PdfNativeText:
         reason=None
         if len(command.source.line_segments)!=1:reason='multiline-paragraph'
         elif len(metrics)!=len(text) or any(ord(c)>=65536 or c=='!' for c in text):reason='control-or-postprocessed-character'
-        elif len({item[:4] for item in metrics})!=1:reason='mixed-font-metrics'
+        elif len({item[:4]+(item[6],) for item in metrics})!=1:reason='mixed-font-metrics'
         elif metrics:
             key,em,stretch,tracking,*_=metrics[0]
             if self.fonts[key]['kind']!='ttf':return parts,None
-            if stretch!=100:reason='stretch'
         if reason or not metrics:
             if reason:
                 facts=self.facts['device_metric_fallbacks'];facts[reason]=facts.get(reason,0)+1
             return parts,None
         from .pdf_device_metrics import centered_advances,installed_widths,tracked_advances
-        key,em,*_=metrics[0];source=self.fonts[key];identity=(key,em)
+        key,em,*_=metrics[0];source=self.fonts[key];font_width=metrics[0][6];identity=(key,em,font_width)
         widths=self.device_widths.setdefault(identity,{})
         missing=''.join(set(text)-widths.keys())
         try:
@@ -84,7 +83,7 @@ class PdfNativeText:
                 # Loaded fontTools tables may recompile timestamps or names;
                 # GDI identity must be checked against original source bytes.
                 tables={tag:source['source'].reader[tag] for tag in ('head','maxp','name')}
-                widths.update(installed_widths(source['family'],em,missing,tables))
+                widths.update(installed_widths(source['family'],em,missing,tables,font_width))
             advances=[item[5] for item in metrics]
             # Each word's measurement run includes its trailing spaces.
             # Spaces flush the word's endpoint carry, then their paragraph
@@ -110,6 +109,7 @@ class PdfNativeText:
             result.append((pen,*part[1:]));pen+=advance
             if character!=' ':alignment=pen
         self.facts['device_centered_lines']+=1
+        if font_width:self.facts['device_centered_stretched_lines']+=1
         return result,alignment
 
     def _fit_saved_line(self,command,text,parts,metrics,alignment):
@@ -269,6 +269,7 @@ class PdfNativeText:
             BITMAP_TRACKING_PROPERTY,BITMAP_SPACE_PROPERTY,SCRIPT_OFFSET_PROPERTY,
             SYNTHETIC_BOLD_PROPERTY,SYNTHETIC_ITALIC_PROPERTY,STRIKE_SHAPE_PROPERTY)
         from .formats import INVISIBLE_STRIKE_SHAPES
+        from .pdf_device_metrics import logical_advances
         formats=layout.formats()
         if any(item.format.property(BITMAP_FONT_PROPERTY) for item in formats):return None
         def legacy(reason):
@@ -279,7 +280,7 @@ class PdfNativeText:
             return legacy('justified-continuation')
         if len(self.records)>=MAX_LINES:return legacy('line-count-bounds')
         text=layout.text();cursor=0;pen=0;alignment_pen=0;parts=[];metrics=[];terminal=len(text.rstrip('\u200b '))-1
-        group_number=0;current_group=None;hft_fallback_mode=False;suppressed_strike=0;stretched=0
+        group_number=0;current_group=None;hft_fallback_mode=False;suppressed_strike=0;stretched=0;terminal_tracking=0
         if len(text)+self.characters>MAX_CHARACTERS:return legacy('character-count-bounds')
         for position,character in enumerate(text):
             units=len(character.encode('utf-16le'))//2
@@ -313,7 +314,7 @@ class PdfNativeText:
                     key,glyph,advance=self._sfnt(raw,character,index)
             except (OSError,ValueError,HftError,UnicodeError,KeyError,struct.error,TTLibError) as error:
                 return legacy(str(error) if isinstance(error,ValueError) else 'font-source-error')
-            stretch=font.stretch();scale=float(stretch)
+            stretch=font.stretch();scale=float(stretch);device_font_width=0
             if not 1<=stretch<=500:return legacy('stretch-bounds')
             source=self.fonts[key]
             if stretch!=100 and source['kind']=='ttf':
@@ -324,39 +325,39 @@ class PdfNativeText:
                 # The requested GDI width uses logical size before printer
                 # em rounding; its PDF ratio uses the rounded base average.
                 width=_round(sfnt['OS/2'].xAvgCharWidth/units*size/.12*stretch/100)
+                # The cached device measurement must select the same integer
+                # LOGFONT width as PDF output, not an unstretched GDI face.
+                device_font_width=width
                 scale=f32(f32(width/average)*100)
                 if scale<=0:return legacy('nonpositive-stretched-font-width')
-            if character=='!' or character==' ' and (fmt.property(BITMAP_SPACE_PROPERTY) is not None or advance==0):
-                # Native text layout gives U+0021 a half-em advance even
-                # with font spaces enabled (HFT and TrueType alike).
-                # Quantize the base half-em before stretch/tracking. Reversing
-                # this order changes 11pt/50% and 18pt/95% by four HWP units.
-                delta=_round(math.floor(size*100/8+1e-9)*stretch/100*tracking)*4
-                untracked_delta=_round(math.floor(size*100/8+1e-9)*stretch/100)*4
-            else:
-                logical_em=math.trunc(_round(size*100)/4)
-                width=(math.floor(advance*logical_em*stretch/100+1e-9) if stretch!=100
-                       else _round(advance*logical_em))
-                delta=_round(width*tracking)*4
-                untracked_delta=width*4
+            half_em=character=='!' or character==' ' and (fmt.property(BITMAP_SPACE_PROPERTY) is not None or advance==0)
+            # Quantize half-em punctuation/spaces before stretch/tracking;
+            # the shared helper also measures uncached wrapping endpoints.
+            delta,untracked_delta=logical_advances(advance,size,stretch,tracking,half_em)
             if self.fonts[key].get('script_fallback'):hft_fallback_mode=True
             rgb=(color.red(),color.green(),color.blue());fallback=fmt.property(FONT_FALLBACK_PROPERTY) or hft_fallback_mode
             group_key=(key,em,rgb,_language_index(character)[0],tracking_percent,scale)
             if fallback or current_group!=group_key:group_number+=1
             current_group=group_key
             parts.append((pen,key,glyph,em,rgb,scale,group_number))
-            metrics.append((key,em,stretch,tracking_percent,delta,untracked_delta))
+            metrics.append((key,em,stretch,tracking_percent,delta,untracked_delta,device_font_width))
             if stretch!=100:stretched+=1
             if fmt.property(STRIKE_SHAPE_PROPERTY) in INVISIBLE_STRIKE_SHAPES:suppressed_strike+=1
             if character.isspace() or fallback:current_group=None
             pen+=delta
-            if character!=' ':alignment_pen=pen
+            if character!=' ':
+                # A continuation retains spacing for layout, but centering
+                # and right alignment measure the final visible glyph only.
+                if position==terminal:terminal_tracking=delta-untracked_delta
+                alignment_pen=pen-terminal_tracking
         if not parts:
             self.facts['processed_lines']+=1;return True
         parts,centered_alignment=self._center_cached_line(command,text,parts,metrics)
         if centered_alignment is not None:alignment_pen=centered_alignment
         parts,fitted=self._fit_saved_line(command,text,parts,metrics,alignment_pen)
         factor={'CENTER':.5,'RIGHT':1}.get(command.source.style.align,0)
+        if terminal_tracking and centered_alignment is None and not fitted and factor:
+            self.facts['continuation_tracking_aligned_lines']+=1
         if command.source.line_segments:
             # Saved frame widths already include paragraph margins; rounding
             # them to four units again changes the native alignment offset.

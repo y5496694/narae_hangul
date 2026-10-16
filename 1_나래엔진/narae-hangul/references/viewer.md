@@ -72,3 +72,6 @@ HWP/HWPX 각각 101쪽에서 보통 TTF/TTC/HFT, 작은 글자, 색상·자간·
 
 
 지원하는 본문 인라인 표의 외곽선·비트맵·기존 painter 글자와 문단 배경을 셀의 실제 경계로 자릅니다. `layout.pdf_native_text.cell_clipped_lines`, `cell_clipped_painter_lines`와 비트맵의 `layout.pdf_bitmap_text.fitted_lines` 등은 처리 수입니다. 저장된 비트맵 줄의 초과 폭도 공백/글자 간격으로 나누며 정렬의 원래 폭을 유지합니다. 새 80쪽은 전체 일치했고 별도 64쪽은 60쪽만 일치했습니다. 그림/다른 개체 클리핑과 미지원 표·장평·스타일, 실제 문서 전체 무차이는 남은 범위입니다.
+
+
+장평의 캐시된 TTF 장치 측정은 정수 LOGFONT 폭을 사용하며 `device_centered_stretched_lines`로 처리 수를 기록한다. 이어지는 줄의 끝 자간을 정렬에서 제외한 수는 `continuation_tracking_aligned_lines`, 숨은 앞 제어 슬롯과 양수 끝 자간을 처리한 수는 `nonbreaking_control_prefixes`, `positive_tracking_wrap_lines`다. 혼합/여러 줄 장치 측정·HFT/비트맵의 추가 줄바꿈·좁은 폭 표본과 새 한컴 출력 상태 차이는 남아 있으므로 최신 `6_나래뷰어/validation.json`의 범위를 확인한다.

@@ -21,6 +21,9 @@ class PdfDeviceMetricsTests(unittest.TestCase):
     def test_font_identity_is_checked_before_using_device_widths(self):
         with self.assertRaisesRegex(ValueError,'unverified-device-font'):
             installed_widths('Arial',108,'AFTER',{'head':b'wrong source font'})
+        for width in (-1,65536):
+            with self.assertRaisesRegex(ValueError,'device-metrics-bounds'):
+                installed_widths('Arial',108,'AFTER',{},width)
 
     @unittest.skipUnless(os.environ.get('NARAE_RUN_HANCOM_TESTS')=='1','requires installed Hancom/fonts')
     def test_cached_single_line_pages_in_both_formats(self):

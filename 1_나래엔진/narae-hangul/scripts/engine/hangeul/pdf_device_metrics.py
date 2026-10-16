@@ -7,6 +7,17 @@ import math
 import sys
 
 
+def logical_advances(advance,size,stretch,tracking=1.,half_em=False):
+    """Tracked/untracked logical widths, rounded before printer placement."""
+    nearest=lambda value:math.floor(value+.5+1e-9)
+    if half_em:
+        width=math.floor(size*100/8+1e-9)*stretch/100
+        return nearest(width*tracking)*4,nearest(width)*4
+    em=math.trunc(nearest(size*100)/4)
+    width=(math.floor(advance*em*stretch/100+1e-9) if stretch!=100 else nearest(advance*em))
+    return nearest(width*tracking)*4,width*4
+
+
 def centered_advances(text,logical,device):
     """Center device glyphs in logical advances, retaining endpoint carry."""
     if len(text)!=len(logical) or len(text)!=len(device):raise ValueError('device-width-count')
@@ -40,10 +51,11 @@ def tracked_advances(text,advances,spacing):
     return result
 
 
-def installed_widths(family,em,characters,tables):
+def installed_widths(family,em,characters,tables,font_width=0):
     """Return widths in 1/100 point units after verifying the selected face."""
     if sys.platform!='win32':raise ValueError('device-metrics-platform')
-    if not 0<em<=8192 or len(characters)>20000 or any(not 0<=ord(c)<65536 for c in characters):
+    if (not 0<em<=8192 or not isinstance(font_width,int) or not 0<=font_width<=65535
+        or len(characters)>20000 or any(not 0<=ord(c)<65536 for c in characters)):
         raise ValueError('device-metrics-bounds')
     import ctypes as c
     from ctypes import wintypes as w
@@ -57,7 +69,7 @@ def installed_widths(family,em,characters,tables):
     dc=gdi.CreateCompatibleDC(None);font=None;previous=None
     if not dc:raise ValueError('device-context-unavailable')
     try:
-        font=gdi.CreateFontW(-em,0,0,0,0,0,0,0,1,7,0,0,0,family)
+        font=gdi.CreateFontW(-em,font_width,0,0,0,0,0,0,1,7,0,0,0,family)
         if not font:raise ValueError('device-font-unavailable')
         previous=gdi.SelectObject(dc,font)
         if not previous or previous==c.c_void_p(-1).value:raise ValueError('device-font-selection')
