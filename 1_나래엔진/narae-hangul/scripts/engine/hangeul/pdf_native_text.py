@@ -52,7 +52,7 @@ class PdfNativeText:
         self.source_bytes=0;self.characters=0
         self.precision=6
         self.facts={'processed_lines':0,'legacy_lines':0,'glyphs':0,'fonts':[],
-                    'legacy_reasons':{},'number_precision':6,'glyph_fallbacks':{},'suppressed_strike_glyphs':0,
+                    'legacy_reasons':{},'number_precision':6,'glyph_fallbacks':{},'suppressed_strike_glyphs':0,'stretched_glyphs':0,
                     'whole_document_parity_verified':False}
 
     def _hanja_fallback(self,font,character,raw,index):
@@ -198,8 +198,8 @@ class PdfNativeText:
         if command.source.style.align=='JUSTIFY' and command.extra.get('justify_continuation'):
             return legacy('justified-continuation')
         if len(self.records)>=MAX_LINES:return legacy('line-count-bounds')
-        text=layout.text();cursor=0;pen=0;parts=[];terminal=len(text.rstrip('\u200b'))-1
-        group_number=0;current_group=None;hft_fallback_mode=False;suppressed_strike=0
+        text=layout.text();cursor=0;pen=0;alignment_pen=0;parts=[];terminal=len(text.rstrip('\u200b '))-1
+        group_number=0;current_group=None;hft_fallback_mode=False;suppressed_strike=0;stretched=0
         if len(text)+self.characters>MAX_CHARACTERS:return legacy('character-count-bounds')
         for position,character in enumerate(text):
             units=len(character.encode('utf-16le'))//2
@@ -211,7 +211,7 @@ class PdfNativeText:
             if fmt is None:return legacy('missing-format')
             font=fmt.font();size=font.pointSizeF();em=_round(size/.12)
             if not 0<em<=8192:return legacy('font-size-bounds')
-            if (font.bold() or font.italic() or font.stretch()!=100 or font.underline() or font.strikeOut()
+            if (font.bold() or font.italic() or font.underline() or font.strikeOut()
                 or fmt.property(SYNTHETIC_BOLD_PROPERTY) or fmt.property(SYNTHETIC_ITALIC_PROPERTY)
                 or fmt.property(SCRIPT_OFFSET_PROPERTY)):
                 return legacy('style-or-script-offset')
@@ -233,27 +233,47 @@ class PdfNativeText:
                     key,glyph,advance=self._sfnt(raw,character,index)
             except (OSError,ValueError,HftError,UnicodeError,KeyError,struct.error,TTLibError) as error:
                 return legacy(str(error) if isinstance(error,ValueError) else 'font-source-error')
+            stretch=font.stretch();scale=float(stretch)
+            if not 1<=stretch<=500:return legacy('stretch-bounds')
+            source=self.fonts[key]
+            if stretch!=100 and source['kind']=='ttf':
+                sfnt=source['source'];units=sfnt['head'].unitsPerEm
+                average=_round(sfnt['OS/2'].xAvgCharWidth*em/units) if 'OS/2' in sfnt else 0
+                if average<=0:return legacy('unavailable-average-character-width')
+                f32=lambda value:struct.unpack('<f',struct.pack('<f',value))[0]
+                # The requested GDI width uses logical size before printer
+                # em rounding; its PDF ratio uses the rounded base average.
+                width=_round(sfnt['OS/2'].xAvgCharWidth/units*size/.12*stretch/100)
+                scale=f32(f32(width/average)*100)
+                if scale<=0:return legacy('nonpositive-stretched-font-width')
             if character=='!' or character==' ' and (fmt.property(BITMAP_SPACE_PROPERTY) is not None or advance==0):
                 # Native text layout gives U+0021 a half-em advance even
                 # with font spaces enabled (HFT and TrueType alike).
-                delta=math.floor(size*100/2*tracking/4+1e-9)*4
-            else:delta=_round(_round(advance*_round(size*100)/4)*tracking)*4
+                # Quantize the base half-em before stretch/tracking. Reversing
+                # this order changes 11pt/50% and 18pt/95% by four HWP units.
+                delta=_round(math.floor(size*100/8+1e-9)*stretch/100*tracking)*4
+            else:
+                width=(math.floor(advance*_round(size*100)*stretch/100/4+1e-9) if stretch!=100
+                       else _round(advance*_round(size*100)/4))
+                delta=_round(width*tracking)*4
             if self.fonts[key].get('script_fallback'):hft_fallback_mode=True
             rgb=(color.red(),color.green(),color.blue());fallback=fmt.property(FONT_FALLBACK_PROPERTY) or hft_fallback_mode
-            group_key=(key,em,rgb,_language_index(character)[0],tracking_percent)
+            group_key=(key,em,rgb,_language_index(character)[0],tracking_percent,scale)
             if fallback or current_group!=group_key:group_number+=1
             current_group=group_key
-            parts.append((pen,key,glyph,em,rgb,group_number))
+            parts.append((pen,key,glyph,em,rgb,scale,group_number))
+            if stretch!=100:stretched+=1
             if fmt.property(STRIKE_SHAPE_PROPERTY) in INVISIBLE_STRIKE_SHAPES:suppressed_strike+=1
             if character.isspace() or fallback:current_group=None
             pen+=delta
+            if character!=' ':alignment_pen=pen
         if not parts:
             self.facts['processed_lines']+=1;return True
         factor={'CENTER':.5,'RIGHT':1}.get(command.source.style.align,0)
-        alignment=(math.floor(command.rect[2]*100/4+1e-9)*4-pen)*factor
+        alignment=(math.floor(command.rect[2]*100/4+1e-9)*4-alignment_pen)*factor
         x=printer_pixel(command.rect[0]);line=command.extra['line'];offset=line.get('y_pt',0)
         y=_round((printer_pixel(command.rect[1]-offset)*12+_round(offset*100)+_round(line['baseline_pt']*100))/12)
-        glyphs=[(key,glyph,em,x+_round((alignment+start)/12),y,color,group) for start,key,glyph,em,color,group in parts]
+        glyphs=[(key,glyph,em,x+_round((alignment+start)/12),y,color,scale,group) for start,key,glyph,em,color,scale,group in parts]
         marker=MARKER_PREFIX+len(self.records).to_bytes(6,'big')
         self.records[marker]=(glyphs,(self.owner._pdf_page_width,self.owner._pdf_page_height),self.precision)
         image=QImage(marker,4,1,12,QImage.Format.Format_RGB888).copy()
@@ -264,6 +284,7 @@ class PdfNativeText:
         finally:painter.restore()
         self.characters+=len(parts);self.facts['processed_lines']+=1;self.facts['glyphs']+=len(parts)
         self.facts['suppressed_strike_glyphs']+=suppressed_strike
+        self.facts['stretched_glyphs']+=stretched
         return True
 
     def finish(self,path):
@@ -396,7 +417,7 @@ class PdfNativeText:
                         sx=round(f32(math.floor(pw)/printer_pixel(pw)),precision);sy=round(f32(math.floor(ph)/printer_pixel(ph)),precision)
                         relative=_multiply((sx,0,0,-sy,0,math.floor(ph)),_inverse(parent))
                         program=['q',_numbers(relative)+' cm','BT','0 Tr']
-                        for key,glyph,em,x,y,color,group in glyphs:
+                        for key,glyph,em,x,y,color,scale,group in glyphs:
                             build_fonts(key)
                             for resource,ref in built[key]:
                                 if name(resource) in font_resources and font_resources.get(name(resource))!=ref:
@@ -408,12 +429,13 @@ class PdfNativeText:
                             if not groups or groups[-1][0][-1]!=item[-1]:groups.append([])
                             groups[-1].append(item)
                         for group in groups:
-                            key,glyph,em,x,y,color,_=group[0]
+                            key,glyph,em,x,y,color,scale,_=group[0]
                             resource,_,_=locations[key,glyph]
-                            program.extend([_numbers([v/255 for v in color])+' rg',f'{resource} {em} Tf',f'1 0 0 -1 {x} {y} Tm'])
+                            program.extend([_numbers([v/255 for v in color])+' rg',f'{resource} {em} Tf',
+                                _numbers([round(scale,precision)])+' Tz',f'1 0 0 -1 {x} {y} Tm'])
                             items=[]
                             for offset,item in enumerate(group):
-                                key,glyph,_,gx,_,_,_=item
+                                key,glyph,_,gx,_,_,_,_=item
                                 current_resource,code,digits=locations[key,glyph]
                                 if current_resource!=resource:
                                     # Type3's 256-code boundary starts a new text
@@ -423,7 +445,13 @@ class PdfNativeText:
                                 items.append(f'<{code:0{digits}X}>')
                                 if offset+1<len(group) and locations[group[offset+1][0],group[offset+1][1]][0]==resource:
                                     width=self.fonts[key]['glyphs'][glyph][1]
-                                    adjustment=_round((width-(group[offset+1][3]-gx)*1000/em)*10)/10
+                                    delta=group[offset+1][3]-gx
+                                    natural=struct.unpack('<f',struct.pack('<f',width*em/1000))[0]
+                                    # Native tests equality before horizontal
+                                    # scaling. A matching device advance skips
+                                    # correction even when Tz changes its ink.
+                                    adjustment=(_round((width-delta*1000/em/(scale/100))*10)/10
+                                        if delta and delta!=natural else 0)
                                     if adjustment:items.append(f'{adjustment:.1f}')
                             if items:program.append('['+' '.join(items)+'] TJ')
                         program.extend(['ET','Q']);replacement=DecodedStreamObject()
