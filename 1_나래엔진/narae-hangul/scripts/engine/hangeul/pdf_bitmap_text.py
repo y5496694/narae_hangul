@@ -38,6 +38,7 @@ def draw_line(owner,painter,command,layout):
     if command.source.style.align=='JUSTIFY' and command.extra.get('justify_continuation'):
         return legacy('justified-continuation')
     line=layout.lineAt(0);cursor=0;pen=0;groups=[];group=None;remaining=set()
+    characters=[];advances=[];untracked=[];fitting=None
     text=layout.text();last_visible=len(text.rstrip('\u200b'))-1
     for character_index,character in enumerate(text):
         length=len(character.encode('utf-16le'))//2
@@ -60,7 +61,7 @@ def draw_line(owner,painter,command,layout):
         if tracking<=0:return legacy('nonpositive-tracking')
         space=character.isspace();key=(family,size,color.rgba(),script,tracking_percent)
         if group is None or (not space and key!=group['key']):
-            group={'key':key,'start':pen,'parts':[],'em':em,'bearing':None}
+            group={'key':key,'start':pen,'parts':[],'part_indices':[],'first':len(characters),'em':em,'bearing':None}
             groups.append(group)
         terminal=character_index==last_visible and not command.extra.get('justify_continuation')
         glyph_tracking=1 if terminal else tracking
@@ -71,12 +72,14 @@ def draw_line(owner,painter,command,layout):
             if group['bearing'] is None:
                 group['bearing']=math.floor(glyph.bounds[0]*em/glyph.units_per_em)
             group['parts'].append((pen,left,top,ink))
+            group['part_indices'].append(len(characters))
             # Native font measurements occupy a 4-HWPUNIT (.04pt) grid.
             # Device widths are differences of rounded cumulative *absolute*
             # logical positions, rather than individually rounded advances.
             advance_hwp=owner._hft_resolver.bitmap_advance(family,character,_round(size*100))
             if advance_hwp is None:return legacy('unavailable-bitmap-advance')
             delta=_round(_round(advance_hwp/4)*glyph_tracking)*4
+            untracked_delta=_round(advance_hwp/4)*4
         else:
             fixed=fmt.property(BITMAP_SPACE_PROPERTY)
             if fixed is not None:
@@ -84,16 +87,32 @@ def draw_line(owner,painter,command,layout):
                 # explicit font spaces use the font's normal rounding instead.
                 target=size*100/2*glyph_tracking
                 delta=math.floor(target/4+1e-9)*4
+                untracked_delta=math.floor(size*100/8+1e-9)*4
             else:
                 advance_hwp=owner._hft_resolver.bitmap_advance(family,character,_round(size*100))
                 if advance_hwp is None:return legacy('unavailable-bitmap-advance')
                 delta=_round(_round(advance_hwp/4)*glyph_tracking)*4
+                untracked_delta=_round(advance_hwp/4)*4
             if group['bearing'] is None:group['bearing']=0
-        pen+=delta;group['end']=pen;cursor+=length
+        characters.append(character);advances.append(delta);untracked.append(untracked_delta)
+        pen+=delta;group['end']=pen;group['last']=len(characters);cursor+=length
         if space:group=None
+    if command.source.line_segments:
+        from .pdf_line_fit import condense_line
+        scope=command.source.scope;all_gaps=command.source.style.line_wrap=='SQUEEZE'
+        while scope:
+            all_gaps=all_gaps or scope.get('line_wrap','BREAK')!='BREAK';scope=scope.get('parent')
+        fitting=condense_line(''.join(characters),advances,untracked,round(command.rect[2]*100),all_gaps)
+        if fitting is not None:
+            positions=[0]
+            for advance in fitting['advances']:positions.append(positions[-1]+advance)
+            for group in groups:
+                group['start']=positions[group['first']];group['end']=positions[group['last']]
+                group['parts']=[(positions[index],*part[1:]) for index,part in zip(group['part_indices'],group['parts'])]
+            pen=positions[-1]
     factor={'CENTER':.5,'RIGHT':1}.get(command.source.style.align,0)
-    width_hwp=math.floor(command.rect[2]*100/4+1e-9)*4
-    alignment=(width_hwp-pen)*factor
+    width_hwp=round(command.rect[2]*100) if command.source.line_segments else math.floor(command.rect[2]*100/4+1e-9)*4
+    alignment=0 if fitting is not None else math.trunc((width_hwp-pen)*factor) if command.source.line_segments else (width_hwp-pen)*factor
     plans=[];total_pixels=0
     for group in groups:
         if not group['parts']:continue
@@ -135,4 +154,6 @@ def draw_line(owner,painter,command,layout):
                                       (owner._pdf_page_width,owner._pdf_page_height))
                     painter.drawImage(QRectF(*(v/.75 for v in frame['rect'])),piece);chunks+=1
     finally:painter.restore()
-    return {'handled':True,'groups':len(plans),'image_chunks':chunks,'remaining':sorted(remaining)}
+    return {'handled':True,'groups':len(plans),'image_chunks':chunks,'remaining':sorted(remaining),
+        'fitted_lines':int(fitting is not None),'condensed_word_gaps':fitting['word_gaps'] if fitting and fitting['word_adjustment'] else 0,
+        'condensed_character_gaps':fitting['character_gaps'] if fitting and fitting['character_adjustment'] else 0}

@@ -47,7 +47,7 @@ def _numbers(values):return ' '.join(f'{value:.15f}'.rstrip('0').rstrip('.') if 
 class PdfNativeText:
     def __init__(self,owner):
         self.owner=owner
-        self.hft_sources={};self.sfnt_sources={};self.fonts={};self.records={};self.path_records={}
+        self.hft_sources={};self.sfnt_sources={};self.fonts={};self.records={};self.path_records={};self.record_clips={}
         self.collection_index=None
         self.script_defaults={};self.requested_fonts={};self.hanja_fonts={}
         self.source_bytes=0;self.characters=0;self.device_widths={}
@@ -55,7 +55,7 @@ class PdfNativeText:
         self.facts={'processed_lines':0,'legacy_lines':0,'glyphs':0,'fonts':[],
                     'legacy_reasons':{},'number_precision':6,'glyph_fallbacks':{},'suppressed_strike_glyphs':0,'stretched_glyphs':0,
                     'device_centered_lines':0,'device_metric_fallbacks':{},'fitted_lines':0,
-                    'condensed_word_gaps':0,'condensed_character_gaps':0,'whole_document_parity_verified':False}
+                    'condensed_word_gaps':0,'condensed_character_gaps':0,'cell_clipped_lines':0,'cell_clipped_painter_lines':0,'whole_document_parity_verified':False}
 
     def _center_cached_line(self,command,text,parts,metrics):
         # A saved, single-line paragraph uses device-centered widths. Uncached
@@ -375,6 +375,10 @@ class PdfNativeText:
             glyphs=[(key,glyph,em,x+_round((alignment+start)/12),y,color,scale,group) for start,key,glyph,em,color,scale,group in parts]
         marker=MARKER_PREFIX+len(self.records).to_bytes(6,'big')
         self.records[marker]=(glyphs,(self.owner._pdf_page_width,self.owner._pdf_page_height),self.precision)
+        cell=command.extra.get('table_text_cell')
+        if cell is not None and origin is not None and self.owner._active_pdf_grids.get(origin[0]):
+            self.record_clips[marker]=(self.owner._active_pdf_grids[origin[0]],cell)
+            self.facts['cell_clipped_lines']+=1
         image=QImage(marker,4,1,12,QImage.Format.Format_RGB888).copy()
         painter.save()
         try:
@@ -529,7 +533,11 @@ class PdfNativeText:
                             raise ValueError('Unexpected PDF text placement block')
                         if path_program is not None:
                             replacement=DecodedStreamObject()
-                            replacement.set_data(('q\n'+_numbers(_inverse(parent))+' cm\n'+path_program+'\nQ\n').encode('ascii'))
+                            # PDF device matrices use single precision. Invert
+                            # that matrix so its product is an actual identity,
+                            # rather than a nearby scale at antialiased corners.
+                            device_parent=tuple(struct.unpack('<f',struct.pack('<f',v))[0] for v in parent)
+                            replacement.set_data(('q\n'+_numbers(_inverse(device_parent))+' cm\n'+path_program+'\nQ\n').encode('ascii'))
                             chunk=ContentStream(replacement,writer).operations
                             for values,operator in chunk:
                                 if operator==b'cm':
@@ -539,7 +547,13 @@ class PdfNativeText:
                         glyphs,(pw,ph),precision=record;f32=lambda value:struct.unpack('<f',struct.pack('<f',value))[0]
                         sx=round(f32(math.floor(pw)/printer_pixel(pw)),precision);sy=round(f32(math.floor(ph)/printer_pixel(ph)),precision)
                         relative=_multiply((sx,0,0,-sy,0,math.floor(ph)),_inverse(parent))
-                        program=['q',_numbers(relative)+' cm','BT','0 Tr']
+                        clip=self.record_clips.get(marker)
+                        if clip:
+                            from .pdf_table_frames import clip_program
+                            # Keep the original glyph CTM untouched. Resetting
+                            # and rebuilding it changes unhinted HFT edges.
+                            program=['q',clip_program(*clip,_inverse(parent)),_numbers(relative)+' cm','BT','0 Tr']
+                        else:program=['q',_numbers(relative)+' cm','BT','0 Tr']
                         for key,glyph,em,x,y,color,scale,group in glyphs:
                             build_fonts(key)
                             for resource,ref in built[key]:

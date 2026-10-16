@@ -1,7 +1,7 @@
 {
-  "date_kst": "2026-10-16T16:34:55+09:00",
+  "date_kst": "2026-10-16T17:28:54+09:00",
   "viewer_version": "0.1.0",
-  "base_commit": "b3db320c0b6c21dc7b32ca9c15ea72c7bd42af07",
+  "base_commit": "763e5b04350bac6f9b9177094cb0ae67b95cc20d",
   "dpi": 96,
   "pixel_tolerance": 0,
   "files": 7,
@@ -51,7 +51,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.0,
-      "changed_fraction_max": 0.015473672867360821,
+      "changed_fraction_max": 0.015325502768086854,
       "errors": [],
       "independent_identical_pages": 1
     },
@@ -66,7 +66,7 @@
       "independent_match": false,
       "page_count_match": true,
       "changed_fraction_min": 0.054034941203410604,
-      "changed_fraction_max": 0.14841480443791896,
+      "changed_fraction_max": 0.14713852108280912,
       "errors": [],
       "independent_identical_pages": 0
     },
@@ -169,11 +169,11 @@
       "skipped": 0
     },
     "appearance_native": {
-      "run": 91,
+      "run": 94,
       "failures": 0,
       "errors": 0,
       "skipped": 0,
-      "scope": "89 distinct historical final passes through b3db320 plus 2 cached-tracking tests; current tracking/line-fit/mixed/grid/cached groups finally passed 20 tests, with one native grid-context failure preserved before rerun; not a fresh full 91-test run",
+      "scope": "91 distinct historical final passes through 763e5b0 plus 3 cell/bitmap tests; current seven related groups freshly passed 26 tests, not a fresh full 94-test run",
       "whole_group_fresh_pass_claimed": false,
       "component_log_sha256": [
         "4d77545a0d5a2651fb75b6e29770b2fa3354b7c8215f10e5b0b82976e685f1b2",
@@ -196,7 +196,14 @@
         "2c6b3bc96374e885f73f9db2d257bddbec912351df38a6aed770e4401d7541d4",
         "d11541424aae63bc7b62c388ef6dc343bac8309f73e1846c91b46900b2091713",
         "6237840b5f1d79fe062b7f0a509a6a00ea40149b5e3dd35afbd93ab224558913",
-        "9742ebae5803260cfc5c6af0724a75e0f31ea1d492a7a7ab8024ce616d126402"
+        "9742ebae5803260cfc5c6af0724a75e0f31ea1d492a7a7ab8024ce616d126402",
+        "ffed38e3ba9097462742230da669a9653a7ae118e776e83847c6bcc901031bd1",
+        "aa6c660d32b73b3cd01537eac6f641aba69dbc836623d948c85f69a02d1f55f1",
+        "de189802661a5d861626ae699767a15b39cf09b6fef3c48f0dd0121513b2dce3",
+        "2740833f1ebe3c80c159f2adb25106f3e9831c4ecda39ce9a77304581774bcb0",
+        "c63f7bfb5c709e138b58f6532aae03bd43007e95761755944c379c6f5614230c",
+        "b49a481a23fe14d9dfee9e1280bd266be1a46ca57f09dae357bc92d0dd5249ff",
+        "aaa1939eb36a189c22b7e85bbd1d4cf2448445f67b1c85b0612e27f201edc535"
       ]
     },
     "full_native_rerun": {
@@ -222,12 +229,12 @@
       "whole_suite_fresh_pass_claimed": false
     },
     "repository_portable": {
-      "run": 112,
-      "passed": 63,
-      "skipped": 49,
+      "run": 119,
+      "passed": 66,
+      "skipped": 53,
       "failures": 0,
       "errors": 0,
-      "log_sha256": "938b87185b18c8b21f7fb25da6bbcdc9d8806ce955e0cae003bd50cc7ec20a29"
+      "log_sha256": "20913e9bf6c04b5ac40cff801654a29ebc30deaf3780ca44cf9f64cecee38ce4"
     },
     "cold_bitmap_cache": {
       "concurrent_workers": 4,
@@ -259,7 +266,8 @@
       "dpi": 96,
       "rgb_tolerance": 0,
       "alignment": false,
-      "resizing": false
+      "resizing": false,
+      "current_native_log_sha256": "aa6c660d32b73b3cd01537eac6f641aba69dbc836623d948c85f69a02d1f55f1"
     },
     "installed_skill_current": {
       "pair_whole_pages": 24,
@@ -424,7 +432,7 @@
       "rgb_tolerance": 0,
       "alignment": false,
       "resizing": false,
-      "native_log_sha256": "6237840b5f1d79fe062b7f0a509a6a00ea40149b5e3dd35afbd93ab224558913",
+      "native_log_sha256": "b49a481a23fe14d9dfee9e1280bd266be1a46ca57f09dae357bc92d0dd5249ff",
       "scope": "Prior 88 grid pages plus 40 complete merged-grid pages; uniform SOLID/NONE borders, opaque fill, inline body tables",
       "border_width_native_conversion_labels": 28,
       "precision_pages_exact": 4,
@@ -474,14 +482,14 @@
       "rgb_tolerance": 0,
       "alignment": false,
       "resizing": false,
-      "log_sha256": "9742ebae5803260cfc5c6af0724a75e0f31ea1d492a7a7ab8024ce616d126402",
+      "log_sha256": "aaa1939eb36a189c22b7e85bbd1d4cf2448445f67b1c85b0612e27f201edc535",
       "visual_qa": "Whole-page cached multifont and fully merged native/independent image pairs inspected; RGB differences zero"
     },
     "normal_font_regression_current": {
       "whole_pages_exact": 202,
       "precision_pages_exact": 4,
       "references": "Existing native PDF references reused without replacement",
-      "log_sha256": "b455750d49a0a8b9d3e27621ff7d3bfbe92a6d52bb3af749f0ce156f0ab6730a"
+      "log_sha256": "bbd0a2f74263bbad454da50013dbb7d30b47b5be78edcf451a268f65c9c53b6e"
     },
     "mixed_table_border_pages": {
       "run": 2,
@@ -496,7 +504,7 @@
       "rgb_tolerance": 0,
       "alignment": false,
       "resizing": false,
-      "native_log_sha256": "d11541424aae63bc7b62c388ef6dc343bac8309f73e1846c91b46900b2091713",
+      "native_log_sha256": "c63f7bfb5c709e138b58f6532aae03bd43007e95761755944c379c6f5614230c",
       "scope": "12 conflicting interior-edge cases, 24 outer-edge cases, 4 merged/fill cases; solid colors, thickness, NONE, reversed order and opaque fills",
       "visual_qa": "Whole page and junction images for outer-edge, merged and opaque-fill cases inspected; all three native/independent pairs exact"
     },
@@ -517,7 +525,7 @@
       "rgb_tolerance": 0,
       "alignment": false,
       "resizing": false,
-      "log_sha256": "2c6b3bc96374e885f73f9db2d257bddbec912351df38a6aed770e4401d7541d4",
+      "log_sha256": "2740833f1ebe3c80c159f2adb25106f3e9831c4ecda39ce9a77304581774bcb0",
       "scope": "10 width cases, 4 fonts/4 size-tracking-stretch cases, Arial cached device widths, 9 spaces/punctuation/no-space cases, 3 mixed-font alignments, 2 font-space cases, 4 wrap-mode cases and 1 smaller leading-space case per scope and format"
     },
     "cached_pdf_tracking": {
@@ -537,8 +545,25 @@
       "rgb_tolerance": 0,
       "alignment": false,
       "resizing": false,
-      "log_sha256": "a19326232198eb1604b4b4b0a8170e3029367dadd2035bde34b8fc6f211d0c39",
+      "log_sha256": "de189802661a5d861626ae699767a15b39cf09b6fef3c48f0dd0121513b2dce3",
       "scope": "3 TTF families, 5 size/tracking/alignment combinations, 2 widths; 9 fractional-width alignment cases"
+    },
+    "pdf_cell_clipping": {
+      "run": 3,
+      "passed": 3,
+      "whole_pages_exact": 80,
+      "outline_cell_pages": 32,
+      "bitmap_cell_pages": 16,
+      "bitmap_fit_body_cell_pages": 32,
+      "formats": [
+        "hwp",
+        "hwpx"
+      ],
+      "dpi": 96,
+      "rgb_tolerance": 0,
+      "alignment": false,
+      "resizing": false,
+      "log_sha256": "ffed38e3ba9097462742230da669a9653a7ae118e776e83847c6bcc901031bd1"
     }
   },
   "rea": {
@@ -1368,11 +1393,11 @@
     }
   },
   "source_sha256": {
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "7249bf3bbd8b190aaf089845ca7cc050cc9aa66800a12fda3cedb606cdb193e4",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/source_layout.py": "2d659c0648ee2763a4177fe1c9fc1ce17147a18353a39032eb75af4e28562520",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/viewer.py": "52bbbdec290189059a89402171f073276d8bdde1ecba059f76149b837602759c",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "ac8024577c0d112f4da78005fc12fc01fb8617d30022e0c0138056d3064d4a96",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_automation_bridge.py": "2a926644ab598b2ae037c0af2e6f71a0350e53ff4e18afe56989ae64a5c7b534",
     "tests/test_viewer.py": "fe32e288cae3778ca10666d93d9772fed9ee05cfdb9231f0cc1bde140b250a44",
-    "2_나래스킬/narae-viewer/SKILL.md": "2b7ea13c907143d9fb2e7bd38b4f28aff2590eff18ea3f24f55fa2d70e780564",
+    "2_나래스킬/narae-viewer/SKILL.md": "465fd5fcf57c511dddbaddc549f74cfc0c7321cb25fab4f96a0d02b7451e47b4",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/formats.py": "29a855dd7961ac405322d02afc33496066fccdc160992c62406f9fea1cb6063a",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/picture_effects.py": "c694c4fbbe40d7c508f4abaa15e5d7a9dc876bd0d3d688d2c085fb4763ec4e3f",
     "tests/test_picture_effects.py": "d5142f67c124fcf22bdd8140704bf13e2854b4536521a069c9ef88ed55bd44c9",
@@ -1384,25 +1409,27 @@
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap.py": "826f68d3246fa10c9eb0ca6b854feca847b7a90d4dd9a176289c59b0f48d20fd",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/windows_bitmap.cs": "5e2216bbf741981dd31bfa44663664a57a8ce539d8d39f502b5215de924e6e8f",
     "tests/test_pdf_bitmap.py": "66cf5a51c50f32f4cd5e7180c06ec1ea770ee8eec380e8c1c154f216bcd8c1c1",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "24929db32de1b04976a3c9bfce1543dca725138ca767a187697cfc262ae3e66f",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "e3556eae0f349f39fab2dd25ba406db9604c48a68230e9065a99b1d78d480e9d",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_bitmap_text.py": "7c0c085dc6005b94c5bf6de0b52463164814c9964051b61640ca25e2fdd93824",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_native_text.py": "b580704c5c117465e9f0c1bca2be5f922ddfe98a706feceaf46afbcd44bf2e1e",
     "tests/test_pdf_native_text.py": "1a71fa6835520e9333f920914180835e7d3b5002802cfd76f351ab4821fe3631",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwp_native.py": "89e08126b83cc8cdd630c35afd58db02318de1dc41b820d45175cf9de4b85194",
     "tests/test_text_decorations.py": "2b3fed445c5a53b5ef553dfef9ef5beedb086e2588959885b8c0420ba82162ac",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/hwpx_native.py": "564aa217a166bdcd5ed814a4c6405159b947aa8a17acb81a3ad773a159b2eec1",
     "tests/test_inline_spacing.py": "61b3de9dddf1e7517475f0b5917dfb23b338b3211c8152c827573938eb6172f2",
     "tests/test_pdf_stretch.py": "dcf48403fa663ef49a46933d395ef3984e088fd9eabe1617bc9f0a4fad24e0c6",
-    "1_나래엔진/narae-hangul/references/viewer.md": "4d59fe5106ac687ef17acbd8b83fc84d537c958b6b5bb378046705e42932122f",
-    "6_나래뷰어/README.md": "b8e4ad8e4aa8f5d9b91baaa984ffbf825efb8f26a4f8119b2fd55964a7f5568a",
-    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "816ce876463a169877f3ad052113ed44c5ef35d3cdf5ca815a067018b4d57693",
+    "1_나래엔진/narae-hangul/references/viewer.md": "7c92528a23b1a6e5932c62c7e33983b8adc64cf46f34cec72f4e7e4a9cf846ee",
+    "6_나래뷰어/README.md": "df71b89683e2bdac8fe781d54eabc7e46bc42e79ba1a06b37e68276a2821b4e7",
+    "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_table_frames.py": "478bd0411db359e3a73021da9a81d736b936f018a1d87efabb1505e3015f7450",
     "tests/test_pdf_table_frames.py": "1c0d7df362ab78952b2e33b9ab5c48aeb43d62b5ae6d783e08f2c9eeba548718",
-    "5_유틸리티/hancom_rea_findings.md": "c4b5a66f03d34f5425ae78d27d14244d134ead5ef85d1b1b116ef390fbc178a8",
+    "5_유틸리티/hancom_rea_findings.md": "ab45c8f8e848c1e3225750ec4bed3bf2a0dec6673635b9c691393a3aa399cd2f",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_device_metrics.py": "8cb2ff0c24892934ae47d3c516cdb4557f8312d22bc049c4f1e48090d4adf60c",
     "tests/test_pdf_device_metrics.py": "007a971d27e5cf2687cc3966a0d7a745cbd01b0c3658a7f4cdc85cde880bd954",
     "tests/test_pdf_mixed_table_frames.py": "f204eee622dcdb6e717c55623fe39bf9d8ca2c4b7383b56593376191ac4ef130",
     "1_나래엔진/narae-hangul/scripts/engine/hangeul/pdf_line_fit.py": "b0c6a4d3131c7d510127993c6620dcbb4965f85c2a00fc4da8ac69959d15fdc3",
-    "tests/test_pdf_line_fit.py": "0cc1b60dbb3f1f1ae208dda38f4fd1fb7a694f7cd65f13e7ca51605999dc82f7",
-    "tests/test_pdf_cached_tracking.py": "5c68ce6d0d0a22ae29cddf16888b3bcd341bb3251c6021f8456c5d0add613054"
+    "tests/test_pdf_line_fit.py": "3d775fe5f7ad1aabbf0d1dd49cd19c9193a7038588a22fe138cce204fd1463e7",
+    "tests/test_pdf_cached_tracking.py": "5c68ce6d0d0a22ae29cddf16888b3bcd341bb3251c6021f8456c5d0add613054",
+    "tests/test_pdf_cell_clip.py": "160d7b8c5a2c7d2e4ade6c7a74f4c95fe56122a2eecc7f5a908528eb558d1c75",
+    "tests/test_hancom.py": "c3fcf73209b52ad3afe4f8d1f1f753b6b8ca11eceea5db714899299194ab5058"
   },
   "cropped_picture_flip": {
     "fixture": "generated four-color PNG cropped asymmetrically on both axes",
@@ -2681,6 +2708,211 @@
       "native uncached screen/print context can still vary despite metadata-after-print",
       "other styles and DPI combinations",
       "whole actual documents remain different"
+    ]
+  },
+  "current_validation_stage": "pdf_cell_clipping",
+  "pdf_cell_clipping": {
+    "behavior": "Clip direct cell text and paragraph backgrounds at the prepared physical cell rectangle, including outline/bitmap/painter paths. Preserve original glyph CTMs; transform clip points into the current parent coordinate system. Invert the single-precision PDF device parent for physical grid fills/strokes.",
+    "scope": "Prepared complete single-page inline body grids with SOLID/NONE cell borders; text clips use cell edges rather than padding/pen extents",
+    "independent_runtime": "Original source geometry, installed fonts and independent PDF paths only; no Hancom runtime or reference PDF in renderer",
+    "bitmap_fit": "Extend the REA-observed common saved-line word/character overflow rule to bitmap buffers, reconstructing group starts/ends and glyph placements; extension verified with native bitmap body/cell outputs",
+    "rea_basis": {
+      "evidence_id": "ev_410b4184fe4004f62f6635377deb1a4abc4621f18f7f01ffdcc21fd71edae3e4",
+      "messages": 80,
+      "truncated": false
+    },
+    "installed_binary_sha256": {
+      "HncBaseDraw.dll": "52734f0b0fc92cf890fc7085708fb72de62f67c0b5e0aa5bf668db7646199fb1",
+      "HNCE2PTP.dll": "42b1eaf97af05ff3662ffa23272b9c19ea5948345c8363969b28b601b741c458",
+      "HncFontLib.dll": "bc7300311c5bb367bc5eaf211c5c92744d372d28ff008feb83ba650cd5e1d232",
+      "HwpApp.dll": "0aa051839026fe803f5ec24965ac112a8e54aecf0da0132f91e20483078429d1",
+      "HwpAppModule.dll": "3a7b930af2cb467b66775cef5f793aecab28cba2b58596226f04bb5512489bf3"
+    },
+    "real_pixels": {
+      "report-hwp": {
+        "before": 1755448,
+        "after": 1755338,
+        "exact": 1,
+        "max_fraction": 0.18037913585402102,
+        "reference_sha256": "59d00f031684f77c3c17323686df5ed18ceac1c800494fc3ad3ae45fd348c0a5"
+      },
+      "report-hwpx": {
+        "before": 1755448,
+        "after": 1755338,
+        "exact": 1,
+        "max_fraction": 0.18037913585402102,
+        "reference_sha256": "81625234203ea5fce32ce098057125140a11f5c51c40dc9b461f16dbe8b1a9bd"
+      },
+      "trip-hwpx": {
+        "before": 13785,
+        "after": 13653,
+        "exact": 1,
+        "max_fraction": 0.015325502768086854,
+        "reference_sha256": "e4bf914e2b4b9ea1d6410c37e69cd32a4a2c2ed404002d5d05e31c043608bcdf"
+      },
+      "form-hwp": {
+        "before": 610507,
+        "after": 609370,
+        "exact": 0,
+        "max_fraction": 0.14713852108280912,
+        "reference_sha256": "b2cc8c977f1d211cc755ca3742171c91ade919377937be0830fbfb9639d840cb"
+      },
+      "guide-hwp": {
+        "before": 3890365,
+        "after": 3890365,
+        "exact": 2,
+        "max_fraction": 0.20485189725077116,
+        "reference_sha256": "4043d88876e1342b1873f83bf7960983f21504f576c0e7cb701b9f62fe35124d"
+      },
+      "lesson-hwp": {
+        "before": 870054,
+        "after": 869883,
+        "exact": 0,
+        "max_fraction": 0.22941782620994355,
+        "reference_sha256": "3aed17b54f71f25cd6f795cfe03dd6db1e8810c3ed2d8dd5848aa80452e00832"
+      },
+      "minutes-hwpx": {
+        "before": 172806,
+        "after": 172806,
+        "exact": 0,
+        "max_fraction": 0.11340625098218816,
+        "reference_sha256": "c6389ce79c6a1cebf148ef78f14dd94d3bb12839fb57bec6b6142e3b840fbed5"
+      }
+    },
+    "real_diagnostics": {
+      "report-hwp": {
+        "native_cell_clipped_lines": 48,
+        "painter_cell_clipped_lines": 10,
+        "bitmap_fitted_lines": 0,
+        "bitmap_condensed_word_gaps": 0,
+        "bitmap_condensed_character_gaps": 0
+      },
+      "report-hwpx": {
+        "native_cell_clipped_lines": 48,
+        "painter_cell_clipped_lines": 10,
+        "bitmap_fitted_lines": 0,
+        "bitmap_condensed_word_gaps": 0,
+        "bitmap_condensed_character_gaps": 0
+      },
+      "trip-hwpx": {
+        "native_cell_clipped_lines": 19,
+        "painter_cell_clipped_lines": 0,
+        "bitmap_fitted_lines": 0,
+        "bitmap_condensed_word_gaps": 0,
+        "bitmap_condensed_character_gaps": 0
+      },
+      "form-hwp": {
+        "native_cell_clipped_lines": 17,
+        "painter_cell_clipped_lines": 46,
+        "bitmap_fitted_lines": 0,
+        "bitmap_condensed_word_gaps": 0,
+        "bitmap_condensed_character_gaps": 0
+      },
+      "guide-hwp": {
+        "native_cell_clipped_lines": 20,
+        "painter_cell_clipped_lines": 50,
+        "bitmap_fitted_lines": 0,
+        "bitmap_condensed_word_gaps": 0,
+        "bitmap_condensed_character_gaps": 0
+      },
+      "lesson-hwp": {
+        "native_cell_clipped_lines": 16,
+        "painter_cell_clipped_lines": 51,
+        "bitmap_fitted_lines": 0,
+        "bitmap_condensed_word_gaps": 0,
+        "bitmap_condensed_character_gaps": 0
+      },
+      "minutes-hwpx": {
+        "native_cell_clipped_lines": 9,
+        "painter_cell_clipped_lines": 4,
+        "bitmap_fitted_lines": 0,
+        "bitmap_condensed_word_gaps": 0,
+        "bitmap_condensed_character_gaps": 0
+      }
+    },
+    "real_pages_exact": 5,
+    "real_documents_exact": 0,
+    "real_pages_checked": 124,
+    "native_references_reused_unchanged": true,
+    "corpus_log_sha256": "5d34c2a57d9b7c9e0c66b2d21d7ae006fa5191e232339511597553184bef2202",
+    "extra_probe": {
+      "pages": 64,
+      "previous_exact": 55,
+      "current_exact": 60,
+      "remaining": 4,
+      "scope": "Four cached stretched Arial pages retain 81/184 pixels per body/cell pair; 32 cell edge pages are a subset of the new 80",
+      "log_sha256": "c2b72432a046d51257a785f7170290f58c09297503b1ef4209388150c13c5a9b"
+    },
+    "intermediate_logs_sha256": {
+      "cell-clip-production-extra64-first.log": "0dafc03d4b6a24d2375741b061a1362bf5a2d27919ba9239b9d5119a91d35787",
+      "cell-clip-native-first.log": "54f2ebd98bb6787932c35d431516ea25d9437d702ace68389eefa927f2e77dde",
+      "cell-clip-edges-first.log": "bfd35e422d990f6cb599d323cada2d99253281857f0ff8480dcafe851eb68ae6",
+      "cell-clip-native-third.log": "15b575d4e84c138aba558908612393f6155db09574b72dc842a7bc4c3d8d690f"
+    },
+    "visual_qa": {
+      "whole_pages": 3,
+      "scope": "Native/independent whole pages and glyph/border crops inspected, including negative bearings and the former one-pixel red corner"
+    },
+    "remaining": [
+      "unsupported/split/floating/nested grids",
+      "picture/other object clipping",
+      "other bitmap tracking/space/style combinations",
+      "cached stretched/mixed/multiline font metrics",
+      "native print-context variation",
+      "actual full-document parity remains unmet"
+    ]
+  },
+  "hancom_process_lifetime": {
+    "reason": "Closing the owned document alone left hidden automation servers alive across jobs.",
+    "behavior": "Hold a process handle for servers created by this Python process. Share ownership between nested bridges. At the last close, verify executable identity, every native top-level window, the single empty pathless document, and request Quit only for the owned hidden server. Never terminate a process in the bridge.",
+    "preserved": [
+      "pre-existing applications",
+      "visible windows",
+      "other native document windows even if COM collections report one",
+      "other or nonempty documents",
+      "unconfirmed document close"
+    ],
+    "status_attribute": "HancomBridge.process_retirement",
+    "verification": {
+      "test_module": "tests/test_hancom.py",
+      "run": 25,
+      "passed": 25,
+      "skipped": 0,
+      "native_tests": 17,
+      "portable_tests": 8,
+      "sequential_lifetime_jobs": 3,
+      "each_owned_process_exit_verified": true,
+      "nested_document_preservation_verified": true,
+      "log_sha256": "67d939447406f0b20c26d1602ab7fe59de75fbf81216a867fdbbf0940f5f9c72"
+    },
+    "portable_guards": {
+      "tests": 3,
+      "conditions": [
+        "unowned process",
+        "visible window",
+        "extra OS window with scoped COM collection",
+        "other document",
+        "nonempty document",
+        "saved path",
+        "failed document close",
+        "nested bridge ownership"
+      ]
+    },
+    "intermediate_failures": [
+      {
+        "reason": "First guard counted WPF infrastructure notification windows as documents and preserved its own empty servers.",
+        "log_sha256": "b9ab1724e6f2a6a8ecb84cc7fd675416c70a97b6e5f27697d2228b28f6164f85"
+      },
+      {
+        "reason": "Native lifetime test encountered an application reused by DispatchEx. The test now preserves it and reports a skip rather than claiming ownership; the final clean run had no skips.",
+        "log_sha256": "53f8acb8aab6a99cd71eb2d6fc06909c30223d6b0a90021be371869c0a96fabc"
+      }
+    ],
+    "independent_renderer_unchanged_by_lifecycle_fix": true,
+    "limitations": [
+      "An application that becomes visible, shared with another controller, or cannot be verified is preserved; inspect the retirement status and process count before the next batch.",
+      "Abnormal Python termination can bypass context-manager cleanup.",
+      "Native jobs are run sequentially; inspect process counts and available memory between batches."
     ]
   }
 }

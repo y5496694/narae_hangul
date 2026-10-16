@@ -99,6 +99,22 @@ def fill_program(grid,cell):
     return '\n'.join((_color(color,'rg'),f'{left} {top} m {right} {top} l {right} {bottom} l {left} {bottom} l h f'))
 
 
+def clip_points(grid,cell):
+    x,y=grid['x'],grid['y'];row,col=cell.row,cell.col
+    left,right,top,bottom=x[col],x[col+cell.col_span],y[row],y[row+cell.row_span]
+    return [(left,top),(right,top),(right,bottom),(left,bottom)]
+
+
+def clip_program(grid,cell,transform=None):
+    """Clip cell text at the physical cell edges, without padding or pens."""
+    points=clip_points(grid,cell)
+    if transform is not None:
+        a,b,c,d,e,f=transform
+        points=[(a*x+c*y+e,b*x+d*y+f) for x,y in points]
+    return ' '.join(f'{round(x,9)} {round(y,9)} '+('m' if i==0 else 'l')
+        for i,(x,y) in enumerate(points))+' h W* n'
+
+
 def stroke_program(grid):
     f32=lambda v:struct.unpack('<f',struct.pack('<f',v))[0]
     x,y=grid['x'],grid['y'];vertical=grid['vertical'];horizontal=grid['horizontal']

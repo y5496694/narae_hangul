@@ -54,6 +54,85 @@ class _AutomationMutex:
             self.handle = None
 
 
+class _OwnedHancomProcess:
+    """Retire only a process created here, after its last bridge closes.
+
+    Keep the process handle until retirement to prevent PID reuse. DispatchEx
+    may share an application, so document counts alone are insufficient: check
+    every native top-level window as well as the remaining empty document.
+    """
+    _live = {}
+
+    @classmethod
+    def acquire(cls, pid, hwnd, created):
+        if pid in cls._live:
+            owner = cls._live[pid]
+            owner.clients += 1
+            return owner
+        if not created:
+            return None
+        import win32api
+        import win32con
+        import win32gui
+        import win32process
+        owner = cls()
+        owner.pid, owner.clients = pid, 1
+        owner.handle = win32api.OpenProcess(
+            win32con.PROCESS_QUERY_INFORMATION | win32con.PROCESS_VM_READ | win32con.SYNCHRONIZE,
+            False, pid)
+        try:
+            owner.executable = win32process.GetModuleFileNameEx(owner.handle, 0)
+            owner.window_class = win32gui.GetClassName(hwnd).split(";", 1)[0] + ";"
+            if Path(owner.executable).name.lower() != "hwp.exe" or not owner.window_class.startswith("HwndWrapper["):
+                owner.handle.Close()
+                return None
+        except BaseException:
+            owner.handle.Close()
+            raise
+        cls._live[pid] = owner
+        return owner
+
+    def release(self, app, document_closed):
+        self.clients -= 1
+        if self.clients:
+            return "shared-with-another-bridge"
+        self._live.pop(self.pid, None)
+        try:
+            if not document_closed:
+                return "document-close-unconfirmed"
+            import win32event
+            import win32gui
+            import win32process
+            if win32event.WaitForSingleObject(self.handle, 0) == win32event.WAIT_OBJECT_0:
+                return "exited"
+            if win32process.GetModuleFileNameEx(self.handle, 0) != self.executable:
+                return "process-identity-changed"
+            windows = []
+            def collect(hwnd, _):
+                if win32process.GetWindowThreadProcessId(hwnd)[1] == self.pid:
+                    windows.append(hwnd)
+            win32gui.EnumWindows(collect, None)
+            if any(win32gui.IsWindowVisible(hwnd) for hwnd in windows):
+                return "visible-window-preserved"
+            document_windows = [hwnd for hwnd in windows
+                                if win32gui.GetClassName(hwnd).startswith(self.window_class)
+                                and win32gui.GetWindowText(hwnd) not in
+                                ("", "SystemResourceNotifyWindow", "MediaContextNotificationWindow")]
+            active = app.XHwpWindows.Active_XHwpWindow.WindowHandle
+            if document_windows != [active] or app.XHwpWindows.Count != 1:
+                return "other-windows-preserved"
+            documents = app.XHwpDocuments
+            if documents.Count != 1 or not app.IsEmpty or documents.Item(0).Path:
+                return "other-documents-preserved"
+            app.Quit()
+            return ("exited" if win32event.WaitForSingleObject(self.handle, 5000) == win32event.WAIT_OBJECT_0
+                    else "quit-requested")
+        except Exception:
+            return "retirement-unconfirmed"
+        finally:
+            self.handle.Close()
+
+
 def integer(value, label):
     if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value <= 100000:
         raise HancomError(f"{label} must be a nonnegative integer")
@@ -138,6 +217,8 @@ class HancomBridge:
         self._document = self._previous_document = self._window = None
         self._document_id = self._previous_document_id = self._window_handle = None
         self._owns_process = False
+        self._owned_process = None
+        self.process_retirement = "not-owned"
         self._old_message_mode = None
         self.visible = bool(visible)
         prior_processes = set(win32process.EnumProcesses())
@@ -153,6 +234,7 @@ class HancomBridge:
                     time.sleep(.2)
             process_id = win32process.GetWindowThreadProcessId(self._window.WindowHandle)[1]
             self._owns_process = process_id not in prior_processes
+            self._owned_process = _OwnedHancomProcess.acquire(process_id, self._window.WindowHandle, self._owns_process)
             documents = self._hwp.XHwpDocuments
             current = documents.Active_XHwpDocument
             if self._owns_process and documents.Count == 1 and current is not None and self._hwp.IsEmpty and not current.Path:
@@ -192,6 +274,7 @@ class HancomBridge:
             raise
 
     def close(self):
+        document_closed = False
         try:
             if self._hwp is not None:
                 try:
@@ -205,6 +288,7 @@ class HancomBridge:
                         self.activate_document()
                         active = self._hwp.XHwpDocuments.Active_XHwpDocument
                         active.Close(False)
+                        document_closed = True
                         if self._previous_document_id is not None:
                             previous = self._hwp.XHwpDocuments.FindItem(self._previous_document_id)
                             if previous is not None: previous.SetActive_XHwpDocument()
@@ -212,6 +296,10 @@ class HancomBridge:
                 # Bound the retirement pause; never retry document mutations.
                 time.sleep(.1)
         finally:
+            owner = getattr(self, "_owned_process", None)
+            if owner is not None:
+                self.process_retirement = owner.release(self._hwp, document_closed)
+                self._owned_process = None
             self._document = self._previous_document = self._window = self._hwp = None
             if self._com is not None:
                 self._uninitialize()

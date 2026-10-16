@@ -198,11 +198,12 @@ class SourceLayout:
         self._pdf_bitmap_bytes=0
         self._pdf_bitmaps=[]
         self._pdf_bitmap_text={'processed_lines':0,'legacy_lines':0,'image_chunks':0,
-                               'legacy_reasons':{},'remaining':{},'whole_document_parity_verified':False}
+                               'legacy_reasons':{},'remaining':{},'fitted_lines':0,'condensed_word_gaps':0,
+                               'condensed_character_gaps':0,'whole_document_parity_verified':False}
         self._pdf_native_writer=None
         self._pdf_table_frames={'processed_grids':0,'legacy_grids':0,'legacy_reasons':{},'whole_document_parity_verified':False}
         self._pdf_native_text={'processed_lines':0,'legacy_lines':0,'glyphs':0,'fonts':[],
-                               'legacy_reasons':{},'whole_document_parity_verified':False}
+                               'legacy_reasons':{},'cell_clipped_lines':0,'cell_clipped_painter_lines':0,'whole_document_parity_verified':False}
         self._bitmap_images={}
         self._bitmap_image_bytes=0
         self._metrics_device=QImage(1,1,QImage.Format.Format_RGB32)
@@ -430,7 +431,7 @@ class SourceLayout:
             text=_utf16_slice(text,0,start)+value+'\u200b'*(8-len(value))+_utf16_slice(text,start+8)
         return text
 
-    def _build(self,blocks,origin,page,body=False,continuation_y=None,content_width=None,table_text_origin=None):
+    def _build(self,blocks,origin,page,body=False,continuation_y=None,content_width=None,table_text_origin=None,table_text_cell=None):
         current=page;last=-1.;origin_x,origin_y=origin
         if content_width is None:content_width=self.body_width
         local_offset=0.;previous_end=0.
@@ -495,7 +496,7 @@ class SourceLayout:
                         if text.strip('\u200b\u200c\u200d '):
                             actual_y=(continuation_y if current>page else origin_y)+y+local_offset
                             self._add(current,Command('text',(origin_x+line['x_pt'],actual_y,line['width_pt'],line['height_pt']),block,
-                                                      {'line':line,'text':text,'start':start,'table_text_origin':table_text_origin,
+                                                      {'line':line,'text':text,'start':start,'table_text_origin':table_text_origin,'table_text_cell':table_text_cell,
                                                        'justify_continuation':number+1<len(lines) and not raw_text.endswith(('\n','\x0b'))}))
                 for run in block.runs:
                     if not run.image:continue
@@ -692,7 +693,7 @@ class SourceLayout:
                 spare=max(0,height-cell.padding[2]-cell.padding[3]-extents[0])
                 shift=spare/2 if cell.vertical_align=='CENTER' else spare if cell.vertical_align=='BOTTOM' else 0
                 final_page=max(final_page,page_cell+self._build(cell.blocks,(cx+cell.padding[0],cy+cell.padding[2]+shift),page_cell,
-                    content_width=widths[id(cell)],table_text_origin=(id(table),native_origin) if native_origin is not None else None))
+                    content_width=widths[id(cell)],table_text_origin=(id(table),native_origin) if native_origin is not None else None,table_text_cell=cell))
             else:
                 for part_page,part_y,part_height in pieces:
                     self._add(part_page,Command('cell',(cx,part_y,width,part_height),cell,{'table_group':id(table)}))
@@ -1010,14 +1011,41 @@ class SourceLayout:
             self._bitmap_images[key]=value;self._bitmap_image_bytes+=image.sizeInBytes()
         return value
 
+    def _clip_pdf_cell(self,painter,command):
+        origin=command.extra.get('table_text_origin');cell=command.extra.get('table_text_cell')
+        grid=self._active_pdf_grids.get(origin[0]) if origin is not None else None
+        if not self._pdf_picture_alpha or grid is None or cell is None:return False
+        from .pdf_table_frames import clip_points
+        inverse,valid=painter.combinedTransform().inverted()
+        if not valid:raise ValueError('Singular PDF cell clip transform')
+        device=painter.device();dx,dy=device.logicalDpiX()/72,device.logicalDpiY()/72
+        path=QPainterPath()
+        for i,(x,y) in enumerate(clip_points(grid,cell)):
+            point=inverse.map(QPointF(x*dx,(math.floor(self._pdf_page_height)-y)*dy))
+            if i:path.lineTo(point)
+            else:path.moveTo(point)
+        path.closeSubpath();painter.setClipPath(path,Qt.ClipOperation.IntersectClip)
+        return True
+
     def _draw_text(self,painter,command):
         paragraph=command.source
         if paragraph.style.background and QColor(paragraph.style.background).isValid():
             x,y,width,height=command.rect
             left,right,top,bottom=paragraph.style.border_offsets
-            painter.fillRect(QRectF((x-left)/.75,(y-top)/.75,(width+left+right)/.75,(height+top+bottom)/.75),QColor(paragraph.style.background))
+            painter.save()
+            try:
+                self._clip_pdf_cell(painter,command)
+                painter.fillRect(QRectF((x-left)/.75,(y-top)/.75,(width+left+right)/.75,(height+top+bottom)/.75),QColor(paragraph.style.background))
+            finally:painter.restore()
         layout=self._text_layout(command)
         if self._pdf_native_writer is not None and self._pdf_native_writer.draw_line(painter,command,layout):return
+        painter.save()
+        try:
+            if self._clip_pdf_cell(painter,command):self._pdf_native_text['cell_clipped_painter_lines']+=1
+            self._draw_painter_text(painter,command,layout)
+        finally:painter.restore()
+
+    def _draw_painter_text(self,painter,command,layout):
         if self._pdf_picture_alpha:
             from .pdf_bitmap_text import draw_line
             bitmap_text=draw_line(self,painter,command,layout)
@@ -1025,6 +1053,8 @@ class SourceLayout:
                 key='processed_lines' if bitmap_text['handled'] else 'legacy_lines'
                 self._pdf_bitmap_text[key]+=1
                 self._pdf_bitmap_text['image_chunks']+=bitmap_text.get('image_chunks',0)
+                for key in ('fitted_lines','condensed_word_gaps','condensed_character_gaps'):
+                    self._pdf_bitmap_text[key]=self._pdf_bitmap_text.get(key,0)+bitmap_text.get(key,0)
                 if not bitmap_text['handled']:
                     reason=bitmap_text['reason'];reasons=self._pdf_bitmap_text['legacy_reasons']
                     reasons[reason]=reasons.get(reason,0)+1
@@ -1414,7 +1444,7 @@ class SourceLayout:
         self._pdf_alpha_sequence=0
         self._pdf_bitmap_cache.clear();self._pdf_bitmap_bytes=0
         self._pdf_bitmap_qualities.clear();self._pdf_bitmaps.clear()
-        self._pdf_bitmap_text.update(processed_lines=0,legacy_lines=0,image_chunks=0,legacy_reasons={},remaining={})
+        self._pdf_bitmap_text.update(processed_lines=0,legacy_lines=0,image_chunks=0,legacy_reasons={},remaining={},fitted_lines=0,condensed_word_gaps=0,condensed_character_gaps=0)
         self._pdf_table_frames.update(processed_grids=0,legacy_grids=0,legacy_reasons={})
         try:
             for index in range(len(self.pages)):

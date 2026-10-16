@@ -10,15 +10,61 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "1_나래엔진/narae-hangul/scripts/engine"))
-from hangeul.hwp_automation_bridge import HancomBridge, HancomError, snapshot
+from hangeul.hwp_automation_bridge import HancomBridge, HancomError, snapshot, _OwnedHancomProcess
 from hangeul.automation import run_job
 from hangeul.formats import load_document, Table
 
 
 class PortableRegressionTests(unittest.TestCase):
+    def test_existing_process_is_never_claimed(self):
+        self.assertIsNone(_OwnedHancomProcess.acquire(-1, 0, False))
+
+    def test_process_retirement_preserves_visible_or_other_documents(self):
+        for reason in ("visible", "other-window", "other-document", "nonempty", "saved", "close-failed"):
+            with self.subTest(reason=reason):
+                app, owner, modules, calls = self.retirement_fixture(reason)
+                with patch.dict(sys.modules, modules):
+                    owner.release(app, reason != "close-failed")
+                self.assertNotIn("quit", calls)
+                self.assertEqual(["handle-close"], calls)
+
+    def test_last_bridge_retires_only_its_empty_hidden_process(self):
+        app, owner, modules, calls = self.retirement_fixture()
+        owner.clients = 2
+        with patch.dict(sys.modules, modules):
+            self.assertEqual("shared-with-another-bridge", owner.release(app, True))
+            self.assertEqual([], calls)
+            self.assertEqual("exited", owner.release(app, True))
+        self.assertEqual(["quit", "handle-close"], calls)
+
+    @staticmethod
+    def retirement_fixture(reason=""):
+        calls = []
+        handle = SimpleNamespace(Close=lambda: calls.append("handle-close"))
+        owner = _OwnedHancomProcess()
+        owner.pid, owner.clients, owner.handle = 12345, 1, handle
+        owner.executable, owner.window_class = "Hwp.exe", "HwndWrapper[Hwp.exe;"
+        documents = SimpleNamespace(Count=2 if reason == "other-document" else 1,
+                                    Item=lambda i: SimpleNamespace(Path="saved.hwp" if reason == "saved" else ""))
+        app = SimpleNamespace(XHwpWindows=SimpleNamespace(Count=1, Active_XHwpWindow=SimpleNamespace(WindowHandle=10)),
+                              XHwpDocuments=documents, IsEmpty=reason != "nonempty", Quit=lambda: calls.append("quit"))
+        waits = iter([258, 0])
+        modules = {
+            "win32event": SimpleNamespace(WAIT_OBJECT_0=0, WaitForSingleObject=lambda *args: next(waits)),
+            "win32process": SimpleNamespace(GetModuleFileNameEx=lambda *args: "Hwp.exe",
+                                             GetWindowThreadProcessId=lambda h: (1, 12345)),
+            "win32gui": SimpleNamespace(EnumWindows=lambda fn, arg: [fn(h, arg) for h in (10, 11) if h == 10 or reason == "other-window"],
+                                        IsWindowVisible=lambda h: reason == "visible",
+                                        GetClassName=lambda h: "HwndWrapper[Hwp.exe;random]",
+                                        GetWindowText=lambda h: "blank"),
+        }
+        return app, owner, modules, calls
+
     def test_false_action_cannot_report_success(self):
         class Actions:
             def Run(self, name): return False
@@ -70,6 +116,31 @@ class PortableRegressionTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 run_job({"action":"edit","input":"in.hwpx","output":"out.hwpx",
                          "operations":[{"op":"set_cell_text","table_index":-1,"row":0,"col":0,"text":"X"}]},folder)
+
+
+@unittest.skipUnless(os.name=="nt" and os.environ.get("NARAE_RUN_HANCOM_TESTS")=="1", "real Hancom tests are opt-in")
+class NativeProcessLifetimeTests(unittest.TestCase):
+    def test_repeated_jobs_leave_no_owned_hancom_process(self):
+        import win32api
+        import win32con
+        import win32event
+        import win32process
+        for index in range(3):
+            with self.subTest(job=index):
+                bridge = HancomBridge()
+                pid = win32process.GetWindowThreadProcessId(bridge._window_handle)[1]
+                process = win32api.OpenProcess(win32con.SYNCHRONIZE, False, pid)
+                try:
+                    if not bridge._owns_process:
+                        self.skipTest("Hancom reused a pre-existing application; it must be preserved")
+                    bridge.execute_action("InsertText", {"Text": "NARAE_PROCESS_LIFETIME"})
+                    bridge.close()
+                    self.assertEqual(win32event.WAIT_OBJECT_0, win32event.WaitForSingleObject(process, 5000),
+                                     bridge.process_retirement)
+                    bridge.close()  # Idempotent cleanup must not release COM twice.
+                finally:
+                    bridge.close()
+                    process.Close()
 
 
 @unittest.skipUnless(os.name=="nt" and os.environ.get("NARAE_RUN_HANCOM_TESTS")=="1", "real Hancom tests are opt-in")

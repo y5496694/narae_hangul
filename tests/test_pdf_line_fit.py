@@ -13,7 +13,7 @@ from hangeul.viewer import application,Document,compare
 TEXT='가나다 라마바사아자(차카타파) 하가'
 
 def text_style(family,size=15,tracking=0,stretch=100,font_space=False):
-    kind='HFT' if family=='한양신명조' else 'TTF'
+    kind='HFT' if family in ('한양신명조','명조','고딕') else 'TTF'
     return TextStyle(font=family,size=size,font_type=kind,letter_spacing=tracking,stretch=stretch,
         language_fonts=(family,)*7,language_font_types=(kind,)*7,language_spacing=(tracking,)*7,
         language_ratios=(stretch,)*7,use_font_space=font_space)
@@ -56,9 +56,9 @@ def cached_source(path,cases,cell):
             page_break=bool(blocks) if not cell else False,break_latin='KEEP_WORD',break_nonlatin='KEEP_WORD',line_wrap='BREAK' if cell else case.get('wrap','BREAK')))
         if not cell:blocks.append(p)
         else:
-            width=case['width']+6
+            padding=case.get('padding',(3,3,0,0));width=case['width']+padding[0]+padding[1]
             blocks.extend((Paragraph(style=ParaStyle(page_break=bool(blocks))),
-                Table(1,1,[Cell(0,0,blocks=[p],width=width,height=50,padding=(3,3,0,0),borders=none,vertical_align='TOP',native_flags={'SQUEEZE':8,'KEEP':16}.get(case.get('wrap'),0))],width=width,height=50,borders=none)))
+                Table(1,1,[Cell(0,0,blocks=[p],width=width,height=50,padding=padding,borders=case.get('borders',none),background=case.get('background',''),vertical_align='TOP',native_flags={'SQUEEZE':8,'KEEP':16}.get(case.get('wrap'),0))],width=width,height=50,borders=none)))
     model=DocumentModel(blocks)
     if path.suffix=='.hwpx':
         save_hwpx(model,path)
