@@ -168,5 +168,3 @@ def style(app, step, target):
             if actual.Item(key) != value:
                 raise ValueError("한글이 요청한 서식을 반영하지 않았습니다: " + key)
     return {"selection": selected[1:], "properties": {**char, **para}}
-
-
