@@ -176,3 +176,11 @@ Qt 기반 추정 레이아웃으로 PNG 및 PDF를 생성합니다. 실제 한�
   }
 }
 ```
+
+## CLI 0.7 편집 안전장치
+
+CLI run의 edit 및 input이 있는 hancom 작업에는 직전 inspect의 expected_input_sha256이 필수다. 작업 JSON에 output을 명시하고 원본 덮어쓰기는 overwrite_source:true를 명시한다. 기본 응답은 compact, --full로 전체 엔진 재독해 정보를 받는다. Python 라이브러리 run_job은 기존 API를 유지하되 파일 잠금·열린 한글 미저장 상태 검사·변경 추적 보호를 공통 적용한다.
+
+기본 인자로 한 번 실행하는 HWPX merge_cells/set_cell_style/insert_row/delete_row는 실제 기존 셀 서식 참조를 사용해 해당 표 XML만 수정한다. 이 보존 경로는 한 구역·한 작업을 지원한다. 다중 작업·확장 인자의 기존 고급 경로는 유지하며 같은 보존 범위를 보장하지 않는다.
+
+열린 문서의 live-read/live-edit와 liveRevision 사용법은 SKILL.md를 따른다. 파일 편집 중 문서가 미저장 상태이면 저장하거나 live-edit로 전환한다.

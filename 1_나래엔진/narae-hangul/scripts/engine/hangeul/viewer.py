@@ -132,6 +132,9 @@ class Document:
             if self.backend == "pdf":
                 shutil.copyfile(self.source, self.pdf_path)
             elif self.backend == "independent":
+                from .revision import revision_state
+                if revision_state(self.source):
+                    raise ValueError("변경 추적 문서는 live-read 또는 --backend hancom으로 확인하세요.")
                 from .formats import load_document
                 from .source_layout import SourceLayout
                 from PySide6.QtPrintSupport import QPrinter

@@ -276,7 +276,7 @@ def _editable_signature(data):
     def visit(value):
         if isinstance(value, dict):
             if value.get("type") == "paragraph":
-                for key in ("cache_text", "line_segments"):
+                for key in ("cache_text", "line_segments", "default_style", "end_style"):
                     value.pop(key, None)
                 for field in PARA_FIELDS:
                     value.get("style", {}).pop(field, None)

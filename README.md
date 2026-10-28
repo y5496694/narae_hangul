@@ -1,4 +1,4 @@
-# 나래 한글(나래팩) (NaraeHangul) v1.2 · 엔진 0.6.0
+# 나래 한글(나래팩) (NaraeHangul) v1.3 · 엔진 0.7.0
 
 한컴오피스에서 열리는 HWP / HWPX 문서를 AI 에이전트가 안전하게 만들고 고칠 수 있도록 만든 CLI 엔진, 스킬 문서, 템플릿 묶음입니다.
 
@@ -142,3 +142,16 @@ python -m unittest discover -s tests -v
 ## 라이선스
 
 MIT License
+
+## 1.3 · 독립 CLI 0.7 설치
+
+나래 한글 오피스와 별도로 실행하는 Python CLI입니다. 오피스 앱·Node.js·Electron 설치가 필요하지 않습니다. Windows x64에서는 최신 소스/릴리스 ZIP을 풀고 **설치.cmd**를 한 번 실행하면 공식 Python과 라이브러리, narae-hangul 스킬을 전용 폴더에 준비합니다. 한컴은 자동 설치하지 않습니다. 독립 파일 작업에는 한컴이 없어도 되며, 열린 한글 및 고급 HWP COM 작업에는 한컴오피스 한글이 필요합니다.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\install.ps1 -InstallRoot "D:\Apps\NaraeHangulCLI"
+& "D:\Apps\NaraeHangulCLI\narae-hangul.cmd" doctor
+& "D:\Apps\NaraeHangulCLI\narae-hangul.cmd" inspect "D:\문서\안내.hwpx"
+& "D:\Apps\NaraeHangulCLI\narae-hangul.cmd" run 작업.json --result 결과.json
+```
+
+오피스에서 검증한 HWPX 문단 서식 보정, 기본 표 구조의 참조 보존 편집, 해시 필수 검사, 파일 잠금, 변경 추적 보호, 미저장 문서 거절, liveRevision 기반 열린 한글 편집을 적용했습니다. 기존 독립 렌더링·고급 COM·검증 기능도 유지합니다. 기본 JSON을 compact로 줄였고 --full, --offset, --limit를 제공합니다. [상세 스킬](1_나래엔진/narae-hangul/SKILL.md) · [변경 사항과 검증 결과](CHANGELOG.md)를 참고하세요.

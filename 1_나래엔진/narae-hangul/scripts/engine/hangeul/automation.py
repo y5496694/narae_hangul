@@ -576,8 +576,11 @@ def _verify_readback(expected, actual, creation=False):
         _equivalent(getattr(expected.page, key), getattr(actual.page, key), f"page.{key}")
 
 
-def run_job(job, base_dir=None):
+def _run_job(job, base_dir=None):
     """Execute one JSON job. Raise on refusal; never reconstruct imports."""
+    if isinstance(job, dict) and job.get("action") in ("live-read", "live-edit"):
+        from .job_safety import live_job
+        return live_job(job,Path(base_dir or Path.cwd()).resolve())
     if isinstance(job, dict) and job.get("action") in ("hancom", "hancom_capabilities"):
         if job.get("schema", SCHEMA) != SCHEMA:
             raise ValueError("Unsupported automation schema")
@@ -616,6 +619,14 @@ def run_job(job, base_dir=None):
         initial_hash = _sha(source)
         if "expected_input_sha256" in job and job["expected_input_sha256"].lower() != initial_hash:
             raise ValueError("Input SHA-256 has changed since inspection")
+        from .revision import revision_state
+        revision = revision_state(source)
+        if revision and action == 'edit':raise ValueError(revision['guidance'])
+        if revision and action == 'inspect':
+            return {**result,'input':str(source),'input_sha256':initial_hash,'input_unchanged':True,
+                    'format':source.suffix[1:].lower(),'paragraphs':[],'tables':[],'images':[],
+                    'counts':{'paragraphs':0,'tables':0},'textDetailsLoaded':False,'revisionState':revision,
+                    'warnings':[revision['guidance']]}
         loaded = load_document(source)
         if not loaded.model or loaded.source_format not in ("hwp", "hwpx"):
             raise ValueError("Automation requires an actual native HWP/HWPX document")
@@ -703,6 +714,15 @@ def run_job(job, base_dir=None):
     finally:
         for path in staged.values():
             path.unlink(missing_ok=True)
+
+
+def run_job(job, base_dir=None):
+    from .job_safety import guarded_job
+    base=Path(base_dir or Path.cwd()).resolve()
+    with guarded_job(job,base) as state:
+        result=_run_job(job,base)
+    result.update(state)
+    return result
 
 
 def main(argv=None):

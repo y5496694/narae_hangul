@@ -347,6 +347,15 @@ def _set_tc_text(tc: ET.Element, header_root: ET.Element | None, text: str, op: 
 
 def apply_advanced_hwpx_operations(hwpx_bytes: bytes, operations: list) -> bytes:
     """Execute high-level table/cell editing commands on HWPX matching Hancom 2024 native spec."""
+    preserving = {
+        'merge_cells':{'op','table_index','start_row','start_col','row_span','col_span','text','vertical_align'},
+        'set_cell_style':{'op','table_index','row','col','vertical_align','padding_mm','width_mm','height_mm'},
+        'insert_row':{'op','table_index','row_index','height_mm'},
+        'delete_row':{'op','table_index','row_index'},
+    }
+    if len(operations)==1 and operations[0].get('op') in preserving and not (set(operations[0])-preserving[operations[0]['op']]):
+        from .hwpx_preserve import apply_advanced_hwpx_operations as preserve
+        return preserve(hwpx_bytes,operations)
     _register_namespaces()
 
     with zipfile.ZipFile(io.BytesIO(hwpx_bytes), "r") as zin:

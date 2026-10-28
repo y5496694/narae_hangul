@@ -14,7 +14,8 @@ import venv
 
 SKILL = Path(__file__).resolve().parents[1]
 ENGINE = SKILL / "scripts" / "engine"
-VERSION = "0.6.0"
+sys.path.insert(0, str(SKILL / "scripts"))
+VERSION = "0.7.0"
 MODULES = ("PySide6", "olefile", "fontTools", "Crypto", "pypdf", "PIL")
 
 
@@ -51,6 +52,7 @@ def choose_runtime(args) -> tuple[list[str], dict[str, str], str]:
         return source_command(Path(args.python).expanduser().resolve())
     configured = os.environ.get("NARAE_HANGUL_EXE")
     config_file = SKILL / "runtime.json"
+    config = {}
     if not configured and config_file.is_file():
         config = json.loads(config_file.read_text(encoding="utf-8-sig"))
         configured = config.get("executable")
@@ -60,6 +62,9 @@ def choose_runtime(args) -> tuple[list[str], dict[str, str], str]:
         executable = Path(configured).expanduser().resolve()
         if executable.is_file():
             return [str(executable)], os.environ.copy(), "configured-app"
+    configured_python = os.environ.get('NARAE_HANGUL_PYTHON') or config.get('python')
+    if configured_python:
+        return source_command(Path(configured_python).expanduser().resolve())
     # The release ships hangeul-editor/ai/skill/narae-hangul next to app/.
     for parent in SKILL.parents:
         executable = parent / "app" / "NaraeHangul" / "NaraeHangul.exe"
@@ -138,8 +143,22 @@ def run(args) -> tuple[int, dict]:
         if isinstance(value, str) and value:
             candidate = Path(value).expanduser()
             paths.append((job.parent / candidate).resolve() if not candidate.is_absolute() else candidate.resolve())
-    if explicit_result in paths:
+    def images(value):
+        if not isinstance(value,(list,dict)):return
+        if isinstance(value,list):
+            for item in value:images(item)
+        else:
+            for key,item in value.items():
+                if key=='path' and isinstance(item,str):paths.append((job.parent/item).resolve())
+                else:images(item)
+    images(task.get('blocks'));images(task.get('operations'))
+    if explicit_result and any(os.path.normcase(str(explicit_result))==os.path.normcase(str(p)) or
+                               explicit_result.exists() and p.exists() and os.path.samefile(explicit_result,p) for p in paths):
         raise ValueError("결과 JSON 경로는 작업 JSON·문서·미리보기 경로와 달라야 합니다.")
+    if (task.get('action')=='edit' or task.get('action')=='hancom' and task.get('input')) and not task.get('expected_input_sha256'):
+        response={'success':False,'error':'편집 전 inspect의 최신 input_sha256을 expected_input_sha256으로 지정하세요.'}
+        write_result(explicit_result,response)
+        return 1,response
     with tempfile.TemporaryDirectory(prefix="narae-job-") as temporary:
         # Always use a new result path: a previous successful JSON must never
         # disguise an engine crash or failure to write this job's result.
@@ -157,6 +176,8 @@ def run(args) -> tuple[int, dict]:
             return 1, response
         response = json.loads(result.read_text(encoding="utf-8-sig"))
         response["skill_runtime"] = runtime
+        from cli_output import compact
+        response = compact(response,full=args.full,offset=args.offset,limit=args.limit)
         write_result(explicit_result, response)
         return (0 if process.returncode == 0 and response.get("success") else 1), response
 
@@ -185,18 +206,28 @@ def main() -> int:
     if len(sys.argv) > 1 and sys.argv[1] in ("read", "open", "export", "verify"):
         return run_viewer(sys.argv[1:])
     parser = argparse.ArgumentParser(description="나래 한글: AI용 HWP 작업 실행")
-    parser.add_argument("action", choices=("run", "doctor", "setup"))
+    parser.add_argument("action", choices=("run", "doctor", "setup", "inspect", "live-read"))
     parser.add_argument("job", nargs="?")
     parser.add_argument("--result", help="엔진 결과 JSON 저장 경로")
     parser.add_argument("--engine", help="NaraeHangul.exe 경로")
     parser.add_argument("--python", help="포함된 소스 엔진에 사용할 Python 경로")
+    parser.add_argument('--full',action='store_true',help='전체 엔진 응답 (기본: compact)')
+    parser.add_argument('--offset',type=int,default=0)
+    parser.add_argument('--limit',type=int)
     parser.add_argument("--hancom", action="store_true", help="doctor에서 한컴 COM/파일 접근 모듈도 확인")
     parser.add_argument("--hancom-module", help="setup에서 명시적으로 지정한 승인된 FilePathCheckDLL 등록")
     args = parser.parse_args()
+    if args.offset<0 or args.limit is not None and args.limit<0:parser.error('offset과 limit는 0 이상의 정수로 지정하세요.')
     if args.hancom and args.action != "doctor": parser.error("--hancom은 doctor에서만 사용합니다.")
     if args.hancom_module and args.action != "setup": parser.error("--hancom-module은 setup에서만 사용합니다.")
     try:
-        if args.action == "run":
+        if args.action in ('inspect','live-read'):
+            if not args.job:parser.error('문서 경로가 필요합니다.')
+            with tempfile.TemporaryDirectory(prefix='narae-read-') as directory:
+                request=Path(directory)/'job.json'
+                request.write_text(json.dumps({'action':args.action,'input':str(Path(args.job).resolve())}),encoding='utf-8')
+                args.job=str(request);code,response=run(args)
+        elif args.action == "run":
             if not args.job:
                 parser.error("run에는 작업 JSON 경로가 필요합니다.")
             code, response = run(args)

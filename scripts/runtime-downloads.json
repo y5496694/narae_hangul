@@ -1,0 +1,8 @@
+{
+  "python": {
+    "version": "3.13.17",
+    "url": "https://www.python.org/ftp/python/3.13.17/python-3.13.17-amd64.zip",
+    "sha256": "b26ca4b4ee51e157836049934d2b8eabd55939be296f3130254251b6df96ec2f",
+    "manifest": "https://www.python.org/ftp/python/3.13.17/windows-3.13.17.json"
+  }
+}
